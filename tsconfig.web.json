@@ -1,0 +1,31 @@
+{
+  "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
+  "include": [
+    "src/assets/**/*.bmp",
+    "src/preload/*.d.ts",
+    "src/renderer/env.d.ts",
+    "src/renderer/**/*",
+    "src/renderer/**/*.tsx",
+    "src/typescript/**/*",
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "api": ["src/renderer/api/index.ts"],
+      "app/*": ["src/renderer/app/*"],
+      "assets/*": ["src/renderer/assets/*"],
+      "audio": ["src/renderer/audio/index.ts"],
+      "components/*": ["src/renderer/components/*"],
+      "hooks/*": ["src/renderer/hooks/*"],
+      "main/*": [ "src/renderer/main/*" ],
+      "queries": ["src/renderer/queries/index.ts"],
+      "routes/*": ["src/renderer/routes/*"],
+      "scripts/*": ["src/renderer/scripts/*"],
+      "state": ["src/renderer/state/index.ts"],
+      "typescript": ["src/typescript/index.ts"],
+      "ui/*": ["src/renderer/ui/*"],
+    }
+  }
+}
