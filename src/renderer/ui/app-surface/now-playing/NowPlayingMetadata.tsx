@@ -1,9 +1,19 @@
 import { observer } from '@legendapp/state/react';
-import { Box, Chip, ChipDelete, Input, InputProps, Typography, useColorScheme } from '@mui/joy';
+import {
+  Box,
+  Chip,
+  ChipDelete,
+  Input,
+  InputProps,
+  SvgIcon,
+  Typography,
+  useColorScheme,
+} from '@mui/joy';
 import { Track } from 'api';
 import TrackRating from 'components/rating/TrackRating';
 import React from 'react';
 import { BiLockAlt, BiLockOpenAlt } from 'react-icons/bi';
+import { TbEdit } from 'react-icons/tb';
 import { store } from 'state';
 
 const MetadataEditInput: React.FC<{
@@ -46,21 +56,11 @@ const NowPlayingMetadata: React.FC = observer(function NowPlayingMetadata() {
   const library = store.library.get();
   const nowPlaying = store.audio.nowPlaying.get();
 
-  console.log(nowPlaying);
-
   const { mode } = useColorScheme();
 
   return (
-    <Box alignItems="flex-start" display="flex" height={1}>
-      <Box
-        display="flex"
-        flex="1 0 0"
-        flexDirection="column"
-        gap={0.5}
-        maxWidth={400}
-        padding={2}
-        paddingTop={8}
-      >
+    <Box alignItems="flex-start" display="flex" height={1} width="calc(100% - 64px)">
+      <Box display="flex" flex="1 0 0" flexDirection="column" gap={0.5} maxWidth={400} padding={2}>
         <MetadataEditInput field="grandparentTitle" label="Album Artist" />
         <MetadataEditInput
           field="originalTitle"
@@ -116,24 +116,24 @@ const NowPlayingMetadata: React.FC = observer(function NowPlayingMetadata() {
           />
         </div>
       </Box>
-      <Box display="flex" flex="1 0 0" flexDirection="column" padding={2} paddingTop={8}>
-        <Typography level="body-sm" lineHeight={1} marginBottom={0.25}>
-          Genres
-        </Typography>
-        <Input
-          placeholder="Add a genre"
-          sx={{
-            '--Input-minHeight': '2rem',
-            '--Input-paddingInline': '0.5rem',
-            background: 'transparent',
-            left: '-0.5rem',
-            width: 'calc(100% + 1rem)',
-            '&:hover': {
-              background: `rgba(21, 21, 21, ${mode === 'dark' ? '0.35' : '0.08'})`,
-            },
-          }}
-          variant="plain"
-        />
+      <Box display="flex" flex="1 0 0" flexDirection="column" padding={2}>
+        <Box display="flex" height={14} marginBottom={0.25}>
+          <Typography level="body-sm" lineHeight={1}>
+            Genres
+          </Typography>
+          <SvgIcon
+            sx={(theme) => ({
+              marginLeft: 'auto',
+              width: 20,
+              height: 20,
+              top: -3,
+              position: 'relative',
+              '&:hover': { color: theme.palette.neutral.plainHoverColor },
+            })}
+          >
+            <TbEdit />
+          </SvgIcon>
+        </Box>
         <Box
           display="flex"
           flexWrap="wrap"

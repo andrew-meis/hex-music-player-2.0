@@ -42,7 +42,7 @@ const Search: React.FC = () => {
 
   return (
     <Box display="flex" flexDirection="column" height={1} marginX={4}>
-      <Typography paddingY={2} level="h1">
+      <Typography level="h1" paddingY={2}>
         Search
       </Typography>
       <SearchInput query={query} />

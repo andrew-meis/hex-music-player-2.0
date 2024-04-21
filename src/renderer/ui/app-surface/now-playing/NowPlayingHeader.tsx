@@ -11,7 +11,7 @@ const NowPlayingArtwork: React.FC<{ albumThumbSrc: string }> = ({ albumThumbSrc 
         aspectRatio: 1,
         borderRadius: 8,
         display: 'flex',
-        height: 'calc(100% - 48px)',
+        height: '100%',
         marginTop: 'auto',
         width: 'auto',
       }}
@@ -49,27 +49,43 @@ const NowPlayingHeader: React.FC = observer(function NowPlayingHeader() {
   return (
     <Box display="flex" height={1}>
       <NowPlayingArtwork albumThumbSrc={albumThumbSrc} />
-      <div style={{ marginBottom: 16, marginRight: 16, marginTop: 'auto' }}>
-        <Typography level="h1" lineHeight={1}>
+      <div
+        style={{
+          contain: 'paint',
+          overflow: 'hidden',
+          marginBottom: 16,
+          marginRight: 16,
+          marginTop: 'auto',
+          width: '-webkit-fill-available',
+        }}
+      >
+        <Typography
+          display="-webkit-box"
+          fontFamily="Rubik"
+          level="h1"
+          lineHeight={1}
+          width="calc(100% - 40px)"
+        >
           {nowPlaying.track.title}
         </Typography>
-        <span style={{ display: 'block', flexShrink: 0, height: '4px', width: '100%' }} />
+        <span style={{ display: 'block', height: 4, width: '100%' }} />
         <Typography
           display="-webkit-box"
           flexShrink={0}
           level="title-lg"
           overflow="hidden"
           sx={{
+            wordBreak: 'break-all',
             WebkitBoxOrient: 'vertical',
             WebkitLineClamp: 1,
           }}
+          width="calc(100% - 40px)"
         >
           {nowPlaying.track.originalTitle || nowPlaying.track.grandparentTitle}
           &thinsp;&thinsp;—&thinsp;&thinsp;
           {nowPlaying.track.parentTitle}
         </Typography>
-        <span style={{ display: 'block', flexShrink: 0, height: '4px', width: '100%' }} />
-        <Box display="flex">
+        <Box alignItems="flex-start" display="flex" overflow="hidden">
           <TrackRating
             id={nowPlaying.track.id}
             library={library}

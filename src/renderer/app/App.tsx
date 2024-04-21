@@ -3,6 +3,7 @@ import AppController from 'ui/app-controller/AppController';
 import AppSurface from 'ui/app-surface/AppSurface';
 
 import isAppInit from './init-app';
+import Modals from './Modals';
 import QueueUpdater from './QueueUpdater';
 
 export const appLoader = async () => {
@@ -23,6 +24,7 @@ const App: React.FC = () => {
       <QueueUpdater />
       <AppSurface />
       <AppController />
+      <Modals />
     </>
   );
 };

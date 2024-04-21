@@ -34,8 +34,6 @@ const initApp = async () => {
       const newAccount = new Account(client, device.accessToken);
       const newServerConnection = new ServerConnection(connection.uri, newAccount);
       const newLibrary = new Library(newServerConnection);
-      console.log(serverConfig);
-      console.log(newServerConnection);
       store.serverConfig.set(serverConfig);
       store.account.set(newAccount);
       store.device.set({

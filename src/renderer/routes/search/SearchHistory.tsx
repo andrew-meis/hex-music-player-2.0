@@ -1,5 +1,6 @@
 import { For, observer, Show } from '@legendapp/state/react';
 import { Box, SvgIcon } from '@mui/joy';
+import Scroller from 'components/scroller/Scroller';
 import React from 'react';
 import { IoCloseSharp } from 'react-icons/io5';
 import { persistedStore } from 'state';
@@ -31,13 +32,7 @@ const SearchHistory: React.FC = observer(function SearchHistory() {
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height="fit-content"
-      justifyContent="center"
-      marginTop={1.5}
-    >
+    <Scroller style={{ height: '-webkit-fill-available', marginBottom: 16, marginTop: 12 }}>
       <Show else={<NoRecentSearches />} if={persistedStore.recentSearches.get().length !== 0}>
         <For optimized each={persistedStore.recentSearches}>
           {(item) => {
@@ -88,7 +83,7 @@ const SearchHistory: React.FC = observer(function SearchHistory() {
           }}
         </For>
       </Show>
-    </Box>
+    </Scroller>
   );
 });
 

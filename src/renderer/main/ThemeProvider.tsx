@@ -2,6 +2,12 @@ import { CssVarsProvider } from '@mui/joy/styles';
 import extendTheme from '@mui/joy/styles/extendTheme';
 import React, { useMemo } from 'react';
 
+declare module '@mui/joy/styles' {
+  interface TypographySystemOverrides {
+    h5: true;
+  }
+}
+
 const createTheme = () =>
   extendTheme({
     breakpoints: {
@@ -14,6 +20,34 @@ const createTheme = () =>
       },
     },
     components: {
+      JoyIconButton: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            '&:hover > .MuiSvgIcon-colorNeutral': {
+              color: theme.palette.neutral.plainHoverColor,
+            },
+            '&:hover > .MuiSvgIcon-colorPrimary': {
+              color: theme.palette.primary[400],
+            },
+          }),
+        },
+      },
+      JoyModal: {
+        styleOverrides: {
+          backdrop: {
+            backdropFilter: 'none',
+          },
+        },
+      },
+      JoyModalDialog: {
+        styleOverrides: {
+          root: {
+            maxHeight: 384,
+            maxWidth: 640,
+            minWidth: 512,
+          },
+        },
+      },
       JoySlider: {
         styleOverrides: {
           root: ({ theme }) => ({
@@ -37,6 +71,9 @@ const createTheme = () =>
               },
             },
           }),
+          rail: {
+            borderRadius: 0,
+          },
           thumb: {
             borderRadius: 4,
             boxShadow: 'var(--joy-shadow-sm)',
@@ -46,6 +83,9 @@ const createTheme = () =>
             '::before': {
               border: 'none',
             },
+          },
+          track: {
+            borderRadius: 0,
           },
         },
       },
@@ -102,6 +142,13 @@ const createTheme = () =>
         fontSize: '1.75rem',
         fontWeight: '700',
         letterSpacing: 0,
+      },
+      h5: {
+        fontFamily: 'TT Commons, sans-serif',
+        fontSize: '1.5rem',
+        fontWeight: '600',
+        letterSpacing: 0,
+        lineHeight: 'var(--joy-lineHeight-xs)',
       },
     },
   });

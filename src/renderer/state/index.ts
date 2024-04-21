@@ -1,7 +1,7 @@
 import { observable } from '@legendapp/state';
 import { configureObservablePersistence, persistObservable } from '@legendapp/state/persist';
 import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/local-storage';
-import { Account, Device, Library, PlayQueueItem } from 'api';
+import { Account, Device, Library, PlayQueueItem, Track } from 'api';
 import { ServerConfig } from 'typescript';
 
 configureObservablePersistence({
@@ -15,9 +15,9 @@ export const persistedStore = observable({
   },
   // User state
   displayRemainingTime: true,
+  lastfmApiKey: '',
   queueid: 5344,
   recentSearches: [] as string[],
-  splitSizes: [10, 90],
 });
 
 persistObservable(persistedStore, {
@@ -46,4 +46,13 @@ export const store = observable({
   library: undefined as unknown as Library,
   // Search
   searchInput: '',
+  // Other application state
+  ui: {
+    nowPlaying: {
+      activeTab: 0,
+    },
+    modals: {
+      editLyrics: undefined as unknown as Track,
+    },
+  },
 });

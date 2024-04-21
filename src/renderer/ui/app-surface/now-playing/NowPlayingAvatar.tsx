@@ -36,13 +36,15 @@ const NowPlayingAvatar: React.FC<{ scrollYProgress: MotionValue<number> }> = obs
     return (
       <Tooltip
         arrow
-        placement="bottom-end"
+        placement="left"
         title={
-          <Typography>
-            {nowPlaying.track.originalTitle || nowPlaying.track.grandparentTitle}
-            &thinsp;&thinsp;—&thinsp;&thinsp;
-            {nowPlaying.track.title}
-          </Typography>
+          !showArtist && (
+            <Typography>
+              {nowPlaying.track.originalTitle || nowPlaying.track.grandparentTitle}
+              &thinsp;&thinsp;—&thinsp;&thinsp;
+              {nowPlaying.track.title}
+            </Typography>
+          )
         }
       >
         <MotionAvatar
@@ -51,7 +53,7 @@ const NowPlayingAvatar: React.FC<{ scrollYProgress: MotionValue<number> }> = obs
           sx={{
             boxShadow: 'var(--joy-shadow-sm)',
             height: 48,
-            marginX: 1,
+            margin: 1,
             width: 48,
           }}
           variants={variants}

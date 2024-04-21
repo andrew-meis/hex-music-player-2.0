@@ -14,6 +14,8 @@ audio.addEventListener('canplaythrough', () => {
   }
 });
 
+audio.addEventListener('error', (error) => console.log(error));
+
 audio.addEventListener('next', async () => {
   window.clearInterval(store.audio.intervalTimer.peek());
   const next = store.audio.next.peek();

@@ -1,6 +1,7 @@
 import 'assets/main.css';
 import 'overlayscrollbars/overlayscrollbars.css';
 
+import { enableReactComponents } from '@legendapp/state/config/enableReactComponents';
 import { Box } from '@mui/joy';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -26,6 +27,8 @@ import Search, { searchLoader } from 'routes/search/Search';
 import Settings, { settingsLoader } from 'routes/settings/Settings';
 import Track, { trackLoader } from 'routes/track/Track';
 import Titlebar from 'ui/titlebar/Titlebar';
+
+enableReactComponents();
 
 export const queryClient = new QueryClient();
 

@@ -4,10 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { LastFMArtist } from 'lastfm-ts-api';
 import React from 'react';
-import { store } from 'state';
+import { persistedStore, store } from 'state';
 import { QueryKeys } from 'typescript';
-
-const artist = new LastFMArtist('256a87f6eed8560303a6a75b8f5dde83');
 
 const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
   const library = store.library.get();
@@ -25,14 +23,16 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
 
   const { data } = useQuery({
     queryKey: [QueryKeys.LASTFM_ARTIST, nowPlaying.track.grandparentId],
-    queryFn: () =>
-      artist.getInfo({
+    queryFn: () => {
+      const lastfmArtist = new LastFMArtist(persistedStore.lastfmApiKey.peek());
+      return lastfmArtist.getInfo({
         artist:
           nowPlaying.track.grandparentTitle === 'Various Artists'
             ? nowPlaying.track.originalTitle
             : nowPlaying.track.grandparentTitle,
         autocorrect: 1,
-      }),
+      });
+    },
   });
 
   return (
@@ -51,15 +51,17 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
             img: {
               sx: {
                 objectPosition: 'center top',
+                maskImage: `linear-gradient(to top, transparent 10%, rgba(0, 0, 0, 1) 80%)`,
               },
             },
           }}
           src={artistThumbSrc}
           sx={{
             aspectRatio: 16 / 9,
+            background: 'transparent',
             borderRadius: 16,
             height: 'auto',
-            margin: 4,
+            margin: 2,
             marginBottom: 'auto',
             width: 400,
           }}
@@ -70,7 +72,8 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
         display="flex"
         height="-webkit-fill-available"
         margin={2}
-        marginTop={8}
+        marginRight={8}
+        marginTop={2}
         position="absolute"
         sx={{
           background: `url(${artistBannerSrc}) no-repeat`,
@@ -80,7 +83,7 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
         width="-webkit-fill-available"
       />
       {data && (
-        <Box bottom={0} padding={4} paddingBottom={2} position="absolute">
+        <Box bottom={0} padding={4} paddingBottom={2} paddingRight={10} position="absolute">
           <Typography
             level="title-md"
             lineHeight={3}
