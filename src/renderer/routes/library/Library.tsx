@@ -1,4 +1,4 @@
-import { Box, Grid, Sheet, SvgIcon, Typography } from '@mui/joy';
+import { Box, Grid, Paper, SvgIcon, Typography } from '@mui/material';
 import { QueryClient } from '@tanstack/react-query';
 import {
   AlbumContainer,
@@ -29,7 +29,7 @@ import { createSearchParams, useLoaderData, useNavigate } from 'react-router-dom
 import { store } from 'state';
 
 const MotionBox = motion(Box);
-const MotionBoxPaper = motion(Box<typeof Sheet>);
+const MotionBoxPaper = motion(Box<typeof Paper>);
 
 const cardTitles = ['artists', 'albums', 'tracks', 'playlists', 'genres', 'collections'] as const;
 
@@ -44,14 +44,14 @@ interface loaderReturn {
 
 export const libraryLoader = (queryClient: QueryClient) => async (): Promise<loaderReturn> => {
   await isAppInit();
-  const config = store.serverConfig.get();
-  const library = store.library.get();
-  const artistsDataQuery = artistsQuery(config, library, { start: 0, size: 0 });
-  const albumsDataQuery = albumsQuery(config, library, { start: 0, size: 0 });
-  const tracksDataQuery = tracksQuery(config, library, { start: 0, size: 0 });
+  const { sectionId } = store.serverConfig.peek();
+  const library = store.library.peek();
+  const artistsDataQuery = artistsQuery(sectionId, library, { start: 0, size: 0 });
+  const albumsDataQuery = albumsQuery(sectionId, library, { start: 0, size: 0 });
+  const tracksDataQuery = tracksQuery(sectionId, library, { start: 0, size: 0 });
   const playlistsDataQuery = playlistsQuery(library, { start: 0, size: 0 });
-  const genresDataQuery = genresQuery(config, library, MediaType.ALBUM, { start: 0, size: 0 });
-  const collectionsDataQuery = collectionsQuery(config, library, { start: 0, size: 0 });
+  const genresDataQuery = genresQuery(sectionId, library, MediaType.ALBUM, { start: 0, size: 0 });
+  const collectionsDataQuery = collectionsQuery(sectionId, library, { start: 0, size: 0 });
   return {
     artists:
       queryClient.getQueryData(artistsDataQuery.queryKey) ??
@@ -104,37 +104,36 @@ const LibrarySectionCard: React.FC<{
   };
 
   return (
-    <Grid lg={2} md={4} sm={4}>
+    <Grid item lg={2} md={4} sm={4}>
       <MotionBoxPaper
         alignItems="center"
-        borderRadius={4}
-        color="neutral"
-        component={Sheet}
+        borderRadius={1}
+        component={Paper}
         display="flex"
+        elevation={2}
         flex="1 0 0"
         height={84}
         position="relative"
         sx={{
           cursor: 'pointer',
         }}
-        variant="soft"
         whileHover="hover"
         width={1}
         onClick={handleClick}
       >
-        <SvgIcon sx={{ height: '46px', marginX: 2, width: '46px' }}>
+        <SvgIcon sx={{ height: '44px', marginX: 2, width: '44px' }}>
           {svgs[title as (typeof cardTitles)[number]]}
         </SvgIcon>
-        <Box marginTop={-0.5}>
-          <Typography level="h3" lineHeight={1}>
+        <Box marginTop={0.5}>
+          <Typography lineHeight="inherit" variant="h3">
             {data.totalSize || 0}
           </Typography>
-          <Typography level="body-xs" lineHeight={1}>
+          <Typography lineHeight="inherit" variant="overline">
             {title.toLocaleUpperCase()}
           </Typography>
         </Box>
         <MotionBox
-          bgcolor="primary.500"
+          bgcolor="primary.main"
           bottom={0}
           height={4}
           position="absolute"
@@ -150,7 +149,7 @@ const Library: React.FC = () => {
 
   return (
     <Box marginX={4}>
-      <Typography level="h1" paddingY={2}>
+      <Typography paddingY={2} variant="h1">
         Library
       </Typography>
       <Grid container spacing={2}>

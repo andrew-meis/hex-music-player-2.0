@@ -1,7 +1,14 @@
 import PreciseAudio from '@synesthesia-project/precise-audio';
 import { store } from 'state';
 
+export { queueActions } from './queue';
+
 export const audio = new PreciseAudio();
+
+window.audio = audio;
+
+audio.thresholds.decodeThresholdSeconds = 360;
+audio.thresholds.downloadThresholdSeconds = 360;
 
 audio.addEventListener('timeupdate', () =>
   store.audio.currentTimeMillis.set(audio.currentTimeMillis)

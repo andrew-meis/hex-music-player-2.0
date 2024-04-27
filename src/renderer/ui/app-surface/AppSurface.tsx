@@ -1,5 +1,5 @@
 import { observer, Show } from '@legendapp/state/react';
-import { Box } from '@mui/joy';
+import { Box } from '@mui/material';
 import React from 'react';
 import { store } from 'state';
 
@@ -8,7 +8,6 @@ import NowPlayingSurface from './now-playing/NowPlayingSurface';
 const AppSurface: React.FC = observer(function AppSurface() {
   return (
     <Box
-      borderRadius={2}
       color="text.primary"
       display="flex"
       height="calc(100vh - 130px)"

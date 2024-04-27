@@ -1,5 +1,13 @@
 import { Memo, useObservable } from '@legendapp/state/react';
-import { Box, IconButton, SvgIcon, Tooltip, useColorScheme } from '@mui/joy';
+import {
+  Box,
+  Button,
+  IconButton,
+  SvgIcon,
+  Tooltip,
+  Typography,
+  useColorScheme,
+} from '@mui/material';
 import chroma from 'chroma-js';
 import {
   AnimatePresence,
@@ -26,7 +34,7 @@ import NowPlayingLyrics from './NowPlayingLyrics';
 import NowPlayingMetadata from './NowPlayingMetadata';
 import NowPlayingSimilar from './NowPlayingSimilar';
 
-const MotionIconButton = motion(IconButton);
+const MotionButton = motion(Button);
 
 const sections = [
   { title: 'Now Playing' },
@@ -49,34 +57,32 @@ const NowPlayingContent: React.FC<{ color: string }> = ({ color }) => {
 
   const top = useTransform(scrollYProgress, [0, 1], [0, 160]);
 
-  console.log('render');
-
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    if (inRange(latest, 0, 0.2)) {
+    const fixedLatest = Math.round(latest * 1e2) / 1e2;
+    if (inRange(fixedLatest, 0, 0.2)) {
       activeSection.set(1);
       return;
     }
-    if (inRange(latest, 0.2, 0.4)) {
+    if (inRange(fixedLatest, 0.2, 0.4)) {
       activeSection.set(2);
       return;
     }
-    if (inRange(latest, 0.4, 0.6)) {
+    if (inRange(fixedLatest, 0.4, 0.6)) {
       activeSection.set(3);
       return;
     }
-    if (inRange(latest, 0.6, 0.8)) {
+    if (inRange(fixedLatest, 0.6, 0.8)) {
       activeSection.set(4);
       return;
     }
-    if (inRange(latest, 0.8, 1)) {
+    if (inRange(fixedLatest, 0.8, 1)) {
       activeSection.set(5);
       return;
     }
-    if (latest === 1) activeSection.set(6);
+    if (fixedLatest === 1) activeSection.set(6);
   });
 
   const [initialize] = useOverlayScrollbars({
-    defer: true,
     options: {
       update: {
         debounce: null,
@@ -126,6 +132,7 @@ const NowPlayingContent: React.FC<{ color: string }> = ({ color }) => {
       ref={ref}
       sx={{
         height: '100%',
+        overflowX: 'hidden',
         position: 'relative',
         scrollSnapType: 'y mandatory',
         width: '100%',
@@ -141,7 +148,7 @@ const NowPlayingContent: React.FC<{ color: string }> = ({ color }) => {
         }}
         top={0}
         width={64}
-        zIndex={400}
+        zIndex={10}
       >
         <div
           style={{
@@ -159,7 +166,7 @@ const NowPlayingContent: React.FC<{ color: string }> = ({ color }) => {
             height={1}
             position="absolute"
             sx={(theme) => ({
-              background: theme.palette.background.surface,
+              background: theme.palette.background.paper,
             })}
             width={1}
           />
@@ -175,24 +182,24 @@ const NowPlayingContent: React.FC<{ color: string }> = ({ color }) => {
             <Box
               display="flex"
               flexDirection="column"
+              margin="auto"
               sx={{
                 contain: 'paint',
                 height: 32 * 6,
                 mask: `
                     url('data:image/svg+xml;utf8,${renderToString(<PiWaveform />)}') no-repeat 4px 4px/24px 24px,
-                    url('data:image/svg+xml;utf8,${renderToString(<BiMessageSquareDetail />)}') no-repeat 5px 36px/22px 22px,
-                    url('data:image/svg+xml;utf8,${renderToString(<IoMdMicrophone />)}') no-repeat 4px 68px/22px 22px,
-                    url('data:image/svg+xml;utf8,${renderToString(<TiInfoLarge />)}') no-repeat 4px 100px/24px 24px,
-                    url('data:image/svg+xml;utf8,${renderToString(<TbHistory />)}') no-repeat 4px 132px/22px 22px,
-                    url('data:image/svg+xml;utf8,${renderToString(<TbWaveSawTool />)}') no-repeat 4px 164px/22px 22px
+                    url('data:image/svg+xml;utf8,${renderToString(<BiMessageSquareDetail />)}') no-repeat 5px 37px/22px 22px,
+                    url('data:image/svg+xml;utf8,${renderToString(<IoMdMicrophone />)}') no-repeat 5px 69px/22px 22px,
+                    url('data:image/svg+xml;utf8,${renderToString(<TiInfoLarge />)}') no-repeat 4px 101px/24px 24px,
+                    url('data:image/svg+xml;utf8,${renderToString(<TbHistory />)}') no-repeat 5px 133px/22px 22px,
+                    url('data:image/svg+xml;utf8,${renderToString(<TbWaveSawTool />)}') no-repeat 5px 165px/22px 22px
                   `,
                 width: 1,
               }}
             >
               <Box
                 sx={(theme) => ({
-                  background:
-                    mode === 'dark' ? theme.palette.neutral[500] : theme.palette.neutral[400],
+                  background: theme.palette.text.secondary,
                   height: '100%',
                   width: '100%',
                   position: 'absolute',
@@ -211,21 +218,31 @@ const NowPlayingContent: React.FC<{ color: string }> = ({ color }) => {
               {sections.map((section, index) => (
                 <Tooltip
                   arrow
+                  PopperProps={{
+                    modifiers: [
+                      {
+                        name: 'offset',
+                        options: {
+                          offset: [0, -12],
+                        },
+                      },
+                    ],
+                  }}
                   enterDelay={1000}
                   key={section.title}
                   placement="left"
-                  sx={(theme) => ({
-                    color:
-                      mode === 'dark' ? theme.palette.neutral[300] : theme.palette.neutral[600],
-                  })}
-                  title={section.title}
+                  title={
+                    <Typography color="text.primary" padding="4px 8px" variant="subtitle2">
+                      {section.title}
+                    </Typography>
+                  }
                 >
                   <IconButton
-                    size="sm"
                     sx={(theme) => ({
+                      height: 32,
+                      width: 32,
                       '&:hover': {
-                        backgroundColor:
-                          mode === 'dark' ? theme.palette.neutral[300] : theme.palette.neutral[600],
+                        backgroundColor: theme.palette.text.primary,
                       },
                     })}
                     onClick={() => handleScrollClick(index + 1)}
@@ -240,25 +257,24 @@ const NowPlayingContent: React.FC<{ color: string }> = ({ color }) => {
                 return (
                   <AnimatePresence>
                     {isActive && (
-                      <MotionIconButton
-                        animate={{ scale: [0, 1.5, 1] }}
-                        color="neutral"
-                        exit={{ scale: [1, 0] }}
+                      <MotionButton
+                        animate={{ scale: [0, 1.5, 1], transition: { delay: 0.5 } }}
+                        exit={{ scale: 0 }}
                         initial={{ scale: 0 }}
-                        size="sm"
                         sx={{
-                          '--IconButton-size': '1.75rem',
-                          '--Icon-fontSize': 'calc(2rem /1.6)',
-                          marginBottom: 0.25,
-                          marginTop: 'auto',
+                          minWidth: 0,
+                          padding: 0.5,
+                          position: 'absolute',
+                          right: 48,
+                          top: 16,
                         }}
-                        variant="solid"
+                        variant="contained"
                         onClick={() => store.ui.modals.editLyrics.set(nowPlaying.track)}
                       >
-                        <SvgIcon viewBox="-1 -1 22 22">
+                        <SvgIcon>
                           <BiMessageSquareEdit />
                         </SvgIcon>
-                      </MotionIconButton>
+                      </MotionButton>
                     )}
                   </AnimatePresence>
                 );

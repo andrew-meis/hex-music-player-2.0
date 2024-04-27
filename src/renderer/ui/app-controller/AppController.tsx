@@ -1,4 +1,4 @@
-import { Box, Divider, Sheet } from '@mui/joy';
+import { Box, Divider, Paper } from '@mui/material';
 import { motion, PanInfo, useDragControls } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigation } from 'react-router-dom';
@@ -62,7 +62,7 @@ const AppController: React.FC = () => {
           <AppBrowser dragControls={dragControls} />
         </motion.div>
         <Box
-          bgcolor="background.body"
+          bgcolor="background.default"
           bottom={-8}
           height={12}
           left={-8}
@@ -71,14 +71,13 @@ const AppController: React.FC = () => {
         />
         <Box
           alignItems="center"
-          borderRadius={8}
-          component={Sheet}
+          borderRadius={2}
+          component={Paper}
           display="flex"
           height={60}
           justifyContent="space-between"
           paddingX={1}
           position="relative"
-          variant="soft"
           width="-webkit-fill-available"
         >
           <AudioControl />

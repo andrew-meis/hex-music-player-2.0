@@ -1,5 +1,5 @@
 import { observer } from '@legendapp/state/react';
-import { IconButton, SvgIcon } from '@mui/joy';
+import { IconButton, SvgIcon } from '@mui/material';
 import { audio } from 'audio';
 import React from 'react';
 import { IoPlaySkipForward } from 'react-icons/io5';
@@ -21,9 +21,8 @@ const Next: React.FC = observer(function Next() {
       disabled={persistedStore.queueid.get() === 0 || !next}
       sx={{
         cursor: 'default',
-        padding: 0.5,
-        ':active': { background: 'transparent' },
-        ':hover': { background: 'transparent' },
+        marginLeft: 0.25,
+        padding: 1,
       }}
       onClick={handleNext}
     >

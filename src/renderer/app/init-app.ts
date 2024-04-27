@@ -33,13 +33,9 @@ const initApp = async () => {
       );
       const newAccount = new Account(client, device.accessToken);
       const newServerConnection = new ServerConnection(connection.uri, newAccount);
-      const newLibrary = new Library(newServerConnection);
+      const newLibrary = new Library(newServerConnection, device);
       store.serverConfig.set(serverConfig);
       store.account.set(newAccount);
-      store.device.set({
-        ...device,
-        uri: `server://${device.clientIdentifier}/com.plexapp.plugins.library`,
-      });
       store.library.set(newLibrary);
       return true;
     }

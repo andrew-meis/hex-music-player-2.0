@@ -1,5 +1,5 @@
 import { observer, Show } from '@legendapp/state/react';
-import { IconButton, SvgIcon } from '@mui/joy';
+import { IconButton, SvgIcon } from '@mui/material';
 import { audio } from 'audio';
 import React from 'react';
 import { FaCirclePause, FaCirclePlay } from 'react-icons/fa6';
@@ -23,8 +23,8 @@ const PlayPause: React.FC = observer(function PlayPause() {
       disabled={!nowPlaying}
       sx={{
         cursor: 'default',
-        ':active': { background: 'transparent', transform: 'scale(0.93)' },
-        ':hover': { background: 'transparent' },
+        padding: 0,
+        ':active': { transform: 'scale(0.93)' },
       }}
       onClick={handlePlayPause}
     >

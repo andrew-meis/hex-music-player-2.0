@@ -1,5 +1,5 @@
 import { observer } from '@legendapp/state/react';
-import { IconButton, SvgIcon } from '@mui/joy';
+import { IconButton, SvgIcon } from '@mui/material';
 import { audio } from 'audio';
 import { useQueue } from 'queries';
 import React from 'react';
@@ -48,9 +48,8 @@ const Previous: React.FC = observer(function Previous() {
       disabled={persistedStore.queueid.get() === 0}
       sx={{
         cursor: 'default',
-        padding: 0.5,
-        ':active': { background: 'transparent' },
-        ':hover': { background: 'transparent' },
+        marginRight: 0.25,
+        padding: 1,
       }}
       onClick={handlePrevious}
     >

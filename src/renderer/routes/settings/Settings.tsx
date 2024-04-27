@@ -3,12 +3,13 @@ import {
   Avatar,
   Box,
   IconButton,
-  Input,
+  InputAdornment,
   SvgIcon,
   Switch,
+  TextField,
   Typography,
   useColorScheme,
-} from '@mui/joy';
+} from '@mui/material';
 import { QueryClient } from '@tanstack/react-query';
 import { User } from 'api';
 import isAppInit from 'app/init-app';
@@ -16,11 +17,12 @@ import Scroller from 'components/scroller/Scroller';
 import { userQuery } from 'queries';
 import React, { useRef } from 'react';
 import { FiLogOut } from 'react-icons/fi';
+import { ImLastfm } from 'react-icons/im';
 import { TbExternalLink } from 'react-icons/tb';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { persistedStore, store } from 'state';
 
-const ReactiveInput = reactive(Input);
+const ReactiveTextField = reactive(TextField);
 
 const settingsBoxStyle = {
   alignItems: 'center',
@@ -73,11 +75,11 @@ const Settings: React.FC = () => {
 
   return (
     <Box display="flex" flexDirection="column" height={1} marginX={4}>
-      <Typography level="h1" paddingY={2}>
+      <Typography paddingY={2} variant="h1">
         Settings
       </Typography>
       <Scroller style={{ height: '-webkit-fill-available', marginBottom: 16, paddingRight: 16 }}>
-        <Typography level="h4">Plex Account</Typography>
+        <Typography variant="h4">Plex Account</Typography>
         <Box alignItems="center" display="flex" paddingY={1} width={1}>
           <Avatar
             alt={user?.title}
@@ -100,42 +102,43 @@ const Settings: React.FC = () => {
             </SvgIcon>
           </IconButton>
         </Box>
-        <Typography level="h4" paddingTop={2}>
+        <Typography paddingTop={2} variant="h4">
           App Interface
         </Typography>
         <Box sx={settingsBoxStyle}>
-          <Typography level="body-md" sx={{ fontWeight: 600 }}>
+          <Typography sx={{ fontWeight: 600 }} variant="body1">
             Dark Mode
           </Typography>
           <Switch
             checked={mode === 'dark'}
-            size="lg"
             onChange={() => setMode(mode === 'light' ? 'dark' : 'light')}
           />
         </Box>
-        <Typography level="h4" paddingTop={2}>
+        <Typography paddingTop={2} variant="h4">
           last.fm
         </Typography>
         <Box sx={settingsBoxStyle}>
-          <Typography level="body-md" sx={{ fontWeight: 600 }}>
+          <Typography sx={{ fontWeight: 600 }} variant="body1">
             API Key
           </Typography>
-          <ReactiveInput
+          <ReactiveTextField
             $defaultValue={persistedStore.lastfmApiKey}
-            sx={{
-              '--Input-minHeight': '2rem',
-              '--Input-paddingInline': '0.5rem',
-              background: 'transparent',
-              width: 312,
-              '&:hover': {
-                background: `rgba(21, 21, 21, ${mode === 'dark' ? '1' : '0.08'})`,
-              },
+            InputProps={{
+              disableUnderline: true,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <ImLastfm />
+                </InputAdornment>
+              ),
             }}
-            variant="outlined"
+            sx={{
+              width: 344,
+            }}
+            variant="standard"
             onChange={(event) => persistedStore.lastfmApiKey.set(event.currentTarget.value)}
           />
         </Box>
-        <Typography level="body-sm" marginTop={-0.5}>
+        <Typography marginTop={-0.5} variant="subtitle2">
           {'Paste your '}
           <a
             href="https://www.last.fm/api/authentication"

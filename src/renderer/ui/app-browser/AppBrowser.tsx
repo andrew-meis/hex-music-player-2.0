@@ -1,4 +1,4 @@
-import { Box, Sheet, SvgIcon } from '@mui/joy';
+import { Box, Paper, SvgIcon } from '@mui/material';
 import { DragControls } from 'framer-motion';
 import React from 'react';
 import { LiaMinusSolid } from 'react-icons/lia';
@@ -24,12 +24,11 @@ const AppBrowser: React.FC<{
 
   return (
     <Box
-      borderRadius={8}
-      component={Sheet}
+      borderRadius={2}
+      component={Paper}
       height="calc(100vh - 40px - 76px)"
       maxWidth={1920}
       mx="auto"
-      variant="soft"
       width="calc(100% - 16px)"
     >
       <SvgIcon

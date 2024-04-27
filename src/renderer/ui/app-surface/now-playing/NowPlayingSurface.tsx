@@ -1,5 +1,5 @@
 import { observer } from '@legendapp/state/react';
-import { Box } from '@mui/joy';
+import { Box, Paper } from '@mui/material';
 import noiseImage from 'assets/noise.bmp?url';
 import chroma from 'chroma-js';
 import { useColorThiefColor } from 'queries';
@@ -14,7 +14,7 @@ const NowPlayingSurface: React.FC = observer(function AppNowPlaying() {
 
   const { data } = useColorThiefColor({
     id: nowPlaying.track.thumb,
-    url: library.api.getAuthenticatedUrl(nowPlaying.track.thumb),
+    url: library.server.getAuthenticatedUrl(nowPlaying.track.thumb),
   });
 
   const defaultColor = chroma([90, 90, 90]);
@@ -30,26 +30,25 @@ const NowPlayingSurface: React.FC = observer(function AppNowPlaying() {
       width={1}
     >
       <Box
+        borderRadius={8}
+        component={Paper}
         sx={{
           aspectRatio: '21 / 9',
           backgroundImage:
-            'linear-gradient(to bottom left, var(--joy-palette-background-level1), var(--joy-palette-neutral-outlinedActiveBg))',
-          borderRadius: 16,
-          contain: 'paint',
+            'linear-gradient(to bottom left, var(--mui-palette-AppBar-defaultBg), var(--mui-palette-Button-inheritContainedBg))',
           display: 'flex',
           marginLeft: 'auto',
           marginRight: 'auto',
-          maxHeight: '100%',
+          maxHeight: 'calc(100% - 2px)',
           width: `calc(${(336 / 466) * 100}vh * (21 / 9))`,
         }}
       >
         <div
           style={{
             backgroundImage: `url(${noiseImage})`,
-            borderRadius: 16,
             height: '100%',
             mixBlendMode: 'overlay',
-            opacity: 0.08,
+            opacity: 0.05,
             position: 'absolute',
             width: '100%',
           }}
@@ -57,7 +56,6 @@ const NowPlayingSurface: React.FC = observer(function AppNowPlaying() {
         <div
           style={{
             background: `radial-gradient(ellipse at top right, ${data?.css() || defaultColor.css()}, transparent), radial-gradient(circle at bottom left, ${data?.css() || defaultColor.css()}, transparent)`,
-            borderRadius: 16,
             height: '100%',
             mixBlendMode: 'color',
             opacity: 0.6,

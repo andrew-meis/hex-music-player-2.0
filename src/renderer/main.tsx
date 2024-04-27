@@ -2,12 +2,12 @@ import 'assets/main.css';
 import 'overlayscrollbars/overlayscrollbars.css';
 
 import { enableReactComponents } from '@legendapp/state/config/enableReactComponents';
-import { Box } from '@mui/joy';
+import { Box } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import App, { appLoader } from 'app/App';
-import ThemeModeSwitch from 'main/ThemeModeSwitch';
-import ThemeProvider from 'main/ThemeProvider';
+import MuiThemeProvider from 'main/MuiThemeProvider';
+import WindowThemeModeSwitch from 'main/WindowThemeModeSwitch';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -108,13 +108,13 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <ThemeModeSwitch />
-        <Box bgcolor="background.body" height="100vh" position="absolute" width="100vw">
+      <MuiThemeProvider>
+        <WindowThemeModeSwitch />
+        <Box bgcolor="background.default" height="100vh" position="absolute" width="100vw">
           <Titlebar />
           <RouterProvider router={router} />
         </Box>
-      </ThemeProvider>
+      </MuiThemeProvider>
       <ReactQueryDevtools buttonPosition="top-left" initialIsOpen={false} />
     </QueryClientProvider>
   </React.StrictMode>

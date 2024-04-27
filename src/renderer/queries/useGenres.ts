@@ -1,22 +1,22 @@
 import { useQuery } from '@tanstack/react-query';
 import { Library, MediaType, Params } from 'api';
 import { store } from 'state';
-import { QueryKeys, ServerConfig } from 'typescript';
+import { QueryKeys } from 'typescript';
 
 export const genresQuery = (
-  config: ServerConfig,
+  sectionId: number,
   library: Library,
   type: MediaType,
   params?: Params
 ) => ({
   queryKey: [QueryKeys.GENRES, type, params],
-  queryFn: async () => library.genres(config.sectionId, type, params),
+  queryFn: async () => library.genres(sectionId, type, params),
 });
 
 const useGenres = (type: MediaType, params?: Params) => {
-  const config = store.serverConfig.get();
-  const library = store.library.get();
-  return useQuery(genresQuery(config, library, type, params));
+  const { sectionId } = store.serverConfig.peek();
+  const library = store.library.peek();
+  return useQuery(genresQuery(sectionId, library, type, params));
 };
 
 export default useGenres;

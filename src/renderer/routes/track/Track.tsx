@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/joy';
+import { Box, Typography } from '@mui/material';
 import React from 'react';
 import { LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ const Track: React.FC = () => {
 
   return (
     <Box marginX={4}>
-      <Typography paddingY={2} level="h1">
+      <Typography paddingY={2} variant="h1">
         {artist}
         {title}
       </Typography>

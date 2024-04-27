@@ -1,4 +1,4 @@
-import { useColorScheme } from '@mui/joy';
+import { useColorScheme } from '@mui/material';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import React, { MutableRefObject, useCallback } from 'react';
 import { ScrollerProps } from 'react-virtuoso';

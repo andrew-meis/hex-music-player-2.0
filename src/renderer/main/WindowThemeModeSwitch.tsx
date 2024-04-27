@@ -1,7 +1,7 @@
-import { useColorScheme } from '@mui/joy';
+import { useColorScheme } from '@mui/material';
 import { useEffect } from 'react';
 
-const ThemeModeSwitch = () => {
+const WindowThemeModeSwitch = () => {
   const { mode } = useColorScheme();
 
   useEffect(() => {
@@ -11,4 +11,4 @@ const ThemeModeSwitch = () => {
   return null;
 };
 
-export default ThemeModeSwitch;
+export default WindowThemeModeSwitch;

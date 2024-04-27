@@ -10,25 +10,24 @@ import {
   Playlist,
   Track,
 } from 'api';
+import AlbumRow from 'components/album/AlbumRow';
+import ArtistRow from 'components/artist/ArtistRow';
+import GenreRow from 'components/genre/GenreRow';
+import PlaylistRow from 'components/playlist/PlaylistRow';
+import TrackRow from 'components/track/TrackRow';
 import Scroller from 'components/virtuoso/Scroller';
 import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
-
-import AlbumResult from './result-renderers/AlbumResult';
-import ArtistResult from './result-renderers/ArtistResult';
-import GenreResult from './result-renderers/GenreResult';
-import PlaylistResult from './result-renderers/PlaylistResult';
-import TrackResult from './result-renderers/TrackResult';
 
 const Item: React.FC<{
   data: Artist | Album | Track | Playlist | Genre;
 }> = ({ data }) => (
   <>
-    {isAlbum(data) && <AlbumResult album={data} />}
-    {isArtist(data) && <ArtistResult artist={data} />}
-    {isGenre(data) && <GenreResult genre={data} />}
-    {isPlaylist(data) && <PlaylistResult playlist={data} />}
-    {isTrack(data) && <TrackResult track={data} />}
+    {isAlbum(data) && <AlbumRow album={data} />}
+    {isArtist(data) && <ArtistRow artist={data} />}
+    {isGenre(data) && <GenreRow genre={data} />}
+    {isPlaylist(data) && <PlaylistRow playlist={data} />}
+    {isTrack(data) && <TrackRow options={{ showType: true }} track={data} />}
   </>
 );
 

@@ -1,5 +1,8 @@
-import { Avatar, Box, Typography } from '@mui/joy';
+import { observer } from '@legendapp/state/react';
+import { Avatar, Box, Typography } from '@mui/material';
 import { Track } from 'api';
+import { queueActions } from 'audio';
+import Row, { RowOptions } from 'components/row/Row';
 import React from 'react';
 import { IoMusicalNotes } from 'react-icons/io5';
 import { Link, useNavigate } from 'react-router-dom';
@@ -10,9 +13,10 @@ import {
 } from 'scripts/navigate-generators';
 import { store } from 'state';
 
-import Result from './Result';
-
-const TrackResult: React.FC<{ track: Track }> = ({ track }) => {
+const TrackRow: React.FC<{ options?: RowOptions; track: Track }> = observer(function TrackRow({
+  options,
+  track,
+}) {
   const library = store.library.get();
   const navigate = useNavigate();
 
@@ -27,21 +31,24 @@ const TrackResult: React.FC<{ track: Track }> = ({ track }) => {
   };
 
   return (
-    <Result onClick={handleNavigate}>
+    <Row
+      onClick={handleNavigate}
+      onContextMenu={() => queueActions.addToQueue([track], undefined, undefined, true)}
+    >
       <Avatar
         alt={track.title}
         src={thumbSrc}
-        sx={{ borderRadius: 4, height: 48, marginX: 1, width: 48 }}
+        sx={{ height: 48, marginX: 1, width: 48 }}
+        variant="rounded"
       >
         <IoMusicalNotes />
       </Avatar>
       <Box>
-        <Typography fontFamily="Rubik" level="title-md" lineHeight={1.2}>
+        <Typography fontFamily="Rubik, sans-serif" lineHeight={1.2} variant="body1">
           {track.title}
         </Typography>
-        <Typography level="title-sm">
-          {track._type}
-          &nbsp; · &nbsp;
+        <Typography variant="subtitle2">
+          {options?.showType ? `${track._type}\xa0 · \xa0` : ''}
           <Link
             className="link"
             to={createArtistNavigate(track)}
@@ -59,8 +66,14 @@ const TrackResult: React.FC<{ track: Track }> = ({ track }) => {
           </Link>
         </Typography>
       </Box>
-    </Result>
+    </Row>
   );
+});
+
+TrackRow.defaultProps = {
+  options: {
+    showType: false,
+  },
 };
 
-export default TrackResult;
+export default TrackRow;

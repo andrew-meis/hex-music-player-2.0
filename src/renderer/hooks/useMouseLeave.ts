@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { throttle } from 'lodash';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export default function useMouseLeave() {
   const [mouseLeft, setMouseLeft] = useState(true);
@@ -12,13 +11,17 @@ export default function useMouseLeave() {
 
       const rect = elementRef.current.getBoundingClientRect();
 
-      // eslint-disable-next-line max-len
-      if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+      if (
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom
+      ) {
         setMouseLeft(true);
       } else {
         setMouseLeft(false);
       }
-    }, 50),
+    }, 50)
   ).current;
 
   const handleMouseEnter = useRef(() => {
@@ -44,12 +47,15 @@ export default function useMouseLeave() {
     }
   }, [mouseLeft]);
 
-  useEffect(() => () => {
-    if (elementRef && elementRef.current) {
-      elementRef.current.removeEventListener('mouseenter', () => handleMouseEnter());
-    }
-    window.removeEventListener('mousemove', (e) => handleMouseMove(e));
-  }, []);
+  useEffect(
+    () => () => {
+      if (elementRef && elementRef.current) {
+        elementRef.current.removeEventListener('mouseenter', () => handleMouseEnter());
+      }
+      window.removeEventListener('mousemove', (e) => handleMouseMove(e));
+    },
+    []
+  );
 
   return [mouseLeft, setRef, elementRef] as const;
 }

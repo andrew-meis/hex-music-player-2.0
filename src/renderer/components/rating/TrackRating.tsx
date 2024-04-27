@@ -1,22 +1,24 @@
-import { SvgIcon } from '@mui/joy';
+import { SvgIcon } from '@mui/material';
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
-import { Library } from 'api';
 import useMouseLeave from 'hooks/useMouseLeave';
 import React, { useEffect, useState } from 'react';
 import { BsDot, BsStarFill } from 'react-icons/bs';
+import { store } from 'state';
 import { QueryKeys } from 'typescript';
 
-const invalidateTrackQueries = async (queryClient: QueryClient) => {
-  await queryClient.invalidateQueries({ queryKey: [QueryKeys.ALBUM_TRACKS] });
-};
+const invalidateTrackQueries = async (queryClient: QueryClient) =>
+  await queryClient.invalidateQueries({
+    predicate: (query) =>
+      [QueryKeys.ALBUM_TRACKS, QueryKeys.PLAYQUEUE].includes(query.queryKey[0] as QueryKeys),
+  });
 
 const Rating: React.FC<
   {
     id: number;
-    library: Library;
     userRating: number;
   } & Omit<React.HTMLProps<HTMLDivElement>, 'id'>
-> = ({ id, library, userRating, ...props }) => {
+> = ({ id, userRating, ...props }) => {
+  const library = store.library.peek();
   const precision = 0.5;
   const totalStars = 5;
   const queryClient = useQueryClient();

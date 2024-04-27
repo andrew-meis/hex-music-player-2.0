@@ -43,9 +43,15 @@ export type { Profile, Service, Subscription, User, UserSubscription } from './t
 export type { Year } from './types/year';
 export type { Params } from './utils/params';
 
-const sort = (asc: string, desc = `${asc}:desc`): string[] => [asc, desc];
+const sort = (asc: string, desc = `${asc}:desc`) => ({
+  asc,
+  desc,
+});
 
 // sort methods
+export const SORT_BY_DATE_PLAYED = sort('viewedAt');
+
+// old, unused
 export const SORT_ARTISTS_BY_TITLE = sort('titleSort');
 export const SORT_ARTISTS_BY_DATE_ADDED = sort('addedAt');
 export const SORT_ARTISTS_BY_DATE_PLAYED = sort('lastViewedAt');

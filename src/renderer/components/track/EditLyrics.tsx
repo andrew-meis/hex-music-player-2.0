@@ -1,4 +1,4 @@
-import { Box, Button, FormHelperText, Textarea, Typography } from '@mui/joy';
+import { Box, Button, FormHelperText, InputBase, Typography } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { Track } from 'api';
 import { db } from 'app/db';
@@ -63,8 +63,8 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
       borderWidth: '1px',
       borderStyle: 'dashed',
       borderColor: isDragAccept
-        ? 'var(--joy-palette-success-400)'
-        : 'var(--joy-palette-neutral-outlinedBorder)',
+        ? 'var(--mui-palette-success-main)'
+        : 'var(--mui-palette-action-disabled)',
     }),
     [isDragAccept]
   );
@@ -74,8 +74,8 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
       fontSize: '0.8rem',
       position: 'relative',
       top: -4,
-      ...(validSyncedLyrics && { color: 'success.400' }),
-      ...(!validSyncedLyrics && validPlainLyrics && { color: 'warning.400' }),
+      ...(validSyncedLyrics && { color: 'success.main' }),
+      ...(!validSyncedLyrics && validPlainLyrics && { color: 'warning.main' }),
     }),
     [validPlainLyrics, validSyncedLyrics]
   );
@@ -106,23 +106,26 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
 
   return (
     <>
-      <Typography level="h4">Edit Lyrics</Typography>
+      <Typography variant="h4">Edit Lyrics</Typography>
       <Box
         {...getRootProps({ style })}
-        border="1px solid var(--joy-palette-neutral-outlinedBorder)"
-        borderRadius="4px"
+        border="1px solid var(--mui-palette-action-disabled)"
+        borderRadius={1}
         height={256}
       >
         <Scroller style={{ height: 256 }}>
-          <Box overflow="auto">
-            <input {...getInputProps()} />
-            <Textarea
-              minRows={20}
-              sx={{
-                borderRadius: 4,
+          <Box bgcolor="background.default" overflow="auto">
+            <InputBase
+              fullWidth
+              multiline
+              inputProps={{
+                ...getInputProps(),
+                style: {
+                  padding: '0 5px',
+                },
               }}
+              minRows={10}
               value={value}
-              variant="soft"
               onChange={(e) => {
                 setValue(e.target.value);
                 setLyricsEdited(true);
@@ -132,16 +135,23 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
         </Scroller>
       </Box>
       <FormHelperText sx={sx}>{text}</FormHelperText>
-      <Box bottom={9} display="flex" gap={0.5} position="absolute" right={20}>
+      <Box bottom={13} display="flex" gap={0.5} position="absolute" right={20}>
         <Button
-          color="danger"
+          color="error"
           disabled={!lyricsEdited}
-          size="sm"
+          size="small"
+          variant="contained"
           onClick={() => store.ui.modals.editLyrics.set(undefined)}
         >
           Cancel
         </Button>
-        <Button color="success" disabled={!lyricsEdited} size="sm" onClick={handleSave}>
+        <Button
+          color="success"
+          disabled={!lyricsEdited}
+          size="small"
+          variant="contained"
+          onClick={handleSave}
+        >
           Save
         </Button>
       </Box>

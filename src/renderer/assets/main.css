@@ -117,21 +117,6 @@ section {
   }
 }
 
-.gutter {
-  background-repeat: no-repeat;
-  background-position: 50%;
-  box-sizing: border-box;
-  flex-shrink: 0;
-}
-
-.gutter.gutter-horizontal {
-  cursor: col-resize;
-}
-
-.gutter.gutter-horizontal:hover {
-  border-right: 1px solid var(--joy-palette-background-tooltip);
-}
-
 .link {
   color: inherit;
   text-decoration: none;

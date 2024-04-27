@@ -1,5 +1,5 @@
 import { For, observer, Show } from '@legendapp/state/react';
-import { Box, SvgIcon } from '@mui/joy';
+import { Box, SvgIcon } from '@mui/material';
 import Scroller from 'components/scroller/Scroller';
 import React from 'react';
 import { IoCloseSharp } from 'react-icons/io5';
@@ -40,7 +40,7 @@ const SearchHistory: React.FC = observer(function SearchHistory() {
             return (
               <Box
                 alignItems="center"
-                borderRadius="4px"
+                borderRadius={1}
                 className="box"
                 color="text.secondary"
                 display="flex"
@@ -51,7 +51,7 @@ const SearchHistory: React.FC = observer(function SearchHistory() {
                     display: 'none',
                   },
                   '&:hover': {
-                    backgroundColor: 'background.level2',
+                    backgroundColor: 'action.hover',
                     color: 'text.primary',
                     '& svg': {
                       display: 'inherit',

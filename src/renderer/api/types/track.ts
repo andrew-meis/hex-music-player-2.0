@@ -1,8 +1,8 @@
 import Prism from '@zwolf/prism';
 import { schema } from 'normalizr';
 import { store } from 'state';
-import { v4 } from 'uuid';
 
+import { MediaType } from '../library';
 import { Field, toFieldList } from './field';
 import { Media, toMedia } from './media';
 import { MediaContainer, toMediaContainer } from './media-container';
@@ -69,8 +69,9 @@ export interface Track {
   userRating: number;
   viewCount: number;
 
-  getSimilarTracks: () => Promise<[]>;
-  getTrackRadio: (id: number) => Promise<Track[]>;
+  getRelatedTracks: () => Promise<TrackContainer>;
+  getSimilarTracks: () => Promise<TrackContainer>;
+  getTrackSrc: () => string;
 }
 
 const isTrack = (x: any): x is Track => x._type === 'track';
@@ -132,23 +133,38 @@ const toTrack = ($data: Prism<any>): Track => ({
   userRating: $data.get<number>('userRating', { quiet: true }).value,
   viewCount: $data.get<number>('viewCount', { quiet: true }).value,
 
-  getSimilarTracks: async () => {
-    return [];
+  getRelatedTracks: async function () {
+    const library = store.library.peek();
+    const { sectionId } = store.serverConfig.peek();
+    const similarArtists = await library.metadataSimilar(this.grandparentId, MediaType.ARTIST, {
+      excludeFields: 'summary',
+      excludeElements: 'Mood,Similar,Genre,Style,Country,Media',
+    });
+    const relatedTracks = await library.sectionItems(sectionId, MediaType.TRACK, {
+      sort: 'lastViewedAt',
+      'track.userRating>': 4,
+      'artist.id': similarArtists.artists.map((artist) => artist.id).join(','),
+      group: 'guid',
+      excludeFields: 'summary',
+      excludeElements: 'Mood,Similar,Genre,Style,Country,Media',
+    });
+    return relatedTracks;
   },
 
-  getTrackRadio: async (id: number) => {
+  getSimilarTracks: async function () {
     const library = store.library.peek();
-    const serverUri = store.device.peek().uri;
-    const uri = `${serverUri}/library/metadata/${id}/station/${v4()}?type=10&maxDegreesOfSeparation=-1`;
-    const tracks = library
-      .createQueue({ uri })
-      .then((queue) => library.playQueue(queue.id, undefined, 0))
-      .then((queue) => library.playQueue(queue.id, queue.items[queue.items.length - 1].id, 0))
-      .then((queue) => library.playQueue(queue.id, queue.items[queue.items.length - 1].id, 0))
-      .then((queue) => library.playQueue(queue.id, queue.items[queue.items.length - 1].id, 0))
-      .then((queue) => library.playQueue(queue.id, queue.items[queue.items.length - 1].id, 0))
-      .then((queue) => queue.items.map((item) => item.track));
-    return tracks;
+    const similarTracks = await library.metadataNearest(this.id, MediaType.TRACK, {
+      excludeGrandparentID: this.grandparentId,
+      limit: 50,
+      maxDistance: 0.15,
+      sort: 'distance',
+    });
+    return similarTracks;
+  },
+
+  getTrackSrc: function () {
+    const library = store.library.peek();
+    return library.server.getAuthenticatedUrl(this.media[0].parts[0].key);
   },
 });
 

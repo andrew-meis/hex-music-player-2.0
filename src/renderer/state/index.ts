@@ -16,7 +16,7 @@ export const persistedStore = observable({
   // User state
   displayRemainingTime: true,
   lastfmApiKey: '',
-  queueid: 5344,
+  queueid: 5424,
   recentSearches: [] as string[],
 });
 
@@ -49,7 +49,7 @@ export const store = observable({
   // Other application state
   ui: {
     nowPlaying: {
-      activeTab: 0,
+      activeSimilarTracksChip: 0,
     },
     modals: {
       editLyrics: undefined as unknown as Track,

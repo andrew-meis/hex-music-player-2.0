@@ -1,5 +1,5 @@
 import { observer, useSelector } from '@legendapp/state/react';
-import { Avatar, Box, Typography, useColorScheme } from '@mui/joy';
+import { Avatar, Box, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { LastFMArtist } from 'lastfm-ts-api';
@@ -11,14 +11,12 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
   const library = store.library.get();
   const nowPlaying = store.audio.nowPlaying.get();
 
-  const { mode } = useColorScheme();
-
   const artistBannerSrc = useSelector(() => {
-    return library.api.getAuthenticatedUrl(nowPlaying.track.grandparentArt);
+    return library.server.getAuthenticatedUrl(nowPlaying.track.grandparentArt);
   });
 
   const artistThumbSrc = useSelector(() => {
-    return library.api.getAuthenticatedUrl(nowPlaying.track.grandparentThumb);
+    return library.server.getAuthenticatedUrl(nowPlaying.track.grandparentThumb);
   });
 
   const { data } = useQuery({
@@ -59,7 +57,7 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
           sx={{
             aspectRatio: 16 / 9,
             background: 'transparent',
-            borderRadius: 16,
+            borderRadius: 4,
             height: 'auto',
             margin: 2,
             marginBottom: 'auto',
@@ -68,7 +66,7 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
         />
       )}
       <Box
-        borderRadius={16}
+        borderRadius={4}
         display="flex"
         height="-webkit-fill-available"
         margin={2}
@@ -84,22 +82,16 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
       />
       {data && (
         <Box bottom={0} padding={4} paddingBottom={2} paddingRight={10} position="absolute">
-          <Typography
-            level="title-md"
-            lineHeight={3}
-            textColor={mode === 'dark' ? 'common.white' : 'common.black'}
-          >
+          <Typography color="text.primary" lineHeight={3} variant="h6">
             {(+data.artist.stats.listeners).toLocaleString()} last.fm listeners
           </Typography>
           <Typography
-            level="body-md"
             sx={{
               display: '-webkit-box',
               overflow: 'hidden',
               WebkitBoxOrient: 'vertical',
               WebkitLineClamp: 3,
             }}
-            textColor={mode === 'dark' ? 'neutral.200' : 'neutral.700'}
           >
             {data?.artist.bio.content.replaceAll(/\[[0-9]\]/g, '').split('<a href')[0]}
           </Typography>

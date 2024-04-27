@@ -1,62 +1,39 @@
-import { observer, reactive } from '@legendapp/state/react';
-import { Box, Chip } from '@mui/joy';
-import { useQuery } from '@tanstack/react-query';
+import { observer, reactive, useObserve } from '@legendapp/state/react';
+import { Box, Chip } from '@mui/material';
 import { Track } from 'api';
-import Scroller from 'components/scroller/Scroller';
-import { LastFMTrack } from 'lastfm-ts-api';
-import { getPlexMatch } from 'queries';
+import TrackRow from 'components/track/TrackRow';
+import Scroller from 'components/virtuoso/Scroller';
+import { useLastfmMatchTracks, useRecentTracks, useRelatedTracks, useSimilarTracks } from 'queries';
 import React from 'react';
 import { FiRadio } from 'react-icons/fi';
 import { ImLastfm } from 'react-icons/im';
 import { IoMdMicrophone } from 'react-icons/io';
 import { PiWaveform } from 'react-icons/pi';
-import { persistedStore, store } from 'state';
-import { QueryKeys } from 'typescript';
+import { Virtuoso } from 'react-virtuoso';
+import { store } from 'state';
 
 const ReactiveChip = reactive(Chip);
 
+const Item: React.FC<{
+  data: Track;
+}> = ({ data }) => <TrackRow track={data} />;
+
 const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
   const nowPlaying = store.audio.nowPlaying.get();
-  const active = store.ui.nowPlaying.activeTab.get();
+  const activeChip = store.ui.nowPlaying.activeSimilarTracksChip.get();
 
-  const { data } = useQuery({
-    queryKey: ['track-radio', nowPlaying.track.id],
-    queryFn: () => nowPlaying.track.getTrackRadio(nowPlaying.track.id),
-    enabled: active === 2,
+  useObserve(store.audio.nowPlaying, ({ value }) => {
+    if (value?.id === nowPlaying.id) return;
+    store.ui.nowPlaying.activeSimilarTracksChip.set(0);
   });
 
-  const { data: lastfmSimilarTracks } = useQuery({
-    queryKey: [QueryKeys.LASTFM_SIMILAR, nowPlaying.track.id],
-    queryFn: async () => {
-      const lastfmTrack = new LastFMTrack(persistedStore.lastfmApiKey.peek());
-      return lastfmTrack.getSimilar({
-        artist:
-          nowPlaying.track.grandparentTitle === 'Various Artists'
-            ? nowPlaying.track.originalTitle
-            : nowPlaying.track.grandparentTitle,
-        track: nowPlaying.track.title,
-        autocorrect: 1,
-      });
-    },
-  });
+  const { data: recentTracks } = useRecentTracks(nowPlaying.track, 365, activeChip === 0);
 
-  const { data: matchedPlexTracks } = useQuery({
-    queryKey: ['lastfm-matched-tracks', nowPlaying.track.id],
-    queryFn: async () => {
-      const matchedTracks = [] as Track[];
-      await Promise.all(
-        lastfmSimilarTracks!.similartracks.track.map(async (track) => {
-          const match = await getPlexMatch({ artist: track.artist.name, title: track.name });
-          if (match) {
-            matchedTracks.push({ ...match, score: track.match as unknown as number });
-          }
-        })
-      );
-      return matchedTracks.sort((a, b) => b.score! - a.score!);
-    },
-    enabled: !!lastfmSimilarTracks && active === 3,
-    staleTime: Infinity,
-  });
+  const { data: similarTracks } = useSimilarTracks(nowPlaying.track, activeChip === 1);
+
+  const { data: relatedTracks } = useRelatedTracks(nowPlaying.track, activeChip === 2);
+
+  const { data: lastfmMatchTracks } = useLastfmMatchTracks(nowPlaying.track, activeChip === 3);
 
   const chips = [
     {
@@ -73,14 +50,23 @@ const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
       icon: <PiWaveform />,
     },
     {
-      label: 'Track Radio',
+      label: 'Related Tracks',
       icon: <FiRadio />,
     },
     {
       label: 'last.fm Similar',
-      icon: <ImLastfm />,
+      icon: <ImLastfm viewBox="0 0 17 17" />,
     },
   ];
+
+  const handleScrollState = (isScrolling: boolean) => {
+    if (isScrolling) {
+      document.body.classList.add('disable-hover');
+    }
+    if (!isScrolling) {
+      document.body.classList.remove('disable-hover');
+    }
+  };
 
   return (
     <Box
@@ -90,24 +76,38 @@ const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
       margin={2}
       width="calc(100% - 80px)"
     >
-      <Scroller style={{ height: '-webkit-fill-available', marginBottom: 8 }}>
-        <Box bgcolor="orchid" height={1000} />
-      </Scroller>
+      <Virtuoso
+        components={{
+          Scroller,
+        }}
+        data={
+          activeChip === 0
+            ? recentTracks?.filter((track) => track.guid !== nowPlaying.track.guid) || []
+            : activeChip === 1
+              ? similarTracks?.tracks || []
+              : activeChip === 2
+                ? relatedTracks || []
+                : activeChip === 3
+                  ? lastfmMatchTracks || []
+                  : []
+        }
+        isScrolling={handleScrollState}
+        itemContent={(_index, data) => <Item data={data} />}
+        style={{ height: '100%', marginBottom: 8 }}
+      />
       <Box display="flex" gap={1} justifyContent="center" width={1}>
         {chips.map((value, index) => (
           <ReactiveChip
+            icon={value.icon}
             key={value.label}
-            startDecorator={value.icon}
+            label={value.label}
+            size="small"
             sx={{
-              fontWeight:
-                active === index ? 'var(--joy-fontWeight-xl)' : 'var(--joy-fontWeight-md)',
+              fontWeight: activeChip === index ? 700 : 500,
               maxWidth: 256,
             }}
-            variant="plain"
-            onClick={() => store.ui.nowPlaying.activeTab.set(index)}
-          >
-            {value.label}
-          </ReactiveChip>
+            onClick={() => store.ui.nowPlaying.activeSimilarTracksChip.set(index)}
+          />
         ))}
       </Box>
     </Box>

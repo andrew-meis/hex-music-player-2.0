@@ -1,6 +1,5 @@
-import { Box, Button, Switch, Typography, useColorScheme } from '@mui/joy';
+import { Box, Button, Switch, Typography, useColorScheme } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,28 +19,29 @@ const LoginSettings: React.FC = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <Typography level="h3">Settings</Typography>
+    <>
+      <Typography variant="h3">Settings</Typography>
       <Box alignItems="center" display="flex" justifyContent="space-between" mt={2}>
-        <Typography sx={{ fontWeight: 600 }} level="title-lg">
+        <Typography sx={{ fontWeight: 600 }} variant="h6">
           Dark Mode
         </Typography>
         <Switch
           checked={mode === 'dark'}
-          size="lg"
+          size="medium"
           onChange={() => setMode(mode === 'light' ? 'dark' : 'light')}
         />
       </Box>
       <Button
         sx={{
+          borderRadius: 16,
           mt: 3,
         }}
-        variant="soft"
+        variant="outlined"
         onClick={navigateHome}
       >
         Finish
       </Button>
-    </motion.div>
+    </>
   );
 };
 

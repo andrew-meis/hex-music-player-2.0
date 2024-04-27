@@ -1,13 +1,12 @@
-import { Avatar, Box, SvgIcon, Typography } from '@mui/joy';
+import { Avatar, Box, SvgIcon, Typography } from '@mui/material';
 import { Genre } from 'api';
+import Row from 'components/row/Row';
 import React from 'react';
 import { FaTags } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { createGenreNavigate } from 'scripts/navigate-generators';
 
-import Result from './Result';
-
-const GenreResult: React.FC<{ genre: Genre }> = ({ genre }) => {
+const GenreRow: React.FC<{ genre: Genre }> = ({ genre }) => {
   const navigate = useNavigate();
 
   const handleNavigate = () => {
@@ -15,20 +14,20 @@ const GenreResult: React.FC<{ genre: Genre }> = ({ genre }) => {
   };
 
   return (
-    <Result onClick={handleNavigate}>
-      <Avatar alt={genre.title} sx={{ borderRadius: 4, height: 48, marginX: 1, width: 48 }}>
+    <Row onClick={handleNavigate}>
+      <Avatar alt={genre.title} sx={{ height: 48, marginX: 1, width: 48 }} variant="rounded">
         <SvgIcon>
           <FaTags />
         </SvgIcon>
       </Avatar>
       <Box>
-        <Typography fontFamily="Rubik" level="title-md" lineHeight={1.2}>
+        <Typography fontFamily="Rubik" lineHeight={1.2} variant="body1">
           {genre.title}
         </Typography>
-        <Typography level="title-sm">genre</Typography>
+        <Typography variant="subtitle2">genre</Typography>
       </Box>
-    </Result>
+    </Row>
   );
 };
 
-export default GenreResult;
+export default GenreRow;

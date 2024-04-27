@@ -1,5 +1,5 @@
 import { observer, useSelector } from '@legendapp/state/react';
-import { Box, Typography } from '@mui/joy';
+import { Box, Typography } from '@mui/material';
 import { audio } from 'audio';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import { useLyrics } from 'queries';
@@ -14,7 +14,7 @@ const getTextStyle = (playerOffset: number, startOffset: number, nextOffset: num
     return 'text.secondary';
   }
   if (playerOffset > nextOffset) {
-    return 'text.tertiary';
+    return 'text.disabled';
   }
   return 'text.secondary';
 };
@@ -70,7 +70,6 @@ const SyncedLine: React.FC<{
 
   return (
     <Typography
-      level="h5"
       ref={shouldSetRef ? setLine : null}
       sx={{
         color,
@@ -79,6 +78,7 @@ const SyncedLine: React.FC<{
           color: 'text.primary',
         },
       }}
+      variant="h5"
       onClick={() => changePosition(startOffset)}
     >
       {text || ''}
@@ -180,11 +180,11 @@ const PlainLyrics: React.FC<{
         {plainLyrics.map((value, index) => (
           <Typography
             key={index}
-            level="title-lg"
             sx={{
               color: 'text.secondary',
               fontWeight: 600,
             }}
+            variant="h5"
           >
             {value || ''}
             &nbsp;
@@ -223,12 +223,12 @@ const NowPlayingLyrics: React.FC = observer(function NowPlayingLyrics() {
       <Box height="-webkit-fill-available" margin={2} overflow="auto" width="calc(100% - 80px)">
         <Box color="text.primary" height="fit-content">
           <Typography
-            level="title-lg"
             sx={{
               color: 'text.secondary',
               fontWeight: 600,
               textAlign: 'center',
             }}
+            variant="h5"
           >
             ...track is instrumental...
           </Typography>
@@ -242,12 +242,12 @@ const NowPlayingLyrics: React.FC = observer(function NowPlayingLyrics() {
       <Box height="-webkit-fill-available" margin={2} overflow="auto" width="calc(100% - 80px)">
         <Box color="text.primary" height="fit-content">
           <Typography
-            level="title-lg"
             sx={{
               color: 'text.secondary',
               fontWeight: 600,
               textAlign: 'center',
             }}
+            variant="h5"
           >
             ...no lyrics found...
           </Typography>

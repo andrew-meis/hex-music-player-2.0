@@ -1,4 +1,4 @@
-import { useColorScheme } from '@mui/joy';
+import { useColorScheme } from '@mui/material';
 import {
   OverlayScrollbarsComponent,
   OverlayScrollbarsComponentProps,

@@ -1,5 +1,5 @@
-import { Memo, Show, useObserve } from '@legendapp/state/react';
-import { IconButton, Input, Sheet, SvgIcon } from '@mui/joy';
+import { Memo, useObserve } from '@legendapp/state/react';
+import { IconButton, InputBase, Paper, SvgIcon, useColorScheme } from '@mui/material';
 import { useDebouncedCallback } from '@react-hookz/web';
 import React, { useRef } from 'react';
 import { CgSearch } from 'react-icons/cg';
@@ -17,8 +17,9 @@ const SearchInput: React.FC<{ query: string }> = ({ query }) => {
   const searchInput = useRef<HTMLInputElement>(null);
   const submit = useSubmit();
 
-  useObserve(() => {
-    store.searchInput.get();
+  const { mode } = useColorScheme();
+
+  useObserve(store.searchInput, () => {
     const searchInputElement = document.getElementById('search-input') as HTMLInputElement;
     if (searchInputElement) {
       searchForm.current = searchInputElement.form;
@@ -66,61 +67,53 @@ const SearchInput: React.FC<{ query: string }> = ({ query }) => {
   };
 
   return (
-    <Sheet
+    <Paper
       component={Form}
-      sx={{ alignItems: 'center', borderRadius: 8, display: 'flex', height: 40 }}
+      elevation={mode === 'dark' ? 8 : 2}
+      sx={{ alignItems: 'center', display: 'flex', height: 40 }}
       onSubmit={(event) => event.preventDefault()}
     >
       <Memo>
         {() => {
           const value = store.searchInput.get();
           return (
-            <Input
-              fullWidth
-              autoComplete="off"
-              endDecorator={
-                <Show if={value.length !== 0}>
-                  <IconButton size="sm" sx={{ margin: 0.5 }} onClick={handleClear}>
-                    <SvgIcon viewBox="-1 0 20 20">
-                      <MdClear />
-                    </SvgIcon>
-                  </IconButton>
-                </Show>
-              }
-              id="search-input"
-              name="query"
-              placeholder="Search"
-              slotProps={{
-                input: { maxLength: 128, spellCheck: false, ref: searchInput },
-              }}
-              startDecorator={
-                <IconButton
-                  size="sm"
-                  sx={{ margin: 0.5 }}
-                  onClick={() => searchInput.current?.focus()}
+            <>
+              <IconButton
+                sx={{ height: 40, width: 40 }}
+                onClick={() => searchInput.current?.focus()}
+              >
+                <SvgIcon
+                  sx={{ height: 20, transform: 'rotate(90deg)', width: 20 }}
+                  viewBox="2 0 24 24"
                 >
-                  <SvgIcon
-                    sx={{ height: 20, transform: 'rotate(90deg)', width: 20 }}
-                    viewBox="1 -1 20 20"
-                  >
-                    <CgSearch />
+                  <CgSearch />
+                </SvgIcon>
+              </IconButton>
+              <InputBase
+                fullWidth
+                autoComplete="off"
+                id="search-input"
+                inputProps={{ maxLength: 128, spellCheck: false, style: { padding: '2px 0 3px' } }}
+                inputRef={searchInput}
+                name="query"
+                placeholder="Search"
+                value={value}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                onFocus={handleFocus}
+              />
+              {value.length !== 0 && (
+                <IconButton sx={{ height: 40, width: 40 }} onClick={handleClear}>
+                  <SvgIcon>
+                    <MdClear />
                   </SvgIcon>
                 </IconButton>
-              }
-              sx={{
-                backgroundColor: 'background.level2',
-                '--Input-paddingInline': 0,
-              }}
-              value={value}
-              variant="soft"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              onFocus={handleFocus}
-            />
+              )}
+            </>
           );
         }}
       </Memo>
-    </Sheet>
+    </Paper>
   );
 };
 

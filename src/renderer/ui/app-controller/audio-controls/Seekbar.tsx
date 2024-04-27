@@ -1,5 +1,5 @@
 import { Memo, observer, Show } from '@legendapp/state/react';
-import { Grid, Slider, Typography } from '@mui/joy';
+import { Grid, Slider, Typography } from '@mui/material';
 import { audio } from 'audio';
 import React from 'react';
 import formatTime from 'scripts/format-time';
@@ -20,7 +20,7 @@ const Seekbar: React.FC = observer(function Seekbar() {
 
   return (
     <Grid container flexBasis="100%" marginX={1} paddingY={1}>
-      <Grid xs alignItems="center" display="flex" height={30} marginRight={1}>
+      <Grid item xs alignItems="center" display="flex" height={30} marginRight={1}>
         <Memo>
           {() => {
             const nowPlaying = store.audio.nowPlaying.get();
@@ -31,7 +31,9 @@ const Seekbar: React.FC = observer(function Seekbar() {
                 disabled={!nowPlaying}
                 max={nowPlaying?.track.duration || 0}
                 min={0}
-                size="sm"
+                sx={{
+                  height: 4,
+                }}
                 value={seekbarDraggingPosition || currentTimeMillis}
                 onChange={changePosition}
                 onChangeCommitted={commitPosition}
@@ -40,8 +42,8 @@ const Seekbar: React.FC = observer(function Seekbar() {
           }}
         </Memo>
       </Grid>
-      <Grid display="flex" justifyContent="flex-end" width="50px">
-        <Typography level="title-sm" mr={1} mt="4px" position="absolute">
+      <Grid item display="flex" justifyContent="flex-end" width="50px">
+        <Typography mr={1} mt="4px" position="absolute" variant="subtitle2">
           <Memo>
             {() => {
               const nowPlaying = store.audio.nowPlaying.get();
@@ -56,16 +58,17 @@ const Seekbar: React.FC = observer(function Seekbar() {
           </Memo>
         </Typography>
       </Grid>
-      <Typography level="title-sm" mt="4px">
+      <Typography mt="4px" variant="subtitle2">
         /
       </Typography>
       <Grid
+        item
         display="flex"
         justifyContent="flex-start"
         width="50px"
         onClick={() => persistedStore.displayRemainingTime.toggle()}
       >
-        <Typography level="title-sm" ml={1} mt="4px" position="absolute">
+        <Typography ml={1} mt="4px" position="absolute" variant="subtitle2">
           <Show if={persistedStore.displayRemainingTime.get()}>
             <Memo>
               {() => {

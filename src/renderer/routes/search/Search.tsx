@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/joy';
+import { Box, Typography } from '@mui/material';
 import { uniq } from 'lodash';
 import { useSearch } from 'queries';
 import React, { useEffect } from 'react';
@@ -42,7 +42,7 @@ const Search: React.FC = () => {
 
   return (
     <Box display="flex" flexDirection="column" height={1} marginX={4}>
-      <Typography level="h1" paddingY={2}>
+      <Typography paddingY={2} variant="h1">
         Search
       </Typography>
       <SearchInput query={query} />

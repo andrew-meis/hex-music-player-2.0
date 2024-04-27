@@ -1,12 +1,22 @@
 import { observer, useSelector } from '@legendapp/state/react';
-import { Avatar, Tooltip, Typography } from '@mui/joy';
-import { motion, MotionValue, useMotionValueEvent } from 'framer-motion';
+import { Avatar, Box, Tooltip, Typography } from '@mui/material';
+import { AnimatePresence, motion, MotionValue, useMotionValueEvent } from 'framer-motion';
 import { useState } from 'react';
 import { store } from 'state';
 
 const variants = {
-  artist: { borderRadius: '50%' },
-  album: { borderRadius: '4px' },
+  initial: (isArtist: boolean) => ({
+    opacity: 0,
+    borderRadius: isArtist ? '4px' : '50%',
+  }),
+  animate: (isArtist: boolean) => ({
+    opacity: 1,
+    borderRadius: isArtist ? '50%' : '4px',
+  }),
+  exit: (isArtist: boolean) => ({
+    opacity: 0,
+    borderRadius: isArtist ? '50%' : '4px',
+  }),
 };
 
 const MotionAvatar = motion(Avatar);
@@ -39,7 +49,7 @@ const NowPlayingAvatar: React.FC<{ scrollYProgress: MotionValue<number> }> = obs
         placement="left"
         title={
           !showArtist && (
-            <Typography>
+            <Typography color="text.primary" padding="4px 8px" textAlign="center">
               {nowPlaying.track.originalTitle || nowPlaying.track.grandparentTitle}
               &thinsp;&thinsp;—&thinsp;&thinsp;
               {nowPlaying.track.title}
@@ -47,17 +57,31 @@ const NowPlayingAvatar: React.FC<{ scrollYProgress: MotionValue<number> }> = obs
           )
         }
       >
-        <MotionAvatar
-          animate={showArtist ? 'artist' : 'album'}
-          src={showArtist ? artistThumbSrc : albumThumbSrc}
-          sx={{
-            boxShadow: 'var(--joy-shadow-sm)',
-            height: 48,
-            margin: 1,
-            width: 48,
-          }}
-          variants={variants}
-        />
+        <Box height={64} width={48}>
+          <AnimatePresence initial={false} mode="popLayout">
+            <MotionAvatar
+              layout
+              animate="animate"
+              custom={showArtist}
+              exit="exit"
+              initial="initial"
+              key={showArtist ? 'artist' : 'album'}
+              src={showArtist ? artistThumbSrc : albumThumbSrc}
+              sx={{
+                boxShadow: 'var(--mui-shadows-2)',
+                height: 48,
+                position: 'relative',
+                top: 8,
+                width: 48,
+              }}
+              transition={{
+                type: 'tween',
+                duration: 0.5,
+              }}
+              variants={variants}
+            />
+          </AnimatePresence>
+        </Box>
       </Tooltip>
     );
   }

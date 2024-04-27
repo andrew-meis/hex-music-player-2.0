@@ -1,5 +1,5 @@
 import { Memo, useObserve } from '@legendapp/state/react';
-import { Box, IconButton, Slider, SvgIcon, Tooltip } from '@mui/joy';
+import { Box, IconButton, Slider, SvgIcon, Tooltip } from '@mui/material';
 import { audio } from 'audio';
 import React, { useState } from 'react';
 import { RiVolumeDownFill, RiVolumeMuteFill, RiVolumeUpFill } from 'react-icons/ri';
@@ -66,6 +66,16 @@ const Volume = () => {
   return (
     <Tooltip
       arrow
+      PopperProps={{
+        modifiers: [
+          {
+            name: 'offset',
+            options: {
+              offset: [0, -8],
+            },
+          },
+        ],
+      }}
       leaveDelay={500}
       placement="top"
       title={
@@ -75,7 +85,6 @@ const Volume = () => {
               <Slider
                 orientation="vertical"
                 shiftStep={5}
-                size="sm"
                 sx={{
                   width: 4,
                   height: 100,
@@ -88,14 +97,13 @@ const Volume = () => {
           </Memo>
         </Box>
       }
-      variant="soft"
     >
-      <IconButton variant="plain" onClick={handleVolumeClick}>
+      <IconButton onClick={handleVolumeClick}>
         <Memo>
           {() => {
             const volume = persistedStore.audio.volume.get();
             return (
-              <SvgIcon color="neutral" viewBox={getViewbox(volume)}>
+              <SvgIcon viewBox={getViewbox(volume)}>
                 {volume === 0 && <RiVolumeMuteFill />}
                 {volume !== 0 && volume <= 60 && <RiVolumeDownFill />}
                 {volume > 60 && <RiVolumeUpFill />}

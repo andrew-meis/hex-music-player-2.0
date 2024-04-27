@@ -13,13 +13,21 @@ export interface Lyrics {
   syncedLyrics: string | null;
 }
 
+export interface LastfmPlexMatch {
+  id?: number;
+  url: string;
+  matchId?: number;
+}
+
 class HexMusicDexie extends Dexie {
   lyrics!: Table<Lyrics>;
+  lastfmPlexMatch!: Table<LastfmPlexMatch>;
 
   constructor() {
     super('hex-music-db');
     this.version(1).stores({
       lyrics: '++id, artistGuid, trackGuid',
+      lastfmPlexMatch: '++id, url',
     });
   }
 }

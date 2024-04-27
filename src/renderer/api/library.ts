@@ -4,6 +4,7 @@ import { Artist, ArtistContainer, parseArtistContainer } from './types/artist';
 import { Collection, CollectionContainer, parseCollectionContainer } from './types/collection';
 import { parseCountryArray } from './types/country';
 import { parseDecadeArray } from './types/decade';
+import { Device } from './types/device';
 import { parseFormatArray } from './types/format';
 import { parseGenreContainer } from './types/genre';
 import { parseHubContainer } from './types/hub';
@@ -105,10 +106,12 @@ export function getItems<T extends MediaType>(
  */
 
 export default class Library {
-  public api: ServerConnection;
+  public device: Device;
+  public server: ServerConnection;
 
-  constructor(serverConnection: ServerConnection) {
-    this.api = serverConnection;
+  constructor(serverConnection: ServerConnection, device: Device) {
+    this.device = device;
+    this.server = serverConnection;
   }
 
   // ==========================================================================
@@ -121,7 +124,7 @@ export default class Library {
    */
 
   async fetch(url: string, options: RequestOptions = {}) {
-    const response = await this.api.fetch(url, {
+    const response = await this.server.fetch(url, {
       ...options,
       searchParams: withContainerParams(options.searchParams),
     });
@@ -202,21 +205,9 @@ export default class Library {
     return parseContainerType<T>(type, response);
   }
 
-  async typedMetadata<T extends MediaType>(
-    id: number,
-    mediaType: T,
-    options?: RequestOptions
-  ): Promise<ReturnType<T>> {
-    const path = `/library/metadata/${id}`;
-    const response = await this.fetch(path, options);
-    const container = parseContainerType<T>(mediaType, response);
-    const items = getItems<T>(mediaType, container);
-    return items[0];
-  }
-
-  /**
-   * Fetch children of a metadata item
-   */
+  // ==========================================================================
+  // ADDITIONAL METADATA PATHS
+  // ==========================================================================
 
   async metadataChildren<T extends MediaType>(
     id: number,
@@ -224,6 +215,26 @@ export default class Library {
     searchParams: Params = {}
   ): Promise<ContainerReturnType<T>> {
     const path = `/library/metadata/${id}/children`;
+    const response = await this.fetch(path, { searchParams });
+    return parseContainerType<T>(type, response);
+  }
+
+  async metadataNearest<T extends MediaType>(
+    id: number,
+    type: T,
+    searchParams: Params = {}
+  ): Promise<ContainerReturnType<T>> {
+    const path = `/library/metadata/${id}/nearest`;
+    const response = await this.fetch(path, { searchParams });
+    return parseContainerType<T>(type, response);
+  }
+
+  async metadataSimilar<T extends MediaType>(
+    id: number,
+    type: T,
+    searchParams: Params = {}
+  ): Promise<ContainerReturnType<T>> {
+    const path = `/library/metadata/${id}/similar`;
     const response = await this.fetch(path, { searchParams });
     return parseContainerType<T>(type, response);
   }
@@ -324,6 +335,16 @@ export default class Library {
   }
 
   // ==========================================================================
+  // STUDIOS
+  // ==========================================================================
+
+  async studios(sectionId: number, type: MediaType) {
+    const path = `/library/sections/${sectionId}/studio`;
+    const response = await this.fetch(path, { searchParams: { type } });
+    return parseStudioArray(response);
+  }
+
+  // ==========================================================================
   // COLLECTIONS
   // ==========================================================================
 
@@ -334,16 +355,6 @@ export default class Library {
   async collections(sectionId: number, searchParams: Params = {}) {
     const collections = await this.sectionItems(sectionId, MediaType.COLLECTION, searchParams);
     return collections;
-  }
-
-  // ==========================================================================
-  // STUDIOS
-  // ==========================================================================
-
-  async studios(sectionId: number, type: MediaType) {
-    const path = `/library/sections/${sectionId}/studio`;
-    const response = await this.fetch(path, { searchParams: { type } });
-    return parseStudioArray(response);
   }
 
   // ==========================================================================
@@ -574,16 +585,12 @@ export default class Library {
     if (!searchParams.url) {
       return undefined;
     }
-    return this.api.getAuthenticatedUrl('/photo/:/transcode', searchParams);
+    return this.server.getAuthenticatedUrl('/photo/:/transcode', searchParams);
   }
 
   // ==========================================================================
   // TRACKS
   // ==========================================================================
-
-  trackSrc(track: Track) {
-    return this.api.getAuthenticatedUrl(track.media[0].parts[0].key);
-  }
 
   trackLyrics(track: Track) {
     const { streams } = track.media[0].parts[0];
@@ -591,7 +598,7 @@ export default class Library {
     if (lyricStream == null) {
       return null;
     }
-    return this.api.getAuthenticatedUrl(lyricStream.key);
+    return this.server.getAuthenticatedUrl(lyricStream.key);
   }
 
   // ==========================================================================
@@ -769,7 +776,7 @@ export default class Library {
       params[`${prop}[].tag.tag-`] = removeTags.map(encodeURIComponent).join(',');
     }
 
-    const response = await this.api.fetch(`/library/sections/${sectionId}/all`, {
+    const response = await this.server.fetch(`/library/sections/${sectionId}/all`, {
       method: 'PUT',
       searchParams: {
         ...params,

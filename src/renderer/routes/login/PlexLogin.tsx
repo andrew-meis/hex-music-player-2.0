@@ -1,6 +1,6 @@
-import { Button, Typography } from '@mui/joy';
+import { LoadingButton } from '@mui/lab';
+import { Typography } from '@mui/material';
 import { Client } from 'api';
-import { motion } from 'framer-motion';
 import qs from 'qs';
 import React from 'react';
 import { FiExternalLink } from 'react-icons/fi';
@@ -28,29 +28,27 @@ const PlexLogin: React.FC<{
   setActiveStep: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ activeStep, client, code, setActiveStep }) => {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <Typography level="h3">Login</Typography>
-      <Button
-        component="a"
+    <>
+      <Typography variant="h3">Login</Typography>
+      <LoadingButton
+        endIcon={<FiExternalLink style={{ height: '0.9em', width: '0.9em' }} viewBox="0 0 24 24" />}
         href={createAuthUrl(client, code)}
-        endDecorator={
-          <FiExternalLink style={{ height: '0.9em', width: '0.9em' }} viewBox="0 1 24 24" />
-        }
         loading={activeStep === 1}
+        loadingPosition="end"
         rel="noreferrer"
-        size="lg"
+        size="large"
         sx={{
           borderRadius: 16,
           mt: 2,
-          width: 256,
+          width: 284,
         }}
         target="_blank"
-        variant="soft"
+        variant="contained"
         onClick={() => setActiveStep(1)}
       >
         Authenticate with Plex
-      </Button>
-    </motion.div>
+      </LoadingButton>
+    </>
   );
 };
 

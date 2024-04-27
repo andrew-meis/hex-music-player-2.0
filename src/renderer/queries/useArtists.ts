@@ -1,17 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { Library, Params } from 'api';
 import { store } from 'state';
-import { QueryKeys, ServerConfig } from 'typescript';
+import { QueryKeys } from 'typescript';
 
-export const artistsQuery = (config: ServerConfig, library: Library, params?: Params) => ({
+export const artistsQuery = (sectionId: number, library: Library, params?: Params) => ({
   queryKey: [QueryKeys.ARTISTS, params],
-  queryFn: async () => library.artists(config.sectionId, params),
+  queryFn: async () => library.artists(sectionId, params),
 });
 
 const useArtists = (params?: Params) => {
-  const config = store.serverConfig.get();
-  const library = store.library.get();
-  return useQuery(artistsQuery(config, library, params));
+  const { sectionId } = store.serverConfig.peek();
+  const library = store.library.peek();
+  return useQuery(artistsQuery(sectionId, library, params));
 };
 
 export default useArtists;

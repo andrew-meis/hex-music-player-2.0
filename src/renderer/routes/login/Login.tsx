@@ -1,8 +1,8 @@
-import { Box, Sheet } from '@mui/joy';
+import { Box, Fade, Paper } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { Account, Client, Device, Library, ServerConnection } from 'api';
 import isAppInit from 'app/init-app';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import ky from 'ky';
 import React, { useEffect, useState } from 'react';
 import { redirect, useLoaderData } from 'react-router-dom';
@@ -106,8 +106,9 @@ const Login: React.FC = () => {
   const { data: librarySections } = useQuery({
     queryKey: ['library-sections'],
     queryFn: async () => {
+      if (!selectedServer) return;
       const newConnection = new ServerConnection(serverConnection!.uri, account);
-      const library = new Library(newConnection);
+      const library = new Library(newConnection, selectedServer);
       const sectionContainer = await library.sections();
       return sectionContainer.sections.filter((section) => section.type === 'artist');
     },
@@ -136,41 +137,55 @@ const Login: React.FC = () => {
   }, [selectedLibrary]);
 
   return (
-    <Box
-      borderRadius={8}
-      component={Sheet}
-      display="flex"
-      flexDirection="column"
-      height={350}
-      margin="auto"
-      padding={2}
-      position="relative"
-      top="50%"
-      sx={{
-        textAlign: 'center',
-        transform: 'translateY(-50%)',
-      }}
-      variant="outlined"
-      width={300}
-    >
-      <AnimatePresence initial={false} mode="wait">
-        {(activeStep === 0 || activeStep === 1) && (
-          <PlexLogin
-            activeStep={activeStep}
-            client={client}
-            code={pin.code}
-            key={activeStep}
-            setActiveStep={setActiveStep}
-          />
-        )}
-        {activeStep === 2 && servers && (
-          <PlexServer key={activeStep} servers={servers} setSelectedServer={setSelectedServer} />
-        )}
-        {activeStep === 3 && librarySections && (
-          <PlexLibrary sections={librarySections} setSelectedLibrary={setSelectedLibrary} />
-        )}
-        {activeStep === 4 && <LoginSettings />}
-      </AnimatePresence>
+    <Box alignItems="center" display="flex" height="calc(100% - 30px)" width={1}>
+      <Fade in={!!pin.code}>
+        <Box
+          borderRadius={4}
+          component={Paper}
+          display="flex"
+          elevation={1}
+          flexDirection="column"
+          height={350}
+          margin="auto"
+          padding={2}
+          position="relative"
+          sx={{
+            textAlign: 'center',
+          }}
+          width={300}
+        >
+          <AnimatePresence initial={false} mode="wait">
+            <motion.div animate={{ opacity: 1 }} exit={{ opacity: 0 }} initial={{ opacity: 0 }}>
+              {(activeStep === 0 || activeStep === 1) && (
+                <PlexLogin
+                  activeStep={activeStep}
+                  client={client}
+                  code={pin.code}
+                  key={activeStep}
+                  setActiveStep={setActiveStep}
+                />
+              )}
+            </motion.div>
+            <motion.div animate={{ opacity: 1 }} exit={{ opacity: 0 }} initial={{ opacity: 0 }}>
+              {activeStep === 2 && servers && (
+                <PlexServer
+                  key={activeStep}
+                  servers={servers}
+                  setSelectedServer={setSelectedServer}
+                />
+              )}
+            </motion.div>
+            <motion.div animate={{ opacity: 1 }} exit={{ opacity: 0 }} initial={{ opacity: 0 }}>
+              {activeStep === 3 && librarySections && (
+                <PlexLibrary sections={librarySections} setSelectedLibrary={setSelectedLibrary} />
+              )}
+            </motion.div>
+            <motion.div animate={{ opacity: 1 }} exit={{ opacity: 0 }} initial={{ opacity: 0 }}>
+              {activeStep === 4 && <LoginSettings />}
+            </motion.div>
+          </AnimatePresence>
+        </Box>
+      </Fade>
     </Box>
   );
 };

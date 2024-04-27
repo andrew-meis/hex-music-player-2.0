@@ -1,5 +1,5 @@
 import { observer, useSelector } from '@legendapp/state/react';
-import { Avatar, Box, Typography } from '@mui/joy';
+import { Avatar, Box, Typography } from '@mui/material';
 import TrackRating from 'components/rating/TrackRating';
 import React from 'react';
 import { store } from 'state';
@@ -9,7 +9,6 @@ const NowPlayingArtwork: React.FC<{ albumThumbSrc: string }> = ({ albumThumbSrc 
     <Box
       style={{
         aspectRatio: 1,
-        borderRadius: 8,
         display: 'flex',
         height: '100%',
         marginTop: 'auto',
@@ -28,7 +27,7 @@ const NowPlayingArtwork: React.FC<{ albumThumbSrc: string }> = ({ albumThumbSrc 
         src={albumThumbSrc}
         sx={{
           borderRadius: 8,
-          boxShadow: 'var(--joy-shadow-sm)',
+          boxShadow: 'var(--mui-shadows-2)',
           margin: 2,
           height: 'calc(100% - 32px)',
           width: 'auto',
@@ -42,8 +41,10 @@ const NowPlayingHeader: React.FC = observer(function NowPlayingHeader() {
   const library = store.library.get();
   const nowPlaying = store.audio.nowPlaying.get();
 
+  console.log(nowPlaying);
+
   const albumThumbSrc = useSelector(() => {
-    return library.api.getAuthenticatedUrl(nowPlaying.track.thumb);
+    return library.server.getAuthenticatedUrl(nowPlaying.track.thumb);
   });
 
   return (
@@ -61,9 +62,16 @@ const NowPlayingHeader: React.FC = observer(function NowPlayingHeader() {
       >
         <Typography
           display="-webkit-box"
-          fontFamily="Rubik"
-          level="h1"
+          fontFamily="Rubik, sans-serif"
           lineHeight={1}
+          overflow="hidden"
+          sx={{
+            paddingBottom: 0.5,
+            wordBreak: 'break-word',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 5,
+          }}
+          variant="h1"
           width="calc(100% - 40px)"
         >
           {nowPlaying.track.title}
@@ -72,13 +80,13 @@ const NowPlayingHeader: React.FC = observer(function NowPlayingHeader() {
         <Typography
           display="-webkit-box"
           flexShrink={0}
-          level="title-lg"
           overflow="hidden"
           sx={{
             wordBreak: 'break-all',
             WebkitBoxOrient: 'vertical',
             WebkitLineClamp: 1,
           }}
+          variant="h6"
           width="calc(100% - 40px)"
         >
           {nowPlaying.track.originalTitle || nowPlaying.track.grandparentTitle}
@@ -86,12 +94,8 @@ const NowPlayingHeader: React.FC = observer(function NowPlayingHeader() {
           {nowPlaying.track.parentTitle}
         </Typography>
         <Box alignItems="flex-start" display="flex" overflow="hidden">
-          <TrackRating
-            id={nowPlaying.track.id}
-            library={library}
-            userRating={nowPlaying.track.userRating}
-          />
-          <Typography display="inline-block" level="body-sm">
+          <TrackRating id={nowPlaying.track.id} userRating={nowPlaying.track.userRating / 2 || 0} />
+          <Typography color="text.secondary" display="inline-block" variant="subtitle2">
             &thinsp;&thinsp;—&thinsp;&thinsp;
             {nowPlaying.track.parentYear}
           </Typography>

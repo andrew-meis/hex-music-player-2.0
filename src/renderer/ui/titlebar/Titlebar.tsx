@@ -1,11 +1,10 @@
-import { Box } from '@mui/joy';
+import { Box } from '@mui/material';
 import favicon from 'assets/favicon.svg';
 import React from 'react';
 
 const Titlebar: React.FC = () => (
   <Box className="titlebar">
     <img
-      data-tauri-drag-region
       alt="logo"
       src={favicon}
       style={{

@@ -1,6 +1,6 @@
-import { Box, Button, Typography } from '@mui/joy';
+import { LoadingButton } from '@mui/lab';
+import { Box, Typography } from '@mui/material';
 import { Device } from 'api';
-import { motion } from 'framer-motion';
 import React, { useState } from 'react';
 
 const PlexServer: React.FC<{
@@ -12,28 +12,28 @@ const PlexServer: React.FC<{
 }> = ({ servers, setSelectedServer }) => {
   const [isLoading, setLoading] = useState(false);
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <Typography level="h3">Server Name</Typography>
+    <>
+      <Typography variant="h3">Server Name</Typography>
       <Box alignItems="center" display="flex" flexDirection="column" gap={1} mt={2}>
         {servers.devices.map((device) => (
-          <Button
+          <LoadingButton
             key={device.id}
             loading={isLoading}
             sx={{
               borderRadius: 16,
-              width: 256,
+              maxWidth: 192,
             }}
-            variant="soft"
+            variant="outlined"
             onClick={() => {
               setLoading(true);
               setSelectedServer(device);
             }}
           >
             {device.name}
-          </Button>
+          </LoadingButton>
         ))}
       </Box>
-    </motion.div>
+    </>
   );
 };
 

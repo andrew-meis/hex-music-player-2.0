@@ -1,13 +1,13 @@
-import { Avatar, Box, Typography } from '@mui/joy';
+import { observer } from '@legendapp/state/react';
+import { Avatar, Box, Typography } from '@mui/material';
 import { Playlist } from 'api';
+import Row from 'components/row/Row';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPlaylistNavigate } from 'scripts/navigate-generators';
 import { store } from 'state';
 
-import Result from './Result';
-
-const PlaylistResult: React.FC<{ playlist: Playlist }> = ({ playlist }) => {
+const PlaylistRow: React.FC<{ playlist: Playlist }> = observer(function PlaylistRow({ playlist }) {
   const library = store.library.get();
   const navigate = useNavigate();
 
@@ -22,17 +22,18 @@ const PlaylistResult: React.FC<{ playlist: Playlist }> = ({ playlist }) => {
   };
 
   return (
-    <Result onClick={handleNavigate}>
+    <Row onClick={handleNavigate}>
       <Avatar
         alt={playlist.title}
         src={thumbSrc}
-        sx={{ borderRadius: 4, height: 48, marginX: 1, width: 48 }}
+        sx={{ height: 48, marginX: 1, width: 48 }}
+        variant="rounded"
       />
       <Box>
-        <Typography fontFamily="Rubik" level="title-md" lineHeight={1.2}>
+        <Typography fontFamily="Rubik" lineHeight={1.2} variant="body1">
           {playlist.title}
         </Typography>
-        <Typography level="title-sm">
+        <Typography variant="subtitle2">
           {playlist.type}
           &nbsp; · &nbsp;
           {playlist.leafCount}
@@ -40,8 +41,8 @@ const PlaylistResult: React.FC<{ playlist: Playlist }> = ({ playlist }) => {
           {playlist.leafCount > 1 || playlist.leafCount === 0 ? 'tracks' : 'track'}
         </Typography>
       </Box>
-    </Result>
+    </Row>
   );
-};
+});
 
-export default PlaylistResult;
+export default PlaylistRow;

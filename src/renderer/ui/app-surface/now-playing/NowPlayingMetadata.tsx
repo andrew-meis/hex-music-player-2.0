@@ -2,13 +2,12 @@ import { observer } from '@legendapp/state/react';
 import {
   Box,
   Chip,
-  ChipDelete,
-  Input,
-  InputProps,
+  InputAdornment,
   SvgIcon,
+  TextField,
+  TextFieldProps,
   Typography,
-  useColorScheme,
-} from '@mui/joy';
+} from '@mui/material';
 import { Track } from 'api';
 import TrackRating from 'components/rating/TrackRating';
 import React from 'react';
@@ -19,44 +18,42 @@ import { store } from 'state';
 const MetadataEditInput: React.FC<{
   divProps?: React.HTMLAttributes<HTMLDivElement>;
   field: keyof Track;
-  inputProps?: InputProps;
+  textFieldProps?: TextFieldProps;
   label: string;
-}> = ({ divProps, field, inputProps, label }) => {
+}> = ({ divProps, field, textFieldProps, label }) => {
   const nowPlaying = store.audio.nowPlaying.get();
   const isLocked = nowPlaying.track.fields.find((value) => value.name === field);
 
-  const { mode } = useColorScheme();
-
   return (
     <div {...divProps}>
-      <Typography level="body-sm" lineHeight={1} marginBottom={0.25}>
+      <Typography color="text.secondary" lineHeight={1} marginBottom={0.25} variant="subtitle2">
         {label}
       </Typography>
-      <Input
-        endDecorator={isLocked ? <BiLockAlt /> : <BiLockOpenAlt />}
+      <TextField
+        InputProps={{
+          disableUnderline: true,
+          endAdornment: (
+            <InputAdornment position="end">
+              {isLocked ? <BiLockAlt /> : <BiLockOpenAlt />}
+            </InputAdornment>
+          ),
+        }}
         sx={{
-          '--Input-minHeight': '2rem',
-          '--Input-paddingInline': '0.5rem',
-          background: 'transparent',
           left: '-0.5rem',
           width: 'calc(100% + 1rem)',
-          '&:hover': {
-            background: `rgba(21, 21, 21, ${mode === 'dark' ? '0.35' : '0.08'})`,
-          },
         }}
         value={(nowPlaying.track[field] as string | number) || ''}
-        variant="plain"
-        {...inputProps}
+        variant="standard"
+        {...textFieldProps}
       />
     </div>
   );
 };
 
 const NowPlayingMetadata: React.FC = observer(function NowPlayingMetadata() {
-  const library = store.library.get();
   const nowPlaying = store.audio.nowPlaying.get();
 
-  const { mode } = useColorScheme();
+  const handleDelete = () => console.log('delete');
 
   return (
     <Box alignItems="flex-start" display="flex" height={1} width="calc(100% - 64px)">
@@ -64,61 +61,52 @@ const NowPlayingMetadata: React.FC = observer(function NowPlayingMetadata() {
         <MetadataEditInput field="grandparentTitle" label="Album Artist" />
         <MetadataEditInput
           field="originalTitle"
-          inputProps={{ placeholder: 'Edit track artist' }}
           label="Track Artist"
+          textFieldProps={{ placeholder: 'Edit track artist' }}
         />
         <MetadataEditInput field="parentTitle" label="Album" />
         <MetadataEditInput field="title" label="Title" />
         <div style={{ display: 'flex', gap: 8, width: 'calc(100% + 1rem)' }}>
           <div style={{ flex: '1 0 0', width: 0 }}>
-            <Typography level="body-sm" lineHeight={1} marginBottom={0.25}>
+            <Typography
+              color="text.secondary"
+              lineHeight={1}
+              marginBottom={0.25}
+              variant="subtitle2"
+            >
               Rating
             </Typography>
             <div style={{ alignItems: 'center', display: 'flex', height: 32 }}>
-              <TrackRating
-                id={nowPlaying.track.id}
-                library={library}
-                userRating={nowPlaying.track.userRating}
-              />
+              <TrackRating id={nowPlaying.track.id} userRating={nowPlaying.track.userRating} />
             </div>
           </div>
           <MetadataEditInput
             divProps={{ style: { flex: '1 0 0', width: 0 } }}
             field="index"
-            inputProps={{
+            label="Track &#x2116;"
+            textFieldProps={{
               sx: {
-                '--Input-minHeight': '2rem',
-                '--Input-paddingInline': '0.5rem',
                 background: 'transparent',
                 left: '-0.5rem',
-                '&:hover': {
-                  background: `rgba(21, 21, 21, ${mode === 'dark' ? '0.35' : '0.08'})`,
-                },
               },
             }}
-            label="Track &#x2116;"
           />
           <MetadataEditInput
             divProps={{ style: { flex: '1 0 0', width: 0 } }}
             field="parentIndex"
-            inputProps={{
+            label="Disc &#x2116;"
+            textFieldProps={{
               sx: {
-                '--Input-minHeight': '2rem',
-                '--Input-paddingInline': '0.5rem',
                 background: 'transparent',
                 left: '-0.5rem',
-                '&:hover': {
-                  background: `rgba(21, 21, 21, ${mode === 'dark' ? '0.35' : '0.08'})`,
-                },
               },
             }}
-            label="Disc &#x2116;"
           />
         </div>
       </Box>
       <Box display="flex" flex="1 0 0" flexDirection="column" padding={2}>
         <Box display="flex" height={14} marginBottom={0.25}>
-          <Typography level="body-sm" lineHeight={1}>
+          <Typography color="text.secondary" lineHeight={1} variant="subtitle2">
             Genres
           </Typography>
           <SvgIcon
@@ -128,7 +116,7 @@ const NowPlayingMetadata: React.FC = observer(function NowPlayingMetadata() {
               height: 20,
               top: -3,
               position: 'relative',
-              '&:hover': { color: theme.palette.neutral.plainHoverColor },
+              '&:hover': { color: theme.palette.action.hover },
             })}
           >
             <TbEdit />
@@ -144,27 +132,25 @@ const NowPlayingMetadata: React.FC = observer(function NowPlayingMetadata() {
           width="calc(100% + 1rem)"
         >
           {nowPlaying.track.genres.map((genre) => (
-            <Chip endDecorator={<ChipDelete />} key={genre.id} variant="plain">
-              {genre.tag}
-            </Chip>
+            <Chip key={genre.id} label={genre.tag} size="small" onDelete={handleDelete} />
           ))}
         </Box>
-        <Typography level="body-sm" lineHeight={1} marginBottom={0.25} marginTop={1.5}>
+        <Typography
+          color="text.secondary"
+          lineHeight={1}
+          marginBottom={0.25}
+          marginTop={1.5}
+          variant="subtitle2"
+        >
           Moods
         </Typography>
-        <Input
+        <TextField
           placeholder="Add a mood"
           sx={{
-            '--Input-minHeight': '2rem',
-            '--Input-paddingInline': '0.5rem',
-            background: 'transparent',
             left: '-0.5rem',
             width: 'calc(100% + 1rem)',
-            '&:hover': {
-              background: `rgba(21, 21, 21, ${mode === 'dark' ? '0.35' : '0.08'})`,
-            },
           }}
-          variant="plain"
+          variant="standard"
         />
         <Box
           display="flex"
@@ -176,9 +162,7 @@ const NowPlayingMetadata: React.FC = observer(function NowPlayingMetadata() {
           width="calc(100% + 1rem)"
         >
           {nowPlaying.track.moods.map((mood) => (
-            <Chip endDecorator={<ChipDelete />} key={mood.id} variant="plain">
-              {mood.tag}
-            </Chip>
+            <Chip key={mood.id} label={mood.tag} size="small" onDelete={handleDelete} />
           ))}
         </Box>
       </Box>

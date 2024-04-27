@@ -1,11 +1,14 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
-import { Library, Params, parseTrackContainer, Track } from 'api';
+import { Library, Params, parseTrackContainer, SORT_BY_DATE_PLAYED, Track } from 'api';
+import { db } from 'app/db';
 import ky from 'ky';
-import { store } from 'state';
-import { QueryKeys, ServerConfig } from 'typescript';
+import { LastFMTrack } from 'lastfm-ts-api';
+import { countBy, uniqBy } from 'lodash';
+import { DateTime } from 'luxon';
+import { persistedStore, store } from 'state';
+import { QueryKeys } from 'typescript';
 
 const fuzzyTrackSearch = async ({ artist, title }: { artist: string; title: string }) => {
-  const account = store.account.peek();
   const library = store.library.peek();
   const { sectionId } = store.serverConfig.peek();
   const params = new URLSearchParams();
@@ -42,19 +45,39 @@ const fuzzyTrackSearch = async ({ artist, title }: { artist: string; title: stri
   params.append('type', (10).toString());
   params.append('limit', (10).toString());
   const url =
-    library.api.uri +
+    library.server.uri +
     `/library/sections/${sectionId}` +
     `/search?${params.toString()}` +
-    `&X-Plex-Token=${account.authToken}`;
-  const response = (await ky(url, { headers: library.api.headers() }).json()) as Record<
+    `&X-Plex-Token=${library.server.account.authToken}`;
+  const response = (await ky(url, { headers: library.server.headers() }).json()) as Record<
     string,
     any
   >;
   return parseTrackContainer(response).tracks;
 };
 
-export const getPlexMatch = async ({ artist, title }: { artist: string; title: string }) => {
+const getPlexMatch = async ({
+  artist,
+  title,
+  url,
+}: {
+  artist: string;
+  title: string;
+  url: string;
+}) => {
   const library = store.library.peek();
+  const savedMatch = await db.lastfmPlexMatch.where('url').equals(url).first();
+  if (savedMatch) {
+    if (savedMatch.matchId) {
+      const match = await library.track(savedMatch.matchId);
+      if (match.tracks.length > 0) {
+        return match.tracks[0];
+      }
+    }
+    if (!savedMatch.matchId) {
+      return undefined;
+    }
+  }
   const regex = /\s[[(](?=[Ff]eat\.|[Ww]ith\s|[Ff]t\.|[Ff]eaturing\s)|\s&\s/;
   const searchArtist = artist.split(regex)[0];
   const searchTitle = title.split(regex)[0];
@@ -62,58 +85,165 @@ export const getPlexMatch = async ({ artist, title }: { artist: string; title: s
     .split(' ')
     .filter((t) => t.length > 1)
     .join(' ');
-  const searchResults: Track[] = [];
+  const directSearchResults: Track[] = [];
   try {
     const results = (await library.searchAll(query)).hubs.find((hub) => hub.type === 'track')
       ?.items as Track[];
-    searchResults.push(...results);
+    directSearchResults.push(...results);
   } catch {
     // pass
   }
-  const searchTrackResults = await fuzzyTrackSearch({
-    artist: searchArtist,
-    title: searchTitle,
-  });
-  const matchTrack = () => {
-    if (searchTrackResults && searchResults) {
-      const allTracks = [...searchTrackResults, ...searchResults];
-      if (allTracks.length === 0) return undefined;
-      const nameMatch = allTracks?.find((track) => {
-        const lastfmTitle = title.replace(/["'’“”]/g, '').toLowerCase();
-        const plexTitle = track.title.replace(/["'’“”]/g, '').toLowerCase();
-        return lastfmTitle === plexTitle;
-      });
-      if (nameMatch) return nameMatch;
-      const alphanumericMatch = allTracks?.find((track) => {
-        const lastfmTitle = title.replace(/\W+/g, ' ').trim().toLowerCase();
-        const plexTitle = track.title.replace(/\W+/g, ' ').trim().toLowerCase();
-        return lastfmTitle === plexTitle;
-      });
-      if (alphanumericMatch) return alphanumericMatch;
-      const partialMatch = allTracks?.find((track) => {
-        const lastfmTitle = title.replace(/["'’“”]/g, '').toLowerCase();
-        const plexTitle = track.title.replace(/["'’“”]/g, '').toLowerCase();
-        return lastfmTitle.includes(plexTitle);
-      });
-      if (partialMatch) return partialMatch;
-      return undefined;
-    }
+  const fuzzySearchResults: Track[] = [];
+  try {
+    const results = await fuzzyTrackSearch({
+      artist: searchArtist,
+      title: searchTitle,
+    });
+    fuzzySearchResults.push(...results);
+  } catch {
+    // pass
+  }
+  const findMatch = () => {
+    const allTracks = [...directSearchResults, ...fuzzySearchResults];
+    if (allTracks.length === 0) return undefined;
+    const nameMatch = allTracks?.find((track) => {
+      const lastfmTitle = title.replace(/["'’“”]/g, '').toLowerCase();
+      const plexTitle = track.title.replace(/["'’“”]/g, '').toLowerCase();
+      return lastfmTitle === plexTitle;
+    });
+    if (nameMatch) return nameMatch;
+    const alphanumericMatch = allTracks?.find((track) => {
+      const lastfmTitle = title.replace(/\W+/g, ' ').trim().toLowerCase();
+      const plexTitle = track.title.replace(/\W+/g, ' ').trim().toLowerCase();
+      return lastfmTitle === plexTitle;
+    });
+    if (alphanumericMatch) return alphanumericMatch;
+    const partialMatch = allTracks?.find((track) => {
+      const lastfmTitle = title.replace(/["'’“”]/g, '').toLowerCase();
+      const plexTitle = track.title.replace(/["'’“”]/g, '').toLowerCase();
+      return lastfmTitle.includes(plexTitle);
+    });
+    if (partialMatch) return partialMatch;
     return undefined;
   };
-  const match = matchTrack();
+  const match = findMatch();
+  if (savedMatch) {
+    await db.lastfmPlexMatch.update(savedMatch.id!, { url, matchId: match?.id });
+  } else {
+    db.lastfmPlexMatch.add({
+      url,
+      matchId: match?.id,
+    });
+  }
   return match;
 };
 
-export const tracksQuery = (config: ServerConfig, library: Library, params?: Params) =>
+export const lastfmMatchTracksQuery = (track: Track, enabled: boolean) =>
+  queryOptions({
+    queryKey: [QueryKeys.LASTFM_MATCH_TRACKS, track.id],
+    queryFn: async () => {
+      const lastfmTrack = new LastFMTrack(persistedStore.lastfmApiKey.peek());
+      const { similartracks } = await lastfmTrack.getSimilar({
+        artist:
+          track.grandparentTitle === 'Various Artists'
+            ? track.originalTitle
+            : track.grandparentTitle,
+        track: track.title,
+        autocorrect: 1,
+      });
+      if (similartracks.track.length === 0) return [];
+      const matchedTracks = [] as Track[];
+      await Promise.all(
+        similartracks.track.map(async (track) => {
+          const match = await getPlexMatch({
+            artist: track.artist.name,
+            title: track.name,
+            url: track.url,
+          });
+          if (match) {
+            matchedTracks.push({ ...match, score: track.match as unknown as number });
+          }
+        })
+      );
+      return matchedTracks.sort((a, b) => b.score! - a.score!);
+    },
+    enabled,
+  });
+
+export const useLastfmMatchTracks = (track: Track, enabled = true) =>
+  useQuery(lastfmMatchTracksQuery(track, enabled));
+
+const recentTracksQuery = (track: Track, days: number, enabled: boolean) =>
+  queryOptions({
+    queryKey: [QueryKeys.RECENT_TRACKS, track.id],
+    queryFn: async () => {
+      const { sectionId } = store.serverConfig.peek();
+      const library = store.library.peek();
+      const time = DateTime.now();
+      const url = library.server.getAuthenticatedUrl('/status/sessions/history/all', {
+        sort: SORT_BY_DATE_PLAYED.desc,
+        librarySectionID: sectionId,
+        metadataItemID: track.grandparentId,
+        'viewedAt<': time.toUnixInteger(),
+        'viewedAt>': time.minus({ days }).toUnixInteger(),
+      });
+      const response = (await ky(url).json()) as Record<string, any>;
+      if (response.MediaContainer.size === 0) {
+        return [];
+      }
+      const keys = response.MediaContainer.Metadata.map((record: Track) => record.ratingKey);
+      const counts = countBy(keys, Math.floor);
+      const { tracks } = await library.tracks(sectionId, {
+        'track.id': Object.keys(counts).join(','),
+      });
+      if (tracks.length > 0) {
+        Object.keys(counts).forEach((key) => {
+          const match = tracks.find((track) => track.ratingKey === key);
+          if (match) match.globalViewCount = counts[key];
+        });
+        return tracks.sort((a, b) => b.globalViewCount - a.globalViewCount);
+      }
+      return [];
+    },
+    enabled,
+  });
+
+export const useRecentTracks = (track: Track, days: number, enabled = true) =>
+  useQuery(recentTracksQuery(track, days, enabled));
+
+const relatedTracksQuery = (track: Track, enabled: boolean) =>
+  queryOptions({
+    queryKey: [QueryKeys.RELATED_TRACKS, track.id],
+    queryFn: () => track.getRelatedTracks(),
+    enabled,
+    select: (data) => {
+      return uniqBy(data.tracks, 'grandparentGuid');
+    },
+  });
+
+export const useRelatedTracks = (track: Track, enabled = true) =>
+  useQuery(relatedTracksQuery(track, enabled));
+
+const similarTracksQuery = (track: Track, enabled: boolean) =>
+  queryOptions({
+    queryKey: [QueryKeys.SIMILAR_TRACKS, track.id],
+    queryFn: () => track.getSimilarTracks(),
+    enabled,
+  });
+
+export const useSimilarTracks = (track: Track, enabled = true) =>
+  useQuery(similarTracksQuery(track, enabled));
+
+export const tracksQuery = (sectionId: number, library: Library, params?: Params) =>
   queryOptions({
     queryKey: [QueryKeys.TRACKS, params],
-    queryFn: async () => library.tracks(config.sectionId, params),
+    queryFn: async () => library.tracks(sectionId, params),
   });
 
 const useTracks = (params?: Params) => {
-  const config = store.serverConfig.get();
-  const library = store.library.get();
-  return useQuery(tracksQuery(config, library, params));
+  const { sectionId } = store.serverConfig.peek();
+  const library = store.library.peek();
+  return useQuery(tracksQuery(sectionId, library, params));
 };
 
 export default useTracks;

@@ -1,0 +1,302 @@
+import grey from '@mui/material/colors/grey';
+import {
+  ColorSystemOptions,
+  Experimental_CssVarsProvider as CssVarsProvider,
+  experimental_extendTheme as extendTheme,
+} from '@mui/material/styles';
+import React, { useMemo } from 'react';
+
+// const darkModeColors: ColorSystemOptions['palette'] = {
+//   primary: {
+//     main: '#81D8D0',
+//     light: '#A1E7DA',
+//     dark: '#41939B',
+//   },
+// };
+
+// const lightModeColors: ColorSystemOptions['palette'] = {
+//   primary: {
+//     main: '#49A19A',
+//     dark: '#246B73',
+//     light: '#75C6B8',
+//   },
+// };
+
+const createDarkTheme = (): ColorSystemOptions => ({
+  palette: {
+    background: {
+      default: '#000000',
+      paper: '#121212',
+    },
+    // ...darkModeColors,
+  },
+});
+
+const createLightTheme = (): ColorSystemOptions => ({
+  palette: {
+    background: {
+      default: '#fafafa',
+      paper: '#ffffff',
+    },
+    // ...lightModeColors,
+  },
+});
+
+const createTheme = () =>
+  extendTheme({
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 900,
+        lg: 1256,
+        xl: 1536,
+      },
+    },
+    colorSchemes: {
+      dark: createDarkTheme(),
+      light: createLightTheme(),
+    },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            textTransform: 'none',
+          },
+          endIcon: {
+            margin: 0,
+            position: 'absolute',
+            right: 12,
+          },
+        },
+      },
+      MuiIconButton: {
+        defaultProps: {
+          disableRipple: true,
+        },
+        styleOverrides: {
+          root: ({ theme }) => ({
+            borderRadius: 8,
+            color: theme.palette.text.secondary,
+            padding: 6,
+            ':hover': {
+              backgroundColor: 'transparent',
+              color: theme.palette.text.primary,
+            },
+            '&.selected': {
+              color: theme.palette.primary.main,
+            },
+            '[data-mui-color-scheme="light"] &.selected:hover': {
+              color: theme.palette.primary.dark,
+            },
+            '[data-mui-color-scheme="dark"] &.selected:hover': {
+              color: theme.palette.primary.light,
+            },
+            '&.Mui-focusVisible': {
+              outline: `2px solid ${theme.palette.primary.main}`,
+            },
+          }),
+        },
+      },
+      MuiInputAdornment: {
+        styleOverrides: {
+          root: ({ ownerState }) => ({
+            ...(ownerState.variant === 'standard' &&
+              ownerState.position === 'end' && {
+                paddingRight: '0.5rem',
+              }),
+            ...(ownerState.variant === 'standard' &&
+              ownerState.position === 'start' && {
+                paddingLeft: '0.5rem',
+              }),
+          }),
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            '[data-mui-color-scheme="dark"] &': {
+              boxShadow: 'none',
+            },
+          },
+        },
+      },
+      MuiSlider: {
+        defaultProps: {
+          size: 'small',
+        },
+        styleOverrides: {
+          root: ({ theme }) => ({
+            color: theme.palette.text.secondary,
+            '& .MuiSlider-thumb': {
+              display: 'none',
+            },
+            ':hover': {
+              color: theme.palette.primary.main,
+              '& .MuiSlider-thumb': {
+                display: 'flex',
+              },
+            },
+          }),
+          thumb: ({ theme }) => ({
+            borderRadius: 4,
+            boxShadow: theme.shadows[1],
+            color: theme.palette.common.white,
+            ':hover': {
+              boxShadow: theme.shadows[3],
+              color: theme.palette.common.white,
+            },
+          }),
+          thumbColorPrimary: {
+            transition: 'none',
+          },
+          track: {
+            border: 'none',
+            transition: 'none',
+          },
+        },
+      },
+      MuiSwitch: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            height: 38,
+            width: 58,
+            padding: 8,
+            '&.Mui-disabled': {
+              '&.MuiSwitch-thumb': {
+                color: theme.palette.action.selected,
+              },
+            },
+          }),
+          switchBase: {
+            padding: 10,
+            '&.Mui-checked': {
+              '&:hover': {
+                backgroundColor: 'transparent',
+              },
+              '&+.MuiSwitch-track': {
+                opacity: 1,
+              },
+            },
+          },
+          thumb: ({ theme }) => ({
+            boxShadow: theme.shadows[3],
+            width: 18,
+            height: 18,
+            color: theme.palette.common.white,
+          }),
+          track: {
+            backgroundColor: grey[500],
+            borderRadius: 10,
+          },
+        },
+      },
+      MuiTextField: {
+        defaultProps: {
+          InputProps: {
+            disableUnderline: true,
+          },
+          inputProps: {
+            style: {
+              paddingLeft: '0.5rem',
+              paddingRight: '0.5rem',
+            },
+          },
+        },
+        styleOverrides: {
+          root: ({ ownerState, theme }) => ({
+            ...(ownerState.variant === 'standard' && {
+              borderRadius: 4,
+              '&>.MuiInputBase-root': {
+                '&:hover': {
+                  background: theme.palette.action.hover,
+                },
+                borderRadius: 4,
+              },
+              '&>.MuiInputBase-root.Mui-focused': {
+                background: theme.palette.action.selected,
+              },
+            }),
+          }),
+        },
+      },
+      MuiTooltip: {
+        styleOverrides: {
+          arrow: ({ theme }) => ({
+            color: theme.palette.Button.inheritContainedBg,
+          }),
+          tooltip: ({ theme }) => ({
+            backgroundColor: theme.palette.Button.inheritContainedBg,
+            maxWidth: 500,
+            padding: 0,
+          }),
+        },
+      },
+      MuiTypography: {
+        variants: [
+          {
+            props: { variant: 'h1' },
+            style: {
+              fontFamily: 'TT Commons, sans-serif',
+              fontSize: '2.75rem',
+              fontWeight: '700',
+            },
+          },
+          {
+            props: { variant: 'h2' },
+            style: {
+              fontFamily: 'TT Commons, sans-serif',
+              fontSize: '2.5rem',
+              fontWeight: '700',
+            },
+          },
+          {
+            props: { variant: 'h3' },
+            style: {
+              fontFamily: 'TT Commons, sans-serif',
+              fontSize: '2.125rem',
+              fontWeight: '700',
+            },
+          },
+          {
+            props: { variant: 'h4' },
+            style: {
+              fontFamily: 'TT Commons, sans-serif',
+              fontSize: '1.75rem',
+              fontWeight: '700',
+            },
+          },
+          {
+            props: { variant: 'h5' },
+            style: {
+              fontFamily: 'TT Commons, sans-serif',
+              fontSize: '1.5rem',
+              fontWeight: '600',
+            },
+          },
+          {
+            props: { variant: 'h6' },
+            style: {
+              fontSize: '1.125rem',
+              fontWeight: '600',
+            },
+          },
+        ],
+      },
+    },
+    typography: {
+      fontFamily: ['Arimo', 'Arial', 'sans-serif'].join(','),
+    },
+  });
+
+const MuiThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const theme = useMemo(() => createTheme(), []);
+
+  return (
+    <CssVarsProvider defaultMode="dark" theme={theme}>
+      {children}
+    </CssVarsProvider>
+  );
+};
+
+export default MuiThemeProvider;

@@ -1,9 +1,6 @@
+import Account from './account';
 import { Params, withParams } from './utils/params';
 import { requestJSON, RequestOptions } from './utils/request';
-
-interface Parent {
-  headers: () => Record<string, string>;
-}
 
 /**
  * A connection to a Plex server
@@ -12,11 +9,11 @@ interface Parent {
 export default class ServerConnection {
   public uri: string;
 
-  public parent: Parent;
+  public account: Account;
 
-  constructor(uri: string, parent: Parent) {
+  constructor(uri: string, account: Account) {
     this.uri = uri;
-    this.parent = parent;
+    this.account = account;
   }
 
   /**
@@ -24,7 +21,7 @@ export default class ServerConnection {
    */
 
   headers() {
-    return this.parent && this.parent.headers();
+    return this.account && this.account.headers();
   }
 
   /**

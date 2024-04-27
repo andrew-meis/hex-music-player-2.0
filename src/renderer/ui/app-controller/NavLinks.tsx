@@ -1,4 +1,4 @@
-import { Box, IconButton, SvgIcon } from '@mui/joy';
+import { Box, IconButton } from '@mui/material';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { BsViewList } from 'react-icons/bs';
 import { CgSearch } from 'react-icons/cg';
@@ -131,39 +131,37 @@ const NavLinks: React.FC<{
 
   return (
     <Box alignItems="center" display="flex" flexBasis={200} flexShrink={0}>
-      <IconButton variant="plain" onClick={() => handleButtonClick('library')}>
-        <SvgIcon
-          color={isBrowserOpen && !ROUTES.includes(location.pathname) ? 'primary' : 'neutral'}
-        >
-          <LuLibrary />
-        </SvgIcon>
-      </IconButton>
-      <IconButton variant="plain" onClick={() => handleButtonClick('search')}>
-        <SvgIcon color={isBrowserOpen && location.pathname === '/search' ? 'primary' : 'neutral'}>
-          <CgSearch style={{ transform: 'rotate(90deg)' }} viewBox="1 -1 25 24" />
-        </SvgIcon>
-      </IconButton>
-      <IconButton variant="plain" onClick={() => handleButtonClick('charts')}>
-        <SvgIcon color={isBrowserOpen && location.pathname === '/charts' ? 'primary' : 'neutral'}>
-          <TiChartLine />
-        </SvgIcon>
+      <IconButton
+        className={isBrowserOpen && !ROUTES.includes(location.pathname) ? 'selected' : ''}
+        onClick={() => handleButtonClick('library')}
+      >
+        <LuLibrary />
       </IconButton>
       <IconButton
-        sx={{
-          '--IconButton-size': '34px',
-        }}
-        variant="plain"
+        className={isBrowserOpen && location.pathname === '/search' ? 'selected' : ''}
+        onClick={() => handleButtonClick('search')}
+      >
+        <CgSearch style={{ transform: 'rotate(90deg)' }} viewBox="1 -1 25 24" />
+      </IconButton>
+      <IconButton
+        className={isBrowserOpen && location.pathname === '/charts' ? 'selected' : ''}
+        onClick={() => handleButtonClick('charts')}
+      >
+        <TiChartLine />
+      </IconButton>
+      <IconButton
+        className={isBrowserOpen && location.pathname === '/queue' ? 'selected' : ''}
+        sx={{ fontSize: 23, height: 36, width: 36 }}
         onClick={() => handleButtonClick('queue')}
       >
-        <SvgIcon color={isBrowserOpen && location.pathname === '/queue' ? 'primary' : 'neutral'}>
-          <BsViewList viewBox="0 3 16 16" />
-          <BsViewList style={{ position: 'absolute' }} viewBox="0 -12 16 16" />
-        </SvgIcon>
+        <BsViewList viewBox="0 3 16 16" />
+        <BsViewList style={{ position: 'absolute' }} viewBox="0 -12 16 16" />
       </IconButton>
-      <IconButton variant="plain" onClick={() => handleButtonClick('settings')}>
-        <SvgIcon color={isBrowserOpen && location.pathname === '/settings' ? 'primary' : 'neutral'}>
-          <MdSettings />
-        </SvgIcon>
+      <IconButton
+        className={isBrowserOpen && location.pathname === '/settings' ? 'selected' : ''}
+        onClick={() => handleButtonClick('settings')}
+      >
+        <MdSettings />
       </IconButton>
       <Volume />
     </Box>

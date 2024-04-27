@@ -7,5 +7,12 @@ export { lyricsQuery, default as useLyrics } from './useLyrics';
 export { playlistsQuery, default as usePlaylists } from './usePlaylists';
 export { queueQuery, default as useQueue } from './useQueue';
 export { searchQuery, default as useSearch } from './useSearch';
-export { getPlexMatch, tracksQuery, default as useTracks } from './useTracks';
+export {
+  tracksQuery,
+  useLastfmMatchTracks,
+  useRecentTracks,
+  useRelatedTracks,
+  useSimilarTracks,
+  default as useTracks,
+} from './useTracks';
 export { userQuery, default as useUser } from './useUser';
