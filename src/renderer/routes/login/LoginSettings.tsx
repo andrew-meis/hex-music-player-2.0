@@ -22,7 +22,7 @@ const LoginSettings: React.FC = () => {
     <>
       <Typography variant="h3">Settings</Typography>
       <Box alignItems="center" display="flex" justifyContent="space-between" mt={2}>
-        <Typography sx={{ fontWeight: 600 }} variant="h6">
+        <Typography sx={{ fontWeight: 600 }} variant="body1">
           Dark Mode
         </Typography>
         <Switch

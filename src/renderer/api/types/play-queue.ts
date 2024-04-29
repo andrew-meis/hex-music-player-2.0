@@ -21,6 +21,8 @@ export interface PlayQueueItem {
   track: Track;
 }
 
+const isPlayQueueItem = (x: any): x is PlayQueueItem => x._type === 'playQueueItem';
+
 export interface PlayQueue {
   _type: string;
   id: number;
@@ -72,6 +74,7 @@ const toPlayQueue = ($data: Prism<any>): PlayQueue => {
 const parsePlayQueue = createParser('playQueue', toPlayQueue);
 
 export {
+  isPlayQueueItem,
   parsePlayQueue,
   playQueueContainerSchema,
   playQueueItemSchema,

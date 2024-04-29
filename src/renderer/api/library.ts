@@ -585,7 +585,7 @@ export default class Library {
     if (!searchParams.url) {
       return undefined;
     }
-    return this.server.getAuthenticatedUrl('/photo/:/transcode', searchParams);
+    return this.server.getAuthenticatedUrl('/photo/:/transcode', { ...searchParams, minSize: 1 });
   }
 
   // ==========================================================================

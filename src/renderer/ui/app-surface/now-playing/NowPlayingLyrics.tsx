@@ -220,13 +220,20 @@ const NowPlayingLyrics: React.FC = observer(function NowPlayingLyrics() {
 
   if (lyrics?.instrumental) {
     return (
-      <Box height="-webkit-fill-available" margin={2} overflow="auto" width="calc(100% - 80px)">
+      <Box
+        alignItems="center"
+        display="flex"
+        height="-webkit-fill-available"
+        justifyContent="center"
+        margin={2}
+        overflow="auto"
+        width="calc(100% - 80px)"
+      >
         <Box color="text.primary" height="fit-content">
           <Typography
             sx={{
               color: 'text.secondary',
               fontWeight: 600,
-              textAlign: 'center',
             }}
             variant="h5"
           >
@@ -239,7 +246,15 @@ const NowPlayingLyrics: React.FC = observer(function NowPlayingLyrics() {
 
   if (!syncedLyrics && !plainLyrics && !lyrics?.instrumental) {
     return (
-      <Box height="-webkit-fill-available" margin={2} overflow="auto" width="calc(100% - 80px)">
+      <Box
+        alignItems="center"
+        display="flex"
+        height="-webkit-fill-available"
+        justifyContent="center"
+        margin={2}
+        overflow="auto"
+        width="calc(100% - 80px)"
+      >
         <Box color="text.primary" height="fit-content">
           <Typography
             sx={{

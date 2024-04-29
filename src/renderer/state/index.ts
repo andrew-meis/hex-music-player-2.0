@@ -1,7 +1,19 @@
-import { observable } from '@legendapp/state';
+import { computed, observable } from '@legendapp/state';
 import { configureObservablePersistence, persistObservable } from '@legendapp/state/persist';
 import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/local-storage';
-import { Account, Device, Library, PlayQueueItem, Track } from 'api';
+import {
+  Account,
+  Album,
+  Artist,
+  Device,
+  Genre,
+  Library,
+  Playlist,
+  PlayQueue,
+  PlayQueueItem,
+  Track,
+} from 'api';
+import chroma from 'chroma-js';
 import { ServerConfig } from 'typescript';
 
 configureObservablePersistence({
@@ -16,7 +28,7 @@ export const persistedStore = observable({
   // User state
   displayRemainingTime: true,
   lastfmApiKey: '',
-  queueid: 5424,
+  queueId: 5424,
   recentSearches: [] as string[],
 });
 
@@ -34,15 +46,16 @@ export const store = observable({
     next: undefined as unknown as PlayQueueItem,
     nowPlaying: undefined as unknown as PlayQueueItem,
     previous: undefined as unknown as PlayQueueItem,
+    queue: undefined as unknown as PlayQueue,
     queueSrcs: [] as string[],
     seekbarDraggingPosition: undefined as unknown as number,
-    updateQueue: false,
+    updateQueue: false as boolean | 'force-playback',
   },
   // Saved server configuration
   serverConfig: undefined as unknown as ServerConfig,
   // Plex API
   account: undefined as unknown as Account,
-  device: undefined as unknown as Device & { uri: string },
+  device: undefined as unknown as Device,
   library: undefined as unknown as Library,
   // Search
   searchInput: '',
@@ -50,9 +63,19 @@ export const store = observable({
   ui: {
     nowPlaying: {
       activeSimilarTracksChip: 0,
+      color: chroma([90, 90, 90]),
+    },
+    menus: {
+      anchorPosition: null as null | { mouseX: number; mouseY: number },
+      items: [] as (Artist | Album | Track | Playlist | Genre | PlayQueueItem)[],
     },
     modals: {
-      editLyrics: undefined as unknown as Track,
+      editLyricsTrack: undefined as unknown as Track,
+      open: '' as '' | 'lyrics',
     },
+    selections: computed(() => {
+      const ids = store.ui.menus.items.map((value) => value.id.get()) as number[];
+      return ids;
+    }),
   },
 });

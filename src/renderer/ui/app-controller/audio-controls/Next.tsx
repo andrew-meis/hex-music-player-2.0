@@ -18,7 +18,7 @@ const Next: React.FC = observer(function Next() {
 
   return (
     <IconButton
-      disabled={persistedStore.queueid.get() === 0 || !next}
+      disabled={persistedStore.queueId.get() === 0 || !next}
       sx={{
         cursor: 'default',
         marginLeft: 0.25,

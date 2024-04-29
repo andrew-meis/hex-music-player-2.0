@@ -1,18 +1,9 @@
 import { observer } from '@legendapp/state/react';
-import {
-  Box,
-  Chip,
-  InputAdornment,
-  SvgIcon,
-  TextField,
-  TextFieldProps,
-  Typography,
-} from '@mui/material';
+import { Box, Chip, InputAdornment, TextField, TextFieldProps, Typography } from '@mui/material';
 import { Track } from 'api';
 import TrackRating from 'components/rating/TrackRating';
 import React from 'react';
 import { BiLockAlt, BiLockOpenAlt } from 'react-icons/bi';
-import { TbEdit } from 'react-icons/tb';
 import { store } from 'state';
 
 const MetadataEditInput: React.FC<{
@@ -56,7 +47,7 @@ const NowPlayingMetadata: React.FC = observer(function NowPlayingMetadata() {
   const handleDelete = () => console.log('delete');
 
   return (
-    <Box alignItems="flex-start" display="flex" height={1} width="calc(100% - 64px)">
+    <Box alignItems="flex-start" display="flex" height={1} marginTop={4} width="calc(100% - 64px)">
       <Box display="flex" flex="1 0 0" flexDirection="column" gap={0.5} maxWidth={400} padding={2}>
         <MetadataEditInput field="grandparentTitle" label="Album Artist" />
         <MetadataEditInput
@@ -105,32 +96,10 @@ const NowPlayingMetadata: React.FC = observer(function NowPlayingMetadata() {
         </div>
       </Box>
       <Box display="flex" flex="1 0 0" flexDirection="column" padding={2}>
-        <Box display="flex" height={14} marginBottom={0.25}>
-          <Typography color="text.secondary" lineHeight={1} variant="subtitle2">
-            Genres
-          </Typography>
-          <SvgIcon
-            sx={(theme) => ({
-              marginLeft: 'auto',
-              width: 20,
-              height: 20,
-              top: -3,
-              position: 'relative',
-              '&:hover': { color: theme.palette.action.hover },
-            })}
-          >
-            <TbEdit />
-          </SvgIcon>
-        </Box>
-        <Box
-          display="flex"
-          flexWrap="wrap"
-          gap={0.5}
-          left="-0.5rem"
-          marginTop={0.5}
-          position="relative"
-          width="calc(100% + 1rem)"
-        >
+        <Typography color="text.secondary" lineHeight={1} marginBottom={0.25} variant="subtitle2">
+          Genres
+        </Typography>
+        <Box display="flex" flexWrap="wrap" gap={0.5} marginTop={0.5} position="relative" width={1}>
           {nowPlaying.track.genres.map((genre) => (
             <Chip key={genre.id} label={genre.tag} size="small" onDelete={handleDelete} />
           ))}
@@ -139,28 +108,12 @@ const NowPlayingMetadata: React.FC = observer(function NowPlayingMetadata() {
           color="text.secondary"
           lineHeight={1}
           marginBottom={0.25}
-          marginTop={1.5}
+          marginTop={1}
           variant="subtitle2"
         >
           Moods
         </Typography>
-        <TextField
-          placeholder="Add a mood"
-          sx={{
-            left: '-0.5rem',
-            width: 'calc(100% + 1rem)',
-          }}
-          variant="standard"
-        />
-        <Box
-          display="flex"
-          flexWrap="wrap"
-          gap={0.5}
-          left="-0.5rem"
-          marginTop={0.5}
-          position="relative"
-          width="calc(100% + 1rem)"
-        >
+        <Box display="flex" flexWrap="wrap" gap={0.5} marginTop={0.5} position="relative" width={1}>
           {nowPlaying.track.moods.map((mood) => (
             <Chip key={mood.id} label={mood.tag} size="small" onDelete={handleDelete} />
           ))}

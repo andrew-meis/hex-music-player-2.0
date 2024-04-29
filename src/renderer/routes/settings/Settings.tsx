@@ -19,7 +19,7 @@ import React, { useRef } from 'react';
 import { FiLogOut } from 'react-icons/fi';
 import { ImLastfm } from 'react-icons/im';
 import { TbExternalLink } from 'react-icons/tb';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
 import { persistedStore, store } from 'state';
 
 const ReactiveTextField = reactive(TextField);
@@ -49,7 +49,6 @@ const Settings: React.FC = () => {
   const { user } = useLoaderData() as Awaited<loaderReturn>;
 
   const thumb = useRef<string | undefined>();
-  const navigate = useNavigate();
   const { mode, setMode } = useColorScheme();
 
   const thumbSrc = useSelector(() => {
@@ -70,7 +69,6 @@ const Settings: React.FC = () => {
     });
     store.account.set(undefined);
     store.library.set(undefined);
-    navigate('/login');
   };
 
   return (

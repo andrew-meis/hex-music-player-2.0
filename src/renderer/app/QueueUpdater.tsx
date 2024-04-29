@@ -6,10 +6,12 @@ import React, { useEffect } from 'react';
 import { store } from 'state';
 
 const QueueUpdater: React.FC = () => {
-  const { data: queue, refetch } = useQueue();
+  const { data: queue, refetch, status } = useQueue();
 
   useEffect(() => {
     if (!queue) return;
+    // Set queue
+    store.audio.queue.set(queue);
     // Set nowPlaying
     const currentIndex = queue.items.findIndex((item) => item.id === queue.selectedItemId);
     store.audio.nowPlaying.set(queue.items[currentIndex]);
@@ -38,9 +40,18 @@ const QueueUpdater: React.FC = () => {
   });
 
   useObserve(store.audio.updateQueue, async ({ value }) => {
-    if (!value) return;
-    await refetch();
-    store.audio.updateQueue.set(false);
+    if (!value || status === 'pending') return;
+    if (value === true) {
+      await refetch();
+      store.audio.updateQueue.set(false);
+      return;
+    }
+    if (value === 'force-playback') {
+      await refetch();
+      store.audio.isPlaying.set(true);
+      store.audio.autoplay.set(true);
+      store.audio.updateQueue.set(false);
+    }
   });
 
   return null;

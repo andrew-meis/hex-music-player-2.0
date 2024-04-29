@@ -26,7 +26,7 @@ const NowPlayingArtwork: React.FC<{ albumThumbSrc: string }> = ({ albumThumbSrc 
         }}
         src={albumThumbSrc}
         sx={{
-          borderRadius: 8,
+          borderRadius: 2,
           boxShadow: 'var(--mui-shadows-2)',
           margin: 2,
           height: 'calc(100% - 32px)',
@@ -40,8 +40,6 @@ const NowPlayingArtwork: React.FC<{ albumThumbSrc: string }> = ({ albumThumbSrc 
 const NowPlayingHeader: React.FC = observer(function NowPlayingHeader() {
   const library = store.library.get();
   const nowPlaying = store.audio.nowPlaying.get();
-
-  console.log(nowPlaying);
 
   const albumThumbSrc = useSelector(() => {
     return library.server.getAuthenticatedUrl(nowPlaying.track.thumb);

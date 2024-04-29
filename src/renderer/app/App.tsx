@@ -1,3 +1,4 @@
+import Menu from 'components/menu/Menu';
 import { redirect, useLocation } from 'react-router-dom';
 import AppController from 'ui/app-controller/AppController';
 import AppSurface from 'ui/app-surface/AppSurface';
@@ -25,6 +26,7 @@ const App: React.FC = () => {
       <AppSurface />
       <AppController />
       <Modals />
+      <Menu />
     </>
   );
 };

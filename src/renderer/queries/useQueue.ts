@@ -23,7 +23,7 @@ const useQueue = <TData = PlayQueue>(
   center?: number,
   select?: (data: PlayQueue) => TData
 ) => {
-  const savedQueueId = persistedStore.queueid.get();
+  const savedQueueId = persistedStore.queueId.get();
   const library = store.library.get();
   return useQuery(queueQuery(library, id || savedQueueId, center, select));
 };

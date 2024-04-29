@@ -27,7 +27,7 @@ export type { Mood } from './types/mood';
 export type { Part } from './types/part';
 export type { Pin } from './types/pin';
 export type { PlayQueue, PlayQueueItem } from './types/play-queue';
-export { parsePlayQueue } from './types/play-queue';
+export { isPlayQueueItem, parsePlayQueue } from './types/play-queue';
 export type { Playlist, PlaylistContainer, PlaylistItem } from './types/playlist';
 export { isPlaylist, parsePlaylistContainer } from './types/playlist';
 export type { ResourceContainer } from './types/resources';

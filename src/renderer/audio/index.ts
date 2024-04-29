@@ -1,6 +1,7 @@
 import PreciseAudio from '@synesthesia-project/precise-audio';
 import { store } from 'state';
 
+export { playbackActions } from './playback';
 export { queueActions } from './queue';
 
 export const audio = new PreciseAudio();
@@ -55,6 +56,11 @@ audio.addEventListener('next', async () => {
       ratingKey: next.track.ratingKey,
     });
   }, 10000);
+  const trackState = audio.trackStates().find((value) => value.src === next.track.getTrackSrc());
+  if (trackState && trackState.state === 'ready' && store.audio.autoplay.peek()) {
+    audio.play();
+    store.audio.autoplay.set(false);
+  }
   store.audio.intervalTimer.set(intervalTimer);
   store.audio.updateQueue.set(true);
 });

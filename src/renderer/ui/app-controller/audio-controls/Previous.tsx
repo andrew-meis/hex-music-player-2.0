@@ -1,14 +1,11 @@
 import { observer } from '@legendapp/state/react';
 import { IconButton, SvgIcon } from '@mui/material';
 import { audio } from 'audio';
-import { useQueue } from 'queries';
 import React from 'react';
 import { IoPlaySkipBack } from 'react-icons/io5';
 import { persistedStore, store } from 'state';
 
 const Previous: React.FC = observer(function Previous() {
-  const queueQuery = useQueue();
-
   const handlePrevious = async () => {
     const library = store.library.peek();
     const nowPlaying = store.audio.nowPlaying.peek();
@@ -38,14 +35,12 @@ const Previous: React.FC = observer(function Previous() {
       queueItemId: previous.id,
       ratingKey: previous.track.ratingKey,
     });
-    await queueQuery.refetch();
-    store.audio.isPlaying.set(true);
-    store.audio.autoplay.set(true);
+    store.audio.updateQueue.set('force-playback');
   };
 
   return (
     <IconButton
-      disabled={persistedStore.queueid.get() === 0}
+      disabled={persistedStore.queueId.get() === 0}
       sx={{
         cursor: 'default',
         marginRight: 0.25,

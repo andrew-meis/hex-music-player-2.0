@@ -112,6 +112,48 @@ const createTheme = () =>
           }),
         },
       },
+      MuiListItemIcon: {
+        styleOverrides: {
+          root: {
+            fontSize: '1.25rem',
+            minWidth: '28px !important',
+          },
+        },
+      },
+      MuiListItemText: {
+        defaultProps: {
+          primaryTypographyProps: {
+            fontSize: '0.875rem',
+          },
+        },
+      },
+      MuiMenu: {
+        defaultProps: {
+          MenuListProps: {
+            sx: {
+              paddingY: 0.5,
+            },
+          },
+          slotProps: {
+            paper: {
+              sx: {
+                minWidth: 192,
+              },
+            },
+          },
+        },
+      },
+      MuiMenuItem: {
+        styleOverrides: {
+          root: {
+            borderRadius: 2,
+            marginLeft: 4,
+            marginRight: 4,
+            paddingLeft: 8,
+            paddingRight: 8,
+          },
+        },
+      },
       MuiPaper: {
         styleOverrides: {
           root: {

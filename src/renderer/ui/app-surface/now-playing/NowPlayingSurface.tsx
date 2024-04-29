@@ -1,24 +1,13 @@
-import { observer } from '@legendapp/state/react';
+import { Memo } from '@legendapp/state/react';
 import { Box, Paper } from '@mui/material';
 import noiseImage from 'assets/noise.bmp?url';
-import chroma from 'chroma-js';
-import { useColorThiefColor } from 'queries';
 import React from 'react';
 import { store } from 'state';
 
+import NowPlayingColor from './NowPlayingColor';
 import NowPlayingContent from './NowPlayingContent';
 
-const NowPlayingSurface: React.FC = observer(function AppNowPlaying() {
-  const library = store.library.get();
-  const nowPlaying = store.audio.nowPlaying.get();
-
-  const { data } = useColorThiefColor({
-    id: nowPlaying.track.thumb,
-    url: library.server.getAuthenticatedUrl(nowPlaying.track.thumb),
-  });
-
-  const defaultColor = chroma([90, 90, 90]);
-
+const NowPlayingSurface: React.FC = () => {
   return (
     <Box
       alignItems="center"
@@ -29,8 +18,9 @@ const NowPlayingSurface: React.FC = observer(function AppNowPlaying() {
       top={0}
       width={1}
     >
+      <NowPlayingColor />
       <Box
-        borderRadius={8}
+        borderRadius={4}
         component={Paper}
         sx={{
           aspectRatio: '21 / 9',
@@ -53,20 +43,27 @@ const NowPlayingSurface: React.FC = observer(function AppNowPlaying() {
             width: '100%',
           }}
         />
-        <div
-          style={{
-            background: `radial-gradient(ellipse at top right, ${data?.css() || defaultColor.css()}, transparent), radial-gradient(circle at bottom left, ${data?.css() || defaultColor.css()}, transparent)`,
-            height: '100%',
-            mixBlendMode: 'color',
-            opacity: 0.6,
-            position: 'absolute',
-            width: '100%',
+        <Memo>
+          {() => {
+            const color = store.ui.nowPlaying.color.get();
+            return (
+              <div
+                style={{
+                  background: `radial-gradient(ellipse at top right, ${color.css()}, transparent), radial-gradient(circle at bottom left, ${color.css()}, transparent)`,
+                  height: '100%',
+                  mixBlendMode: 'color',
+                  opacity: 0.6,
+                  position: 'absolute',
+                  width: '100%',
+                }}
+              />
+            );
           }}
-        />
-        <NowPlayingContent color={data?.css() || defaultColor.css()} />
+        </Memo>
+        <NowPlayingContent />
       </Box>
     </Box>
   );
-});
+};
 
 export default NowPlayingSurface;

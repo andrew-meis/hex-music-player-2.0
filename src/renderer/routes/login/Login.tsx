@@ -155,8 +155,13 @@ const Login: React.FC = () => {
           width={300}
         >
           <AnimatePresence initial={false} mode="wait">
-            <motion.div animate={{ opacity: 1 }} exit={{ opacity: 0 }} initial={{ opacity: 0 }}>
-              {(activeStep === 0 || activeStep === 1) && (
+            {(activeStep === 0 || activeStep === 1) && (
+              <motion.div
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+                key="login"
+              >
                 <PlexLogin
                   activeStep={activeStep}
                   client={client}
@@ -164,25 +169,42 @@ const Login: React.FC = () => {
                   key={activeStep}
                   setActiveStep={setActiveStep}
                 />
-              )}
-            </motion.div>
-            <motion.div animate={{ opacity: 1 }} exit={{ opacity: 0 }} initial={{ opacity: 0 }}>
-              {activeStep === 2 && servers && (
+              </motion.div>
+            )}
+            {activeStep === 2 && servers && (
+              <motion.div
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+                key="server"
+              >
                 <PlexServer
                   key={activeStep}
                   servers={servers}
                   setSelectedServer={setSelectedServer}
                 />
-              )}
-            </motion.div>
-            <motion.div animate={{ opacity: 1 }} exit={{ opacity: 0 }} initial={{ opacity: 0 }}>
-              {activeStep === 3 && librarySections && (
+              </motion.div>
+            )}
+            {activeStep === 3 && librarySections && (
+              <motion.div
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+                key="library"
+              >
                 <PlexLibrary sections={librarySections} setSelectedLibrary={setSelectedLibrary} />
-              )}
-            </motion.div>
-            <motion.div animate={{ opacity: 1 }} exit={{ opacity: 0 }} initial={{ opacity: 0 }}>
-              {activeStep === 4 && <LoginSettings />}
-            </motion.div>
+              </motion.div>
+            )}
+            {activeStep === 4 && (
+              <motion.div
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+                key="settings"
+              >
+                <LoginSettings />
+              </motion.div>
+            )}
           </AnimatePresence>
         </Box>
       </Fade>

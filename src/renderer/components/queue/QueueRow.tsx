@@ -1,7 +1,7 @@
 import { observer, useSelector } from '@legendapp/state/react';
 import { Avatar, Box, Typography } from '@mui/material';
-import { Track } from 'api';
-import Row, { RowOptions } from 'components/row/Row';
+import { PlayQueueItem } from 'api';
+import Row from 'components/row/Row';
 import React from 'react';
 import { IoMusicalNotes } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
@@ -12,13 +12,11 @@ import {
 } from 'scripts/navigate-generators';
 import { store } from 'state';
 
-const TrackRow: React.FC<{ options?: RowOptions; track: Track }> = observer(function TrackRow({
-  options,
-  track,
-}) {
+const QueueRow: React.FC<{ queueItem: PlayQueueItem }> = observer(function QueueRow({ queueItem }) {
+  const { track } = queueItem;
   const library = store.library.get();
 
-  const isSelected = useSelector(() => store.ui.selections.get().includes(track.id));
+  const isSelected = useSelector(() => store.ui.selections.get().includes(queueItem.id));
 
   const thumbSrc = library.resizeImage({ url: track.thumb, width: 64, height: 64 });
 
@@ -28,7 +26,7 @@ const TrackRow: React.FC<{ options?: RowOptions; track: Track }> = observer(func
       mouseX: event.clientX + 2,
       mouseY: event.clientY - 6,
     });
-    store.ui.menus.items.set([track]);
+    store.ui.menus.items.set([queueItem]);
   };
 
   const handleLink = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -60,7 +58,6 @@ const TrackRow: React.FC<{ options?: RowOptions; track: Track }> = observer(func
             </Link>
           </Typography>
           <Typography variant="subtitle2">
-            {options?.showType ? `${track._type}\xa0 · \xa0` : ''}
             <Link
               className="link"
               to={createArtistNavigate(track)}
@@ -83,10 +80,4 @@ const TrackRow: React.FC<{ options?: RowOptions; track: Track }> = observer(func
   );
 });
 
-TrackRow.defaultProps = {
-  options: {
-    showType: false,
-  },
-};
-
-export default TrackRow;
+export default QueueRow;

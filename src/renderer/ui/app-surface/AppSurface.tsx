@@ -1,4 +1,4 @@
-import { observer, Show } from '@legendapp/state/react';
+import { observer, Show, useSelector } from '@legendapp/state/react';
 import { Box } from '@mui/material';
 import React from 'react';
 import { store } from 'state';
@@ -6,6 +6,8 @@ import { store } from 'state';
 import NowPlayingSurface from './now-playing/NowPlayingSurface';
 
 const AppSurface: React.FC = observer(function AppSurface() {
+  const isNowPlaying = useSelector(() => !!store.audio.nowPlaying.get());
+
   return (
     <Box
       color="text.primary"
@@ -18,7 +20,7 @@ const AppSurface: React.FC = observer(function AppSurface() {
       position="relative"
       width="calc(100% - 16px)"
     >
-      <Show if={store.audio.nowPlaying.get()}>
+      <Show if={isNowPlaying}>
         <NowPlayingSurface />
       </Show>
     </Box>

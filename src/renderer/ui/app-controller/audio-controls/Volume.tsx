@@ -66,18 +66,20 @@ const Volume = () => {
   return (
     <Tooltip
       arrow
-      PopperProps={{
-        modifiers: [
-          {
-            name: 'offset',
-            options: {
-              offset: [0, -8],
-            },
-          },
-        ],
-      }}
       leaveDelay={500}
       placement="top"
+      slotProps={{
+        popper: {
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                offset: [0, -8],
+              },
+            },
+          ],
+        },
+      }}
       title={
         <Box alignItems="center" display="flex" height={124}>
           <Memo>

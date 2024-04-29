@@ -1,4 +1,12 @@
-import { Box, Button, FormHelperText, InputBase, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  FormHelperText,
+  InputBase,
+  Typography,
+} from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { Track } from 'api';
 import { db } from 'app/db';
@@ -27,6 +35,7 @@ const processLyrics = (lyrics: string) => {
 const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
   const queryClient = useQueryClient();
   const { data: lyrics } = useLyrics(track);
+  const [instrumental, setInstrumental] = useState(lyrics?.instrumental);
   const [lyricsEdited, setLyricsEdited] = useState(false);
   const [value, setValue] = useState(lyrics?.syncedLyrics || lyrics?.plainLyrics || '');
 
@@ -87,37 +96,56 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
     return ' ';
   }, [validPlainLyrics, validSyncedLyrics, value]);
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInstrumental(event.target.checked);
+    if (event.target.checked) {
+      setValue('');
+    }
+    if (!event.target.checked) {
+      setValue(lyrics?.syncedLyrics || lyrics?.plainLyrics || '');
+    }
+    setLyricsEdited(true);
+  };
+
   const handleSave = async () => {
     const lyricsRecord = await db.lyrics
       .where('artistGuid')
       .equals(track.grandparentGuid)
       .and((lyrics) => lyrics.trackGuid === track.guid)
       .first();
-    if (!lyricsRecord) return;
+    if (!lyricsRecord || !lyrics) return;
     const newLyrics = {
       ...lyrics,
+      instrumental: instrumental,
       ...(validSyncedLyrics && { syncedLyrics: value }),
-      ...(!validSyncedLyrics && validPlainLyrics && { plainLyrics: value }),
+      ...(!validSyncedLyrics && validPlainLyrics && { plainLyrics: value || null }),
     };
+    console.log(newLyrics);
     await db.lyrics.update(lyricsRecord.id, newLyrics);
     queryClient.refetchQueries({ queryKey: [QueryKeys.LYRICS, track.id] });
-    store.ui.modals.editLyrics.set(undefined);
+    store.ui.modals.open.set('');
   };
 
   return (
     <>
       <Typography variant="h4">Edit Lyrics</Typography>
+      <FormControlLabel
+        control={<Checkbox checked={instrumental} onChange={handleChange} />}
+        label="Mark as instrumental"
+      />
       <Box
         {...getRootProps({ style })}
+        bgcolor="background.default"
         border="1px solid var(--mui-palette-action-disabled)"
         borderRadius={1}
         height={256}
       >
         <Scroller style={{ height: 256 }}>
-          <Box bgcolor="background.default" overflow="auto">
+          <Box overflow="auto">
             <InputBase
               fullWidth
               multiline
+              disabled={instrumental}
               inputProps={{
                 ...getInputProps(),
                 style: {
@@ -141,7 +169,7 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
           disabled={!lyricsEdited}
           size="small"
           variant="contained"
-          onClick={() => store.ui.modals.editLyrics.set(undefined)}
+          onClick={() => store.ui.modals.open.set('')}
         >
           Cancel
         </Button>
