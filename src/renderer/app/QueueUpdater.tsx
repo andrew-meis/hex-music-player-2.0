@@ -1,60 +1,48 @@
-import { useObserve } from '@legendapp/state/react';
+import { observer, useObserve } from '@legendapp/state/react';
 import { audio } from 'audio';
 import { isEqual } from 'lodash';
 import { useQueue } from 'queries';
 import React, { useEffect } from 'react';
-import { store } from 'state';
+import { persistedStore, store } from 'state';
 
-const QueueUpdater: React.FC = () => {
-  const { data: queue, refetch, status } = useQueue();
+const QueueUpdater: React.FC = observer(function QueueUpdater() {
+  const queueId = persistedStore.queueId.get();
+  const query = useQueue(queueId);
 
   useEffect(() => {
-    if (!queue) return;
-    // Set queue
-    store.audio.queue.set(queue);
-    // Set nowPlaying
-    const currentIndex = queue.items.findIndex((item) => item.id === queue.selectedItemId);
-    store.audio.nowPlaying.set(queue.items[currentIndex]);
-    // Set queueSrcs
-    store.audio.queueSrcs.set(
-      queue.items.slice(currentIndex).map((item) => item.track.getTrackSrc())
-    );
-    // Set next
-    if (queue.items[currentIndex + 1]) {
-      store.audio.next.set(queue.items[currentIndex + 1]);
-    } else {
-      store.audio.next.set(undefined);
-    }
-    // set previous
-    if (queue.items[currentIndex - 1]) {
-      store.audio.previous.set(queue.items[currentIndex - 1]);
-    } else {
-      store.audio.previous.set(undefined);
-    }
-  }, [queue]);
+    const { data: queue } = query;
+    store.queue.currentQueue.set(queue);
+  }, [query]);
 
-  useObserve(store.audio.queueSrcs, ({ value }) => {
+  useObserve(store.events.newQueue, ({ value }) => {
     if (!value) return;
-    if (isEqual(value, audio.tracks())) return;
-    audio.updateTracks(...(value as string[]));
+    store.audio.isPlaying.set(true);
+    store.audio.autoplay.set(true);
+    store.events.newQueue.set(false);
   });
 
-  useObserve(store.audio.updateQueue, async ({ value }) => {
-    if (!value || status === 'pending') return;
+  useObserve(store.queue.srcs, ({ value }) => {
+    if (!value) return;
+    if (isEqual(value, audio.tracks())) return;
+    audio.updateTracks(...value);
+  });
+
+  useObserve(store.events.updateQueue, async ({ value }) => {
+    if (!value || query.status === 'pending') return;
     if (value === true) {
-      await refetch();
-      store.audio.updateQueue.set(false);
+      await query.refetch();
+      store.events.updateQueue.set(false);
       return;
     }
     if (value === 'force-playback') {
-      await refetch();
+      await query.refetch();
       store.audio.isPlaying.set(true);
       store.audio.autoplay.set(true);
-      store.audio.updateQueue.set(false);
+      store.events.updateQueue.set(false);
     }
   });
 
   return null;
-};
+});
 
 export default QueueUpdater;

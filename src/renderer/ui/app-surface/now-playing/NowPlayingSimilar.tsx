@@ -1,5 +1,5 @@
-import { observer, reactive, useObserve } from '@legendapp/state/react';
-import { Box, Chip } from '@mui/material';
+import { observer, reactive, useObserve, useUnmount } from '@legendapp/state/react';
+import { Box, Chip, ClickAwayListener } from '@mui/material';
 import { Track } from 'api';
 import TrackRow from 'components/track/TrackRow';
 import Scroller from 'components/virtuoso/Scroller';
@@ -11,29 +11,44 @@ import { IoMdMicrophone } from 'react-icons/io';
 import { PiWaveform } from 'react-icons/pi';
 import { Virtuoso } from 'react-virtuoso';
 import { store } from 'state';
+import { selectActions } from 'ui/select';
 
 const ReactiveChip = reactive(Chip);
 
 const Item: React.FC<{
   data: Track;
-}> = ({ data }) => <TrackRow track={data} />;
+  index: number;
+}> = ({ data, index }) => <TrackRow index={index} track={data} />;
 
 const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
-  const nowPlaying = store.audio.nowPlaying.get();
+  const nowPlaying = store.queue.nowPlaying.get();
   const activeChip = store.ui.nowPlaying.activeSimilarTracksChip.get();
 
-  useObserve(store.audio.nowPlaying, ({ value }) => {
+  useObserve(store.queue.nowPlaying, ({ value }) => {
     if (value?.id === nowPlaying.id) return;
     store.ui.nowPlaying.activeSimilarTracksChip.set(0);
   });
 
-  const { data: recentTracks } = useRecentTracks(nowPlaying.track, 365, activeChip === 0);
+  useUnmount(() => selectActions.handleClickAway());
+
+  const { data: recentTracks } = useRecentTracks(nowPlaying.track, 90, activeChip === 0);
 
   const { data: similarTracks } = useSimilarTracks(nowPlaying.track, activeChip === 1);
 
   const { data: relatedTracks } = useRelatedTracks(nowPlaying.track, activeChip === 2);
 
   const { data: lastfmMatchTracks } = useLastfmMatchTracks(nowPlaying.track, activeChip === 3);
+
+  const activeData =
+    activeChip === 0
+      ? recentTracks?.filter((track) => track.guid !== nowPlaying.track.guid) || []
+      : activeChip === 1
+        ? similarTracks?.tracks || []
+        : activeChip === 2
+          ? relatedTracks || []
+          : activeChip === 3
+            ? lastfmMatchTracks || []
+            : [];
 
   const chips = [
     {
@@ -76,25 +91,24 @@ const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
       margin={2}
       width="calc(100% - 80px)"
     >
-      <Virtuoso
-        components={{
-          Scroller,
+      <ClickAwayListener
+        onClickAway={(event) => {
+          if (store.ui.select.items.peek() === activeData) {
+            selectActions.handleClickAway(event);
+          }
         }}
-        data={
-          activeChip === 0
-            ? recentTracks?.filter((track) => track.guid !== nowPlaying.track.guid) || []
-            : activeChip === 1
-              ? similarTracks?.tracks || []
-              : activeChip === 2
-                ? relatedTracks || []
-                : activeChip === 3
-                  ? lastfmMatchTracks || []
-                  : []
-        }
-        isScrolling={handleScrollState}
-        itemContent={(_index, data) => <Item data={data} />}
-        style={{ height: '100%', marginBottom: 8 }}
-      />
+      >
+        <Virtuoso
+          components={{
+            Scroller,
+          }}
+          data={activeData}
+          isScrolling={handleScrollState}
+          itemContent={(index, data) => <Item data={data} index={index} />}
+          style={{ height: '100%', marginBottom: 8 }}
+          onMouseEnter={() => store.ui.select.items.set(activeData)}
+        />
+      </ClickAwayListener>
       <Box display="flex" gap={1} justifyContent="center" width={1}>
         {chips.map((value, index) => (
           <ReactiveChip

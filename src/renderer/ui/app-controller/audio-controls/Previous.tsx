@@ -8,8 +8,8 @@ import { persistedStore, store } from 'state';
 const Previous: React.FC = observer(function Previous() {
   const handlePrevious = async () => {
     const library = store.library.peek();
-    const nowPlaying = store.audio.nowPlaying.peek();
-    const previous = store.audio.previous.peek();
+    const nowPlaying = store.queue.nowPlaying.peek();
+    const previous = store.queue.previous.peek();
     if (!previous) {
       audio.currentTime = 0;
       return;
@@ -35,7 +35,7 @@ const Previous: React.FC = observer(function Previous() {
       queueItemId: previous.id,
       ratingKey: previous.track.ratingKey,
     });
-    store.audio.updateQueue.set('force-playback');
+    store.events.updateQueue.set('force-playback');
   };
 
   return (

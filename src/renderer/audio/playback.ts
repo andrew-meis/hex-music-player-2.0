@@ -1,10 +1,38 @@
-import { PlayQueueItem } from 'api';
-import { audio } from 'audio';
+import { Album, Artist, PlayQueueItem, Track } from 'api';
+import { audio, queueActions } from 'audio';
 import { store } from 'state';
+import { v4 } from 'uuid';
+
+const playAlbumRadio = async (album: Album) => {
+  const { sectionId } = store.serverConfig.peek();
+  const library = store.library.peek();
+  const uri = `${library.device.uri}/library/sections/${sectionId}/stations/3/${album.id}/${v4()}?type=audio&maxDegreesOfSeparation=-1`;
+  queueActions.createQueue(uri, false);
+};
+
+const playArtistRadio = async (artist: Artist) => {
+  const library = store.library.peek();
+  const uri = `${library.device.uri}/library/metadata/${artist.id}/station/${v4()}?type=10&maxDegreesOfSeparation=-1`;
+  queueActions.createQueue(uri, false);
+};
+
+const playLibraryItems = async (
+  items: (Album | Artist | Track)[],
+  shuffle = false,
+  key: string | undefined = undefined
+) => {
+  const library = store.library.peek();
+  const ids = items.map((item) => item.id).join(',');
+  const uri = library.buildLibraryURI(
+    library.server.account.client.identifier,
+    `/library/metadata/${ids}`
+  );
+  queueActions.createQueue(uri, shuffle, key);
+};
 
 const playQueueItem = async (item: PlayQueueItem) => {
   window.clearInterval(store.audio.intervalTimer.peek());
-  const nowPlaying = store.audio.nowPlaying.peek();
+  const nowPlaying = store.queue.nowPlaying.peek();
   const library = store.library.peek();
   await library.timeline({
     currentTime: Math.max(0, Math.floor(audio.currentTime) * 1000),
@@ -22,9 +50,19 @@ const playQueueItem = async (item: PlayQueueItem) => {
     queueItemId: item.id,
     ratingKey: item.track.ratingKey,
   });
-  store.audio.updateQueue.set('force-playback');
+  store.events.updateQueue.set('force-playback');
+};
+
+const playTrackRadio = async (track: Track) => {
+  const library = store.library.peek();
+  const uri = `${library.device.uri}/library/metadata/${track.id}/station/${v4()}?type=10&maxDegreesOfSeparation=-1`;
+  queueActions.createQueue(uri, false);
 };
 
 export const playbackActions = {
+  playAlbumRadio,
+  playArtistRadio,
+  playLibraryItems,
   playQueueItem,
+  playTrackRadio,
 };

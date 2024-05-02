@@ -6,7 +6,7 @@ import { IoPlaySkipForward } from 'react-icons/io5';
 import { persistedStore, store } from 'state';
 
 const Next: React.FC = observer(function Next() {
-  const next = store.audio.next.get();
+  const next = store.queue.next.get();
 
   const handleNext = async () => {
     audio.skip();

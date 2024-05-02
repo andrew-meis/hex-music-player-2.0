@@ -4,26 +4,24 @@ import { Artist } from 'api';
 import Row from 'components/row/Row';
 import React from 'react';
 import { IoMdMicrophone } from 'react-icons/io';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { createArtistNavigate } from 'scripts/navigate-generators';
 import { store } from 'state';
 
-const ArtistRow: React.FC<{ artist: Artist }> = observer(function ArtistRow({ artist }) {
+const ArtistRow: React.FC<{ artist: Artist; index: number }> = observer(function ArtistRow({
+  artist,
+  index,
+}) {
   const library = store.library.get();
-  const navigate = useNavigate();
 
   const thumbSrc = library.resizeImage({ url: artist.thumb, width: 64, height: 64 });
-
-  const handleNavigate = () => {
-    navigate(createArtistNavigate(artist));
-  };
 
   const handleLink = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.stopPropagation();
   };
 
   return (
-    <Row onClick={handleNavigate}>
+    <Row index={index}>
       <Avatar alt={artist.title} src={thumbSrc} sx={{ height: 48, marginX: 1, width: 48 }}>
         <SvgIcon>
           <IoMdMicrophone />
@@ -31,9 +29,15 @@ const ArtistRow: React.FC<{ artist: Artist }> = observer(function ArtistRow({ ar
       </Avatar>
       <Box>
         <Typography fontFamily="Rubik" lineHeight={1.2} variant="body1">
-          {artist.title}
+          <Link
+            className="link"
+            to={createArtistNavigate(artist)}
+            onClick={(event) => handleLink(event)}
+          >
+            {artist.title}
+          </Link>
         </Typography>
-        <Typography variant="subtitle2">
+        <Typography variant="subtitle1">
           {artist.type}
           &nbsp; · &nbsp;
           <Link

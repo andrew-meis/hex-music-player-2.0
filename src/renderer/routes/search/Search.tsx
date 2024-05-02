@@ -16,7 +16,7 @@ interface loaderReturn {
 export const searchLoader = async ({ request }: LoaderFunctionArgs): Promise<loaderReturn> => {
   const url = new URL(request.url);
   const query = url.searchParams.get('query') || '';
-  store.searchInput.set(query);
+  store.ui.search.input.set(query);
   return {
     query,
   };

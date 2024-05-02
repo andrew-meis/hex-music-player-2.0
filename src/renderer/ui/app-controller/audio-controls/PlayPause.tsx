@@ -6,7 +6,7 @@ import { FaCirclePause, FaCirclePlay } from 'react-icons/fa6';
 import { store } from 'state';
 
 const PlayPause: React.FC = observer(function PlayPause() {
-  const nowPlaying = store.audio.nowPlaying.get();
+  const nowPlaying = store.queue.nowPlaying.get();
 
   const handlePlayPause = () => {
     if (!nowPlaying) return;

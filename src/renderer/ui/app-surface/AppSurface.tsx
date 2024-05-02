@@ -6,7 +6,7 @@ import { store } from 'state';
 import NowPlayingSurface from './now-playing/NowPlayingSurface';
 
 const AppSurface: React.FC = observer(function AppSurface() {
-  const isNowPlaying = useSelector(() => !!store.audio.nowPlaying.get());
+  const nowPlayingBool = useSelector(() => !!store.queue.nowPlaying.get());
 
   return (
     <Box
@@ -20,7 +20,7 @@ const AppSurface: React.FC = observer(function AppSurface() {
       position="relative"
       width="calc(100% - 16px)"
     >
-      <Show if={isNowPlaying}>
+      <Show if={nowPlayingBool}>
         <NowPlayingSurface />
       </Show>
     </Box>

@@ -120,7 +120,6 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
       ...(validSyncedLyrics && { syncedLyrics: value }),
       ...(!validSyncedLyrics && validPlainLyrics && { plainLyrics: value || null }),
     };
-    console.log(newLyrics);
     await db.lyrics.update(lyricsRecord.id, newLyrics);
     queryClient.refetchQueries({ queryKey: [QueryKeys.LYRICS, track.id] });
     store.ui.modals.open.set('');

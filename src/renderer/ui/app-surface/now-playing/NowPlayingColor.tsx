@@ -8,7 +8,7 @@ const defaultColor = chroma([90, 90, 90]);
 
 const NowPlayingColor: React.FC = observer(function NowPlayingColor() {
   const library = store.library.get();
-  const nowPlaying = store.audio.nowPlaying.get();
+  const nowPlaying = store.queue.nowPlaying.get();
 
   const { data: color } = useColorThiefColor({
     id: nowPlaying.track.thumb,

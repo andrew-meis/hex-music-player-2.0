@@ -4,26 +4,24 @@ import { Album } from 'api';
 import Row from 'components/row/Row';
 import React from 'react';
 import { BiSolidAlbum } from 'react-icons/bi';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { createAlbumNavigate, createArtistNavigate } from 'scripts/navigate-generators';
 import { store } from 'state';
 
-const AlbumRow: React.FC<{ album: Album }> = observer(function AlbumRow({ album }) {
+const AlbumRow: React.FC<{ album: Album; index: number }> = observer(function AlbumRow({
+  album,
+  index,
+}) {
   const library = store.library.get();
-  const navigate = useNavigate();
 
   const thumbSrc = library.resizeImage({ url: album.thumb, width: 64, height: 64 });
-
-  const handleNavigate = () => {
-    navigate(createAlbumNavigate(album));
-  };
 
   const handleLink = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.stopPropagation();
   };
 
   return (
-    <Row onClick={handleNavigate}>
+    <Row index={index}>
       <Avatar
         alt={album.title}
         src={thumbSrc}
@@ -34,9 +32,15 @@ const AlbumRow: React.FC<{ album: Album }> = observer(function AlbumRow({ album 
       </Avatar>
       <Box>
         <Typography fontFamily="Rubik" lineHeight={1.2} variant="body1">
-          {album.title}
+          <Link
+            className="link"
+            to={createAlbumNavigate(album)}
+            onClick={(event) => handleLink(event)}
+          >
+            {album.title}
+          </Link>
         </Typography>
-        <Typography variant="subtitle2">
+        <Typography variant="subtitle1">
           {album.type}
           &nbsp; · &nbsp;
           <Link

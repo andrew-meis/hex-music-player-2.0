@@ -19,7 +19,7 @@ const SearchInput: React.FC<{ query: string }> = ({ query }) => {
 
   const { mode } = useColorScheme();
 
-  useObserve(store.searchInput, () => {
+  useObserve(store.ui.search.input, () => {
     const searchInputElement = document.getElementById('search-input') as HTMLInputElement;
     if (searchInputElement) {
       searchForm.current = searchInputElement.form;
@@ -42,7 +42,7 @@ const SearchInput: React.FC<{ query: string }> = ({ query }) => {
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    store.searchInput.set(event.target.value);
+    store.ui.search.input.set(event.target.value);
     searchForm.current = event.currentTarget.form;
     if (event.target.value.length === 0) {
       submit(searchForm.current);
@@ -53,7 +53,7 @@ const SearchInput: React.FC<{ query: string }> = ({ query }) => {
   };
 
   const handleClear = () => {
-    store.searchInput.set('');
+    store.ui.search.input.set('');
     if (searchInput.current) {
       nativeInputValueSetter?.call(searchInput.current, '');
       const inputEvent = new Event('input', { bubbles: true });
@@ -75,7 +75,7 @@ const SearchInput: React.FC<{ query: string }> = ({ query }) => {
     >
       <Memo>
         {() => {
-          const value = store.searchInput.get();
+          const value = store.ui.search.input.get();
           return (
             <>
               <IconButton

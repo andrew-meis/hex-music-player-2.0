@@ -15,7 +15,7 @@ const Volume = () => {
   const [prevVolume, setPrevVolume] = useState(0);
 
   useObserve(() => {
-    const nowPlaying = store.audio.nowPlaying.get();
+    const nowPlaying = store.queue.nowPlaying.get();
     const volume = persistedStore.audio.volume.get();
     if (nowPlaying?.track.media[0].parts[0].streams[0].gain) {
       const decibelLevel = 20 * Math.log10(volume / 100);

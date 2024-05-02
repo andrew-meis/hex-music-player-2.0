@@ -52,20 +52,20 @@ const SyncedLine: React.FC<{
   }, [line]);
 
   const shouldSetRef = useSelector(() => {
+    const nowPlaying = store.queue.nowPlaying.get();
+    if (!nowPlaying) return false;
     const currentTimeMillis = store.audio.currentTimeMillis.get();
     return (
       currentTimeMillis > startOffset &&
-      currentTimeMillis < (nextOffset || store.audio.nowPlaying.track.duration.get())
+      currentTimeMillis < (nextOffset || nowPlaying.track.duration)
     );
   });
 
   const color = useSelector(() => {
+    const nowPlaying = store.queue.nowPlaying.get();
+    if (!nowPlaying) return 'text.secondary';
     const currentTimeMillis = store.audio.currentTimeMillis.get();
-    return getTextStyle(
-      currentTimeMillis,
-      startOffset,
-      nextOffset || store.audio.nowPlaying.track.duration.get()
-    );
+    return getTextStyle(currentTimeMillis, startOffset, nextOffset || nowPlaying.track.duration);
   });
 
   return (
@@ -196,7 +196,7 @@ const PlainLyrics: React.FC<{
 };
 
 const NowPlayingLyrics: React.FC = observer(function NowPlayingLyrics() {
-  const nowPlaying = store.audio.nowPlaying.get();
+  const nowPlaying = store.queue.nowPlaying.get();
 
   const { data: lyrics } = useLyrics(nowPlaying.track);
 

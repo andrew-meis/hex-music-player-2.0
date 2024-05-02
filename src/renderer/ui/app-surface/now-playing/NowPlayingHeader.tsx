@@ -39,7 +39,7 @@ const NowPlayingArtwork: React.FC<{ albumThumbSrc: string }> = ({ albumThumbSrc 
 
 const NowPlayingHeader: React.FC = observer(function NowPlayingHeader() {
   const library = store.library.get();
-  const nowPlaying = store.audio.nowPlaying.get();
+  const nowPlaying = store.queue.nowPlaying.get();
 
   const albumThumbSrc = useSelector(() => {
     return library.server.getAuthenticatedUrl(nowPlaying.track.thumb);

@@ -9,7 +9,7 @@ import { QueryKeys } from 'typescript';
 
 const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
   const library = store.library.get();
-  const nowPlaying = store.audio.nowPlaying.get();
+  const nowPlaying = store.queue.nowPlaying.get();
 
   const artistBannerSrc = useSelector(() => {
     return library.server.getAuthenticatedUrl(nowPlaying.track.grandparentArt);

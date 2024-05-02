@@ -1,5 +1,5 @@
 import PreciseAudio from '@synesthesia-project/precise-audio';
-import { store } from 'state';
+import { persistedStore, store } from 'state';
 
 export { playbackActions } from './playback';
 export { queueActions } from './queue';
@@ -22,12 +22,28 @@ audio.addEventListener('canplaythrough', () => {
   }
 });
 
+audio.addEventListener('ended', async () => {
+  window.clearInterval(store.audio.intervalTimer.peek());
+  const library = store.library.peek();
+  const nowPlaying = store.queue.nowPlaying.peek();
+  await library.timeline({
+    currentTime: Math.max(0, Math.floor(audio.currentTime) * 1000),
+    duration: nowPlaying.track.duration,
+    key: nowPlaying.track.key,
+    playerState: 'stopped',
+    queueItemId: nowPlaying.id,
+    ratingKey: nowPlaying.track.ratingKey,
+  });
+  store.audio.isPlaying.set(false);
+  persistedStore.queueId.set(0);
+});
+
 audio.addEventListener('error', (error) => console.log(error));
 
 audio.addEventListener('next', async () => {
   window.clearInterval(store.audio.intervalTimer.peek());
-  const next = store.audio.next.peek();
-  const nowPlaying = store.audio.nowPlaying.peek();
+  const next = store.queue.next.peek();
+  const nowPlaying = store.queue.nowPlaying.peek();
   const library = store.library.peek();
   await library.timeline({
     currentTime: Math.max(0, Math.floor(audio.currentTime) * 1000),
@@ -37,7 +53,7 @@ audio.addEventListener('next', async () => {
     queueItemId: nowPlaying.id,
     ratingKey: nowPlaying.track.ratingKey,
   });
-  store.audio.nowPlaying.set(next);
+  if (!next) return;
   await library.timeline({
     currentTime: Math.max(0, Math.floor(audio.currentTime) * 1000),
     duration: next.track.duration,
@@ -62,12 +78,12 @@ audio.addEventListener('next', async () => {
     store.audio.autoplay.set(false);
   }
   store.audio.intervalTimer.set(intervalTimer);
-  store.audio.updateQueue.set(true);
+  store.events.updateQueue.set(true);
 });
 
 audio.addEventListener('pause', async () => {
   window.clearInterval(store.audio.intervalTimer.peek());
-  const nowPlaying = store.audio.nowPlaying.peek();
+  const nowPlaying = store.queue.nowPlaying.peek();
   store.audio.isPlaying.set(false);
   const library = store.library.peek();
   await library.timeline({
@@ -82,7 +98,7 @@ audio.addEventListener('pause', async () => {
 
 audio.addEventListener('play', async () => {
   window.clearInterval(store.audio.intervalTimer.peek());
-  const nowPlaying = store.audio.nowPlaying.peek();
+  const nowPlaying = store.queue.nowPlaying.peek();
   console.log(`$ play event: ${nowPlaying.track.title}`);
   store.audio.isPlaying.set(true);
   const library = store.library.peek();
@@ -109,7 +125,7 @@ audio.addEventListener('play', async () => {
 
 audio.addEventListener('seeked', async () => {
   window.clearInterval(store.audio.intervalTimer.peek());
-  const nowPlaying = store.audio.nowPlaying.peek();
+  const nowPlaying = store.queue.nowPlaying.peek();
   const library = store.library.peek();
   await library.timeline({
     currentTime: Math.max(0, Math.floor(audio.currentTime) * 1000),

@@ -10,14 +10,15 @@ const Seekbar: React.FC = observer(function Seekbar() {
   const remaining = useRef<HTMLSpanElement>(null);
   const thumb = useRef<HTMLSpanElement>(null);
   const track = useRef<HTMLSpanElement>(null);
-  const nowPlaying = store.audio.nowPlaying.get();
+  const nowPlaying = store.queue.nowPlaying.get();
 
   useObserveEffect(() => {
     const current = store.audio.currentTimeMillis.get();
-    const nowPlaying = store.audio.nowPlaying.get();
-    if (elapsed.current && remaining.current && !nowPlaying) {
+    const nowPlaying = store.queue.nowPlaying.get();
+    if (elapsed.current && remaining.current && track.current && !nowPlaying) {
       elapsed.current.innerText = '--:--';
       remaining.current.innerText = '--:--';
+      track.current.style.width = '0%';
     }
     if (!elapsed.current || !remaining.current || !thumb.current || !track.current || !nowPlaying)
       return;

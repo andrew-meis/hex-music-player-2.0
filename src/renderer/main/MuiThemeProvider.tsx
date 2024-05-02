@@ -6,21 +6,23 @@ import {
 } from '@mui/material/styles';
 import React, { useMemo } from 'react';
 
-// const darkModeColors: ColorSystemOptions['palette'] = {
-//   primary: {
-//     main: '#81D8D0',
-//     light: '#A1E7DA',
-//     dark: '#41939B',
-//   },
-// };
+declare module '@mui/material/styles' {
+  interface TypeAction {
+    hoverSelected: string;
+  }
+}
 
-// const lightModeColors: ColorSystemOptions['palette'] = {
-//   primary: {
-//     main: '#49A19A',
-//     dark: '#246B73',
-//     light: '#75C6B8',
-//   },
-// };
+const commonTheme: ColorSystemOptions = {
+  palette: {
+    action: {
+      hoverSelected: ` 
+          rgba(var(--mui-palette-action-selectedChannel) 
+          / calc(var(--mui-palette-action-selectedOpacity) 
+          + var(--mui-palette-action-hoverOpacity)))
+      `,
+    },
+  },
+};
 
 const createDarkTheme = (): ColorSystemOptions => ({
   palette: {
@@ -28,8 +30,8 @@ const createDarkTheme = (): ColorSystemOptions => ({
       default: '#000000',
       paper: '#121212',
     },
-    // ...darkModeColors,
   },
+  ...commonTheme,
 });
 
 const createLightTheme = (): ColorSystemOptions => ({
@@ -38,8 +40,8 @@ const createLightTheme = (): ColorSystemOptions => ({
       default: '#fafafa',
       paper: '#ffffff',
     },
-    // ...lightModeColors,
   },
+  ...commonTheme,
 });
 
 const createTheme = () =>
@@ -321,6 +323,19 @@ const createTheme = () =>
             style: {
               fontSize: '1.125rem',
               fontWeight: '600',
+            },
+          },
+          {
+            props: { variant: 'subtitle1' },
+            style: {
+              display: '-webkit-box',
+              fontFamily: 'Arimo, Arial, sans-serif',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              lineHeight: 1.57,
+              overflow: 'hidden',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 1,
             },
           },
         ],

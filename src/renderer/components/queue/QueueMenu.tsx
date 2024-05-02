@@ -4,15 +4,15 @@ import { PlayQueueItem } from 'api';
 import { playbackActions, queueActions } from 'audio';
 import React, { useRef } from 'react';
 import { BsPlayFill } from 'react-icons/bs';
+import { CgRowFirst } from 'react-icons/cg';
 import { MdClear } from 'react-icons/md';
-import { TiArrowForward } from 'react-icons/ti';
 import { store } from 'state';
 
 const QueueMenu: React.FC = observer(function QueueMenu() {
-  const items = store.ui.menus.items.get() as PlayQueueItem[];
+  const items = store.ui.select.selectedItems.get() as PlayQueueItem[];
   const nowPlayingRef = useRef<PlayQueueItem | undefined>();
 
-  useObserve(store.audio.nowPlaying, ({ value }) => {
+  useObserve(store.queue.nowPlaying, ({ value }) => {
     if (!nowPlayingRef.current) {
       nowPlayingRef.current = value;
       return;
@@ -23,7 +23,7 @@ const QueueMenu: React.FC = observer(function QueueMenu() {
   });
 
   const handleMoveNext = () => {
-    const nowPlaying = store.audio.nowPlaying.peek();
+    const nowPlaying = store.queue.nowPlaying.peek();
     queueActions.moveWithinQueue(
       items.map((item) => item.id),
       nowPlaying.id
@@ -53,7 +53,7 @@ const QueueMenu: React.FC = observer(function QueueMenu() {
       )}
       <MenuItem onClick={handleMoveNext}>
         <ListItemIcon>
-          <TiArrowForward />
+          <CgRowFirst />
         </ListItemIcon>
         <ListItemText>Move next</ListItemText>
       </MenuItem>

@@ -25,7 +25,7 @@ const NowPlayingAvatar: React.FC<{ scrollYProgress: MotionValue<number> }> = obs
   function NowPlayingAvatar({ scrollYProgress }) {
     const [showArtist, setShowArtist] = useState(true);
     const library = store.library.get();
-    const nowPlaying = store.audio.nowPlaying.get();
+    const nowPlaying = store.queue.nowPlaying.get();
 
     useMotionValueEvent(scrollYProgress, 'change', (latest) => {
       if (latest === 0) {

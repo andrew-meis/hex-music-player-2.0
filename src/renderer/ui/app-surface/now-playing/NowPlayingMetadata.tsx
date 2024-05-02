@@ -12,7 +12,7 @@ const MetadataEditInput: React.FC<{
   textFieldProps?: TextFieldProps;
   label: string;
 }> = ({ divProps, field, textFieldProps, label }) => {
-  const nowPlaying = store.audio.nowPlaying.get();
+  const nowPlaying = store.queue.nowPlaying.get();
   const isLocked = nowPlaying.track.fields.find((value) => value.name === field);
 
   return (
@@ -42,7 +42,7 @@ const MetadataEditInput: React.FC<{
 };
 
 const NowPlayingMetadata: React.FC = observer(function NowPlayingMetadata() {
-  const nowPlaying = store.audio.nowPlaying.get();
+  const nowPlaying = store.queue.nowPlaying.get();
 
   const handleDelete = () => console.log('delete');
 

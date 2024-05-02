@@ -1,8 +1,13 @@
-import { Track } from 'api';
+import { Album, Artist, Track } from 'api';
 import ky from 'ky';
 import { persistedStore, store } from 'state';
 
-const addToQueue = async (newItems: Track[], after = 0, end = false, next = false) => {
+const addToQueue = async (
+  newItems: (Album | Artist | Track)[],
+  after = 0,
+  end = false,
+  next = false
+) => {
   const library = store.library.peek();
   const ids = newItems.map((track) => track.id).join(',');
   const uri = library.buildLibraryURI(
@@ -16,7 +21,15 @@ const addToQueue = async (newItems: Track[], after = 0, end = false, next = fals
     ...(next && { next: 1 }),
   });
   await ky.put(url);
-  store.audio.updateQueue.set(true);
+  store.events.updateQueue.set(true);
+};
+
+const createQueue = async (uri: string, shuffle = false, key: string | undefined = undefined) => {
+  console.log(uri, shuffle, key);
+  const library = store.library.peek();
+  const { id } = await library.createQueue({ uri, shuffle, key });
+  persistedStore.queueId.set(id);
+  store.events.newQueue.set(true);
 };
 
 const moveWithinQueue = async (ids: number[], afterId: number) => {
@@ -30,7 +43,7 @@ const moveWithinQueue = async (ids: number[], afterId: number) => {
       await library.movePlayQueueItem(queueId, id, ids[index - 1]);
     }
   }
-  store.audio.updateQueue.set(true);
+  store.events.updateQueue.set(true);
 };
 
 const removeFromQueue = async (ids: number[]) => {
@@ -42,11 +55,12 @@ const removeFromQueue = async (ids: number[]) => {
     return ky.delete(url);
   });
   await Promise.all(promises);
-  store.audio.updateQueue.set(true);
+  store.events.updateQueue.set(true);
 };
 
 export const queueActions = {
   addToQueue,
+  createQueue,
   moveWithinQueue,
   removeFromQueue,
 };

@@ -15,7 +15,7 @@ const LyricsActions: React.FC<{
 }> = observer(function LyricsActions({ activeSection }) {
   const color = store.ui.nowPlaying.color.get();
   const isActive = activeSection.get() === 2;
-  const nowPlaying = store.audio.nowPlaying.get();
+  const nowPlaying = store.queue.nowPlaying.get();
   return (
     <AnimatePresence>
       {isActive && (
@@ -52,7 +52,7 @@ const MetadataActions: React.FC<{
 }> = observer(function MetadataActions({ activeSection }) {
   const color = store.ui.nowPlaying.color.get();
   const isActive = activeSection.get() === 4;
-  // const nowPlaying = store.audio.nowPlaying.get();
+
   return (
     <AnimatePresence>
       {isActive && (

@@ -3,13 +3,15 @@ import { Avatar, Box, Typography } from '@mui/material';
 import { Playlist } from 'api';
 import Row from 'components/row/Row';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { createPlaylistNavigate } from 'scripts/navigate-generators';
 import { store } from 'state';
 
-const PlaylistRow: React.FC<{ playlist: Playlist }> = observer(function PlaylistRow({ playlist }) {
+const PlaylistRow: React.FC<{ index: number; playlist: Playlist }> = observer(function PlaylistRow({
+  index,
+  playlist,
+}) {
   const library = store.library.get();
-  const navigate = useNavigate();
 
   const thumbSrc = library.resizeImage({
     url: playlist.thumb || playlist.composite,
@@ -17,12 +19,12 @@ const PlaylistRow: React.FC<{ playlist: Playlist }> = observer(function Playlist
     height: 64,
   });
 
-  const handleNavigate = () => {
-    navigate(createPlaylistNavigate(playlist));
+  const handleLink = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    event.stopPropagation();
   };
 
   return (
-    <Row onClick={handleNavigate}>
+    <Row index={index}>
       <Avatar
         alt={playlist.title}
         src={thumbSrc}
@@ -31,9 +33,15 @@ const PlaylistRow: React.FC<{ playlist: Playlist }> = observer(function Playlist
       />
       <Box>
         <Typography fontFamily="Rubik" lineHeight={1.2} variant="body1">
-          {playlist.title}
+          <Link
+            className="link"
+            to={createPlaylistNavigate(playlist)}
+            onClick={(event) => handleLink(event)}
+          >
+            {playlist.title}
+          </Link>
         </Typography>
-        <Typography variant="subtitle2">
+        <Typography variant="subtitle1">
           {playlist.type}
           &nbsp; · &nbsp;
           {playlist.leafCount}

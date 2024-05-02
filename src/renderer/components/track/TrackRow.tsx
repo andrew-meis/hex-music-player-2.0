@@ -1,4 +1,4 @@
-import { observer, useSelector } from '@legendapp/state/react';
+import { observer } from '@legendapp/state/react';
 import { Avatar, Box, Typography } from '@mui/material';
 import { Track } from 'api';
 import Row, { RowOptions } from 'components/row/Row';
@@ -12,35 +12,18 @@ import {
 } from 'scripts/navigate-generators';
 import { store } from 'state';
 
-const TrackRow: React.FC<{ options?: RowOptions; track: Track }> = observer(function TrackRow({
-  options,
-  track,
-}) {
-  const library = store.library.get();
+const TrackRow: React.FC<{ index: number; options?: RowOptions; track: Track }> = observer(
+  function TrackRow({ index, options, track }) {
+    const library = store.library.get();
 
-  const isSelected = useSelector(() => store.ui.selections.get().includes(track.id));
+    const thumbSrc = library.resizeImage({ url: track.thumb, width: 64, height: 64 });
 
-  const thumbSrc = library.resizeImage({ url: track.thumb, width: 64, height: 64 });
+    const handleLink = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+      event.stopPropagation();
+    };
 
-  const handleContextMenu = (event: React.MouseEvent) => {
-    event.preventDefault();
-    store.ui.menus.anchorPosition.set({
-      mouseX: event.clientX + 2,
-      mouseY: event.clientY - 6,
-    });
-    store.ui.menus.items.set([track]);
-  };
-
-  const handleLink = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    event.stopPropagation();
-  };
-
-  return (
-    <>
-      <Row
-        bgcolor={isSelected ? 'action.selected' : 'transparent'}
-        onContextMenu={handleContextMenu}
-      >
+    return (
+      <Row index={index}>
         <Avatar
           alt={track.title}
           src={thumbSrc}
@@ -59,7 +42,7 @@ const TrackRow: React.FC<{ options?: RowOptions; track: Track }> = observer(func
               {track.title}
             </Link>
           </Typography>
-          <Typography variant="subtitle2">
+          <Typography variant="subtitle1">
             {options?.showType ? `${track._type}\xa0 · \xa0` : ''}
             <Link
               className="link"
@@ -79,9 +62,9 @@ const TrackRow: React.FC<{ options?: RowOptions; track: Track }> = observer(func
           </Typography>
         </Box>
       </Row>
-    </>
-  );
-});
+    );
+  }
+);
 
 TrackRow.defaultProps = {
   options: {

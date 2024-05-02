@@ -5,7 +5,6 @@ import {
   Account,
   Album,
   Artist,
-  Device,
   Genre,
   Library,
   Playlist,
@@ -28,7 +27,7 @@ export const persistedStore = observable({
   // User state
   displayRemainingTime: true,
   lastfmApiKey: '',
-  queueId: 5424,
+  queueId: 0,
   recentSearches: [] as string[],
 });
 
@@ -37,29 +36,69 @@ persistObservable(persistedStore, {
 });
 
 export const store = observable({
-  // Audio player
+  // Saved server configuration
+  serverConfig: undefined as unknown as ServerConfig,
+  // Plex API
+  account: undefined as unknown as Account,
+  library: undefined as unknown as Library,
   audio: {
     autoplay: false,
     currentTimeMillis: 0,
     intervalTimer: 0,
     isPlaying: false,
-    next: undefined as unknown as PlayQueueItem,
-    nowPlaying: undefined as unknown as PlayQueueItem,
-    previous: undefined as unknown as PlayQueueItem,
-    queue: undefined as unknown as PlayQueue,
-    queueSrcs: [] as string[],
     seekbarDraggingPosition: undefined as unknown as number,
+  },
+  events: {
+    newQueue: false,
     updateQueue: false as boolean | 'force-playback',
   },
-  // Saved server configuration
-  serverConfig: undefined as unknown as ServerConfig,
-  // Plex API
-  account: undefined as unknown as Account,
-  device: undefined as unknown as Device,
-  library: undefined as unknown as Library,
-  // Search
-  searchInput: '',
-  // Other application state
+  queue: {
+    currentQueue: undefined as unknown as PlayQueue,
+    srcs: computed(() => {
+      const currentQueue = store.queue.currentQueue.get();
+      if (!currentQueue) return [];
+      const currentIndex = currentQueue.items.findIndex(
+        (item) => item.id === currentQueue.selectedItemId
+      );
+      const value = currentQueue.items
+        .slice(currentIndex)
+        .map((item) => item.track.getTrackSrc()) as string[];
+      return value;
+    }),
+    nowPlaying: computed(() => {
+      const currentQueue = store.queue.currentQueue.get();
+      if (!currentQueue) return undefined as unknown as PlayQueueItem;
+      const currentIndex = currentQueue.items.findIndex(
+        (item) => item.id === currentQueue.selectedItemId
+      );
+      const value = currentQueue.items[currentIndex] as PlayQueueItem;
+      return value;
+    }),
+    next: computed(() => {
+      const currentQueue = store.queue.currentQueue.get();
+      if (!currentQueue) return undefined as unknown as PlayQueueItem;
+      const currentIndex = currentQueue.items.findIndex(
+        (item) => item.id === currentQueue.selectedItemId
+      );
+      if (currentQueue.items[currentIndex + 1]) {
+        const value = currentQueue.items[currentIndex + 1] as PlayQueueItem;
+        return value;
+      }
+      return undefined;
+    }),
+    previous: computed(() => {
+      const currentQueue = store.queue.currentQueue.get();
+      if (!currentQueue) return undefined as unknown as PlayQueueItem;
+      const currentIndex = currentQueue.items.findIndex(
+        (item) => item.id === currentQueue.selectedItemId
+      );
+      if (currentQueue.items[currentIndex - 1]) {
+        const value = currentQueue.items[currentIndex - 1] as PlayQueueItem;
+        return value;
+      }
+      return undefined;
+    }),
+  },
   ui: {
     nowPlaying: {
       activeSimilarTracksChip: 0,
@@ -67,15 +106,30 @@ export const store = observable({
     },
     menus: {
       anchorPosition: null as null | { mouseX: number; mouseY: number },
-      items: [] as (Artist | Album | Track | Playlist | Genre | PlayQueueItem)[],
     },
     modals: {
       editLyricsTrack: undefined as unknown as Track,
       open: '' as '' | 'lyrics',
     },
-    selections: computed(() => {
-      const ids = store.ui.menus.items.map((value) => value.id.get()) as number[];
-      return ids;
-    }),
+    search: {
+      input: '',
+    },
+    select: {
+      items: [] as (Artist | Album | Track | Playlist | Genre | PlayQueueItem)[],
+      selected: [] as number[],
+      selectedItems: computed(() => {
+        const items = store.ui.select.items.get();
+        const selected = store.ui.select.selected.get();
+        const value = items.filter((_item, index) => selected.includes(index)) as (
+          | Artist
+          | Album
+          | Track
+          | Playlist
+          | Genre
+          | PlayQueueItem
+        )[];
+        return value;
+      }),
+    },
   },
 });
