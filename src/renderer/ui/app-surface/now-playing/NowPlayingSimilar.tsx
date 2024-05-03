@@ -120,7 +120,10 @@ const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
               fontWeight: activeChip === index ? 700 : 500,
               maxWidth: 256,
             }}
-            onClick={() => store.ui.nowPlaying.activeSimilarTracksChip.set(index)}
+            onClick={() => {
+              store.ui.select.selected.set([]);
+              store.ui.nowPlaying.activeSimilarTracksChip.set(index);
+            }}
           />
         ))}
       </Box>

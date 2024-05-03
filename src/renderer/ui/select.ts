@@ -1,8 +1,5 @@
-import { observe } from '@legendapp/state';
 import { range } from 'lodash';
 import { store } from 'state';
-
-observe(store.ui.select, ({ value }) => console.log(value));
 
 const handleClickAway = (event?: MouseEvent | TouchEvent) => {
   if (
@@ -11,6 +8,7 @@ const handleClickAway = (event?: MouseEvent | TouchEvent) => {
     event.target.classList.contains('MuiBackdrop-root')
   )
     return;
+  if (store.ui.menus.anchorPosition.peek() !== null) return;
   store.ui.select.selected.set([]);
 };
 

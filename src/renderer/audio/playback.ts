@@ -1,4 +1,4 @@
-import { Album, Artist, PlayQueueItem, Track } from 'api';
+import { Album, Artist, Playlist, PlayQueueItem, Track } from 'api';
 import { audio, queueActions } from 'audio';
 import { store } from 'state';
 import { v4 } from 'uuid';
@@ -27,6 +27,16 @@ const playLibraryItems = async (
     library.server.account.client.identifier,
     `/library/metadata/${ids}`
   );
+  queueActions.createQueue(uri, shuffle, key);
+};
+
+const playPlaylist = async (
+  playlist: Playlist,
+  shuffle = false,
+  key: string | undefined = undefined
+) => {
+  const library = store.library.peek();
+  const uri = `${library.device.uri}/playlists/${playlist.id}/items`;
   queueActions.createQueue(uri, shuffle, key);
 };
 
@@ -63,6 +73,7 @@ export const playbackActions = {
   playAlbumRadio,
   playArtistRadio,
   playLibraryItems,
+  playPlaylist,
   playQueueItem,
   playTrackRadio,
 };

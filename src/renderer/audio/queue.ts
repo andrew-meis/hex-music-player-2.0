@@ -1,19 +1,25 @@
-import { Album, Artist, Track } from 'api';
+import { Album, Artist, Playlist, Track } from 'api';
 import ky from 'ky';
 import { persistedStore, store } from 'state';
 
 const addToQueue = async (
-  newItems: (Album | Artist | Track)[],
+  newItems: (Album | Artist | Track)[] | Playlist,
   after = 0,
   end = false,
   next = false
 ) => {
   const library = store.library.peek();
-  const ids = newItems.map((track) => track.id).join(',');
-  const uri = library.buildLibraryURI(
-    library.server.account.client.identifier,
-    `/library/metadata/${ids}`
-  );
+  let uri: string;
+  if (Array.isArray(newItems)) {
+    const ids = newItems.map((track) => track.id).join(',');
+    uri = library.buildLibraryURI(
+      library.server.account.client.identifier,
+      `/library/metadata/${ids}`
+    );
+  } else {
+    uri = `${library.device.uri}${newItems.key}`;
+  }
+  console.log(newItems, uri);
   const url = library.server.getAuthenticatedUrl(`/playQueues/${persistedStore.queueId.peek()}`, {
     uri,
     ...(after && { after }),

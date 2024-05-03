@@ -1,8 +1,9 @@
 import { observer } from '@legendapp/state/react';
 import { Menu as MuiMenu } from '@mui/material';
-import { isAlbum, isArtist, isPlayQueueItem, isTrack } from 'api';
+import { isAlbum, isArtist, isPlaylist, isPlayQueueItem, isTrack } from 'api';
 import AlbumMenu from 'components/album/AlbumMenu';
 import ArtistMenu from 'components/artist/ArtistMenu';
+import PlaylistMenu from 'components/playlist/PlaylistMenu';
 import QueueMenu from 'components/queue/QueueMenu';
 import TrackMenu from 'components/track/TrackMenu';
 import { isEmpty } from 'lodash';
@@ -31,6 +32,7 @@ const Menu: React.FC = observer(function Menu() {
     >
       {!isEmpty(items) && items.every((item) => isAlbum(item)) && <AlbumMenu />}
       {!isEmpty(items) && items.every((item) => isArtist(item)) && <ArtistMenu />}
+      {!isEmpty(items) && items.every((item) => isPlaylist(item)) && <PlaylistMenu />}
       {!isEmpty(items) && items.every((item) => isPlayQueueItem(item)) && <QueueMenu />}
       {!isEmpty(items) && items.every((item) => isTrack(item)) && <TrackMenu />}
     </MuiMenu>
