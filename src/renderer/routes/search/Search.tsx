@@ -1,8 +1,9 @@
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { uniq } from 'lodash';
 import { useSearch } from 'queries';
 import React, { useEffect } from 'react';
-import { LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import { createSearchParams, LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import RouteContainer from 'routes/RouteContainer';
 import { persistedStore, store } from 'state';
 
 import SearchHistory from './SearchHistory';
@@ -36,19 +37,38 @@ const Search: React.FC = () => {
 
   useEffect(() => {
     if (query.length > 1) {
-      persistedStore.recentSearches.set((prev) => uniq([query, ...prev]).slice(0, 999));
+      persistedStore.recentSearches.set((prev) => uniq([query, ...prev]).slice(0, 32));
     }
   }, [query]);
 
+  useEffect(() => {
+    store.ui.breadcrumbs.set([
+      { title: 'Home', to: { pathname: '/' } },
+      {
+        title: 'Search',
+        to: { pathname: '/search' },
+      },
+      ...(query
+        ? [
+            {
+              title: query,
+              to: { pathname: `/search`, search: createSearchParams({ query }).toString() },
+            },
+          ]
+        : []),
+    ]);
+  }, [query]);
+
   return (
-    <Box display="flex" flexDirection="column" height={1} marginX={4}>
-      <Typography paddingY={2} variant="h1">
+    <RouteContainer flexDirection="column">
+      <Typography paddingBottom={2} variant="h1">
         Search
       </Typography>
-      <SearchInput query={query} />
+      <SearchInput />
+      <span style={{ display: 'block', marginTop: 16, width: '100%' }} />
       {query.length < 2 && !searchResults && <SearchHistory />}
       {query.length > 1 && searchResults && <SearchResults searchResults={searchResults} />}
-    </Box>
+    </RouteContainer>
   );
 };
 

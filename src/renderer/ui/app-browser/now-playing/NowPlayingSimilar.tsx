@@ -91,6 +91,24 @@ const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
       margin={2}
       width="calc(100% - 80px)"
     >
+      <Box display="flex" gap={1} justifyContent="center" width={1}>
+        {chips.map((value, index) => (
+          <ReactiveChip
+            $sx={() => ({
+              fontWeight: store.ui.nowPlaying.activeSimilarTracksChip.get() === index ? 700 : 500,
+              maxWidth: 256,
+            })}
+            icon={value.icon}
+            key={value.label}
+            label={value.label}
+            size="small"
+            onClick={() => {
+              store.ui.select.selected.set([]);
+              store.ui.nowPlaying.activeSimilarTracksChip.set(index);
+            }}
+          />
+        ))}
+      </Box>
       <ClickAwayListener
         onClickAway={(event) => {
           if (store.ui.select.items.peek() === activeData) {
@@ -105,28 +123,10 @@ const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
           data={activeData}
           isScrolling={handleScrollState}
           itemContent={(index, data) => <Item data={data} index={index} />}
-          style={{ height: '100%', marginBottom: 8 }}
-          onMouseEnter={() => store.ui.select.items.set(activeData)}
+          style={{ height: '100%', marginTop: 16 }}
+          onMouseOver={() => store.ui.select.items.set(activeData)}
         />
       </ClickAwayListener>
-      <Box display="flex" gap={1} justifyContent="center" width={1}>
-        {chips.map((value, index) => (
-          <ReactiveChip
-            icon={value.icon}
-            key={value.label}
-            label={value.label}
-            size="small"
-            sx={{
-              fontWeight: activeChip === index ? 700 : 500,
-              maxWidth: 256,
-            }}
-            onClick={() => {
-              store.ui.select.selected.set([]);
-              store.ui.nowPlaying.activeSimilarTracksChip.set(index);
-            }}
-          />
-        ))}
-      </Box>
     </Box>
   );
 });

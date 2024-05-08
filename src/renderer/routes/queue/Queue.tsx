@@ -1,13 +1,24 @@
 import { Show } from '@legendapp/state/react';
-import { Box, ClickAwayListener, Typography } from '@mui/material';
+import { Box, ClickAwayListener } from '@mui/material';
 import QueueRow from 'components/queue/QueueRow';
 import Scroller from 'components/virtuoso/Scroller';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Virtuoso } from 'react-virtuoso';
+import RouteHeader from 'routes/RouteHeader';
 import { store } from 'state';
 import { selectActions } from 'ui/select';
 
 const Queue: React.FC = () => {
+  useEffect(() => {
+    store.ui.breadcrumbs.set([
+      { title: 'Home', to: { pathname: '/' } },
+      {
+        title: 'Queue',
+        to: { pathname: '/queue' },
+      },
+    ]);
+  }, []);
+
   const handleScrollState = (isScrolling: boolean) => {
     if (isScrolling) {
       document.body.classList.add('disable-hover');
@@ -19,9 +30,6 @@ const Queue: React.FC = () => {
 
   return (
     <Box display="flex" flexDirection="column" height={1} marginX={4}>
-      <Typography paddingY={2} variant="h1">
-        Queue
-      </Typography>
       <Show ifReady={store.queue.currentQueue.items}>
         {() => {
           const queue = store.queue.currentQueue.get();
@@ -37,13 +45,14 @@ const Queue: React.FC = () => {
             >
               <Virtuoso
                 components={{
+                  Header: () => <RouteHeader title="Queue" />,
                   Scroller,
                 }}
                 data={upcomingItems}
                 isScrolling={handleScrollState}
                 itemContent={(index, data) => <QueueRow index={index} queueItem={data} />}
-                style={{ height: '100%', marginBottom: 16 }}
-                onMouseEnter={() => store.ui.select.items.set(upcomingItems)}
+                style={{ height: '100%' }}
+                onMouseOver={() => store.ui.select.items.set(upcomingItems)}
               />
             </ClickAwayListener>
           );

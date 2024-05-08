@@ -15,11 +15,13 @@ import { User } from 'api';
 import isAppInit from 'app/init-app';
 import Scroller from 'components/scroller/Scroller';
 import { userQuery } from 'queries';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { FiLogOut } from 'react-icons/fi';
 import { ImLastfm } from 'react-icons/im';
 import { TbExternalLink } from 'react-icons/tb';
 import { useLoaderData } from 'react-router-dom';
+import RouteContainer from 'routes/RouteContainer';
+import RouteHeader from 'routes/RouteHeader';
 import { persistedStore, store } from 'state';
 
 const ReactiveTextField = reactive(TextField);
@@ -51,6 +53,16 @@ const Settings: React.FC = () => {
   const thumb = useRef<string | undefined>();
   const { mode, setMode } = useColorScheme();
 
+  useEffect(() => {
+    store.ui.breadcrumbs.set([
+      { title: 'Home', to: { pathname: '/' } },
+      {
+        title: 'Settings',
+        to: { pathname: '/settings' },
+      },
+    ]);
+  }, []);
+
   const thumbSrc = useSelector(() => {
     const library = store.library.get();
     if (!library) {
@@ -72,11 +84,9 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" height={1} marginX={4}>
-      <Typography paddingY={2} variant="h1">
-        Settings
-      </Typography>
-      <Scroller style={{ height: '-webkit-fill-available', marginBottom: 16, paddingRight: 16 }}>
+    <RouteContainer>
+      <Scroller style={{ height: '-webkit-fill-available', paddingRight: 16 }}>
+        <RouteHeader title="Settings" />
         <Typography variant="h4">Plex Account</Typography>
         <Box alignItems="center" display="flex" paddingY={1} width={1}>
           <Avatar
@@ -152,7 +162,7 @@ const Settings: React.FC = () => {
           <TbExternalLink viewBox="0 -1 22 22" />
         </Typography>
       </Scroller>
-    </Box>
+    </RouteContainer>
   );
 };
 

@@ -1,12 +1,18 @@
-import { Box, Paper, SvgIcon } from '@mui/material';
-import { DragControls } from 'framer-motion';
+import { reactive, Show, useSelector } from '@legendapp/state/react';
+import { Box } from '@mui/material';
+import { DragControls, motion } from 'framer-motion';
 import React from 'react';
-import { LiaMinusSolid } from 'react-icons/lia';
-import { Outlet } from 'react-router-dom';
+import { store } from 'state';
+
+import NowPlayingSurface from './now-playing/NowPlayingSurface';
+
+const MotionBox = motion(Box);
+const ReactiveBox = reactive(MotionBox);
 
 const AppBrowser: React.FC<{
   dragControls: DragControls;
 }> = ({ dragControls }) => {
+  const nowPlayingBool = useSelector(() => !!store.queue.nowPlaying.get());
   const startDrag = (event: React.PointerEvent<SVGSVGElement>) => {
     const dragIcon = document.getElementById('drag-icon') as HTMLInputElement;
     if (dragIcon) {
@@ -23,36 +29,20 @@ const AppBrowser: React.FC<{
   };
 
   return (
-    <Box
-      borderRadius={2}
-      component={Paper}
-      height="calc(100vh - 40px - 76px)"
-      maxWidth={1920}
-      mx="auto"
-      width="calc(100% - 16px)"
+    <ReactiveBox
+      $animate={() => ({
+        height: store.ui.overlay.get() ? 'calc(100vh - 160px)' : '100%',
+      })}
+      alignItems="center"
+      display="flex"
+      marginX="auto"
+      maxWidth={1888}
+      width="calc(100% - 32px)"
     >
-      <SvgIcon
-        data-is-grabbed="false"
-        id="drag-icon"
-        sx={{
-          color: 'text.secondary',
-          cursor: 'grab',
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          top: -2,
-          margin: 'auto',
-          '&:hover': {
-            color: 'text.primary',
-          },
-        }}
-        onPointerDown={startDrag}
-        onPointerUp={endDrag}
-      >
-        <LiaMinusSolid />
-      </SvgIcon>
-      <Outlet />
-    </Box>
+      <Show if={nowPlayingBool}>
+        <NowPlayingSurface endDrag={endDrag} startDrag={startDrag} />
+      </Show>
+    </ReactiveBox>
   );
 };
 

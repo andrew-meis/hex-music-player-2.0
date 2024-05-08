@@ -11,6 +11,7 @@ import {
 } from 'api';
 import isAppInit from 'app/init-app';
 import { motion } from 'framer-motion';
+import { capitalize } from 'lodash';
 import {
   albumsQuery,
   artistsQuery,
@@ -19,19 +20,20 @@ import {
   playlistsQuery,
   tracksQuery,
 } from 'queries';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BiSolidAlbum } from 'react-icons/bi';
 import { BsMusicNote, BsMusicNoteList } from 'react-icons/bs';
 import { FaTags } from 'react-icons/fa';
 import { IoMdMicrophone } from 'react-icons/io';
 import { LuLayoutGrid } from 'react-icons/lu';
 import { createSearchParams, useLoaderData, useNavigate } from 'react-router-dom';
+import RouteContainer from 'routes/RouteContainer';
 import { store } from 'state';
 
 const MotionBox = motion(Box);
 const MotionBoxPaper = motion(Box<typeof Paper>);
 
-const cardTitles = ['artists', 'albums', 'tracks', 'playlists', 'genres', 'collections'] as const;
+const sections = ['artists', 'albums', 'tracks', 'playlists', 'genres', 'collections'] as const;
 
 interface loaderReturn {
   artists: ArtistContainer;
@@ -90,15 +92,19 @@ const svgs = {
 
 const LibrarySectionCard: React.FC<{
   data: Record<string, any>;
-  title: string;
-}> = ({ data, title }) => {
+  section: string;
+}> = ({ data, section }) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    store.ui.breadcrumbs.set([{ title: 'Home', to: { pathname: '/' } }]);
+  }, []);
 
   const handleClick = () => {
     navigate({
-      pathname: `/${title}`,
+      pathname: `/${section}`,
       search: createSearchParams({
-        title,
+        section: capitalize(section),
       }).toString(),
     });
   };
@@ -122,14 +128,14 @@ const LibrarySectionCard: React.FC<{
         onClick={handleClick}
       >
         <SvgIcon sx={{ height: '44px', marginX: 2, width: '44px' }}>
-          {svgs[title as (typeof cardTitles)[number]]}
+          {svgs[section as (typeof sections)[number]]}
         </SvgIcon>
         <Box marginTop={0.5}>
           <Typography lineHeight="inherit" variant="h3">
             {data.totalSize || 0}
           </Typography>
           <Typography lineHeight="inherit" variant="overline">
-            {title.toLocaleUpperCase()}
+            {section.toLocaleUpperCase()}
           </Typography>
         </Box>
         <MotionBox
@@ -148,16 +154,16 @@ const Library: React.FC = () => {
   const loaderData = useLoaderData() as Awaited<loaderReturn>;
 
   return (
-    <Box marginX={4}>
-      <Typography paddingY={2} variant="h1">
+    <RouteContainer>
+      <Typography paddingBottom={2} variant="h1">
         Library
       </Typography>
       <Grid container spacing={2}>
-        {cardTitles.map((card) => (
-          <LibrarySectionCard data={loaderData[card]} key={card} title={card} />
+        {sections.map((section) => (
+          <LibrarySectionCard data={loaderData[section]} key={section} section={section} />
         ))}
       </Grid>
-    </Box>
+    </RouteContainer>
   );
 };
 

@@ -65,8 +65,8 @@ const SearchResults: React.FC<{
         data={searchResults}
         isScrolling={handleScrollState}
         itemContent={(index, data) => <Item data={data} index={index} />}
-        style={{ height: '100%', marginBottom: 16, marginTop: 16 }}
-        onMouseEnter={() => store.ui.select.items.set(searchResults)}
+        style={{ height: '100%' }}
+        onMouseOver={() => store.ui.select.items.set(searchResults)}
       />
     </ClickAwayListener>
   );

@@ -12,7 +12,7 @@ declare module '@mui/material/styles' {
   }
 }
 
-const commonTheme: ColorSystemOptions = {
+const createDarkTheme = (): ColorSystemOptions => ({
   palette: {
     action: {
       hoverSelected: ` 
@@ -21,27 +21,31 @@ const commonTheme: ColorSystemOptions = {
           + var(--mui-palette-action-hoverOpacity)))
       `,
     },
-  },
-};
-
-const createDarkTheme = (): ColorSystemOptions => ({
-  palette: {
     background: {
       default: '#000000',
       paper: '#121212',
     },
   },
-  ...commonTheme,
 });
 
 const createLightTheme = (): ColorSystemOptions => ({
   palette: {
+    action: {
+      hoverSelected: ` 
+          rgba(var(--mui-palette-action-selectedChannel) 
+          / calc(var(--mui-palette-action-selectedOpacity) 
+          + var(--mui-palette-action-hoverOpacity)))
+      `,
+    },
     background: {
       default: '#fafafa',
       paper: '#ffffff',
     },
+    text: {
+      primary: 'rgba(0, 0, 0, 1)',
+      secondary: 'rgba(0, 0, 0, 0.85)',
+    },
   },
-  ...commonTheme,
 });
 
 const createTheme = () =>
@@ -60,6 +64,18 @@ const createTheme = () =>
       light: createLightTheme(),
     },
     components: {
+      MuiBreadcrumbs: {
+        styleOverrides: {
+          li: {
+            fontSize: '0.875rem',
+            fontWeight: 600,
+          },
+          separator: {
+            fontSize: '0.875rem',
+            fontWeight: 600,
+          },
+        },
+      },
       MuiButton: {
         styleOverrides: {
           root: {
@@ -80,7 +96,10 @@ const createTheme = () =>
           root: ({ theme }) => ({
             borderRadius: 8,
             color: theme.palette.text.secondary,
+            fontSize: '1.375rem',
+            height: 36,
             padding: 6,
+            width: 36,
             ':hover': {
               backgroundColor: 'transparent',
               color: theme.palette.text.primary,

@@ -1,6 +1,8 @@
-import { Box, Typography } from '@mui/material';
-import React from 'react';
-import { LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import { Typography } from '@mui/material';
+import React, { useEffect } from 'react';
+import { createSearchParams, LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import RouteContainer from 'routes/RouteContainer';
+import { store } from 'state';
 
 export const genreLoader = async ({ params, request }: LoaderFunctionArgs) => {
   const { id } = params;
@@ -15,12 +17,32 @@ export const genreLoader = async ({ params, request }: LoaderFunctionArgs) => {
 const Genre: React.FC = () => {
   const { id, title } = useLoaderData() as Awaited<ReturnType<typeof genreLoader>>;
 
+  useEffect(() => {
+    store.ui.breadcrumbs.set([
+      { title: 'Home', to: { pathname: '/' } },
+      {
+        title: 'Genres',
+        to: {
+          pathname: '/genres',
+          search: createSearchParams({ section: 'Genres' }).toString(),
+        },
+      },
+      {
+        title,
+        to: {
+          pathname: `/genres/${id}`,
+          search: createSearchParams({ title }).toString(),
+        },
+      },
+    ]);
+  }, []);
+
   return (
-    <Box marginX={4}>
-      <Typography paddingY={2} variant="h1">
+    <RouteContainer>
+      <Typography paddingBottom={2} variant="h1">
         {title}
       </Typography>
-    </Box>
+    </RouteContainer>
   );
 };
 

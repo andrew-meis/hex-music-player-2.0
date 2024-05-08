@@ -1,5 +1,5 @@
 import { useObservable } from '@legendapp/state/react';
-import { Box } from '@mui/material';
+import { Box, Paper } from '@mui/material';
 import { useMotionValueEvent, useScroll } from 'framer-motion';
 import { inRange } from 'lodash';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
@@ -113,6 +113,8 @@ const NowPlayingContent: React.FC = () => {
         >
           <Box
             borderRadius={4}
+            component={Paper}
+            elevation={4}
             height={1}
             position="absolute"
             sx={(theme) => ({

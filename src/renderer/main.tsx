@@ -13,20 +13,26 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Album, { albumLoader } from 'routes/album/Album';
+import Albums, { albumsLoader } from 'routes/albums/Albums';
 import Artist, { artistLoader } from 'routes/artist/Artist';
 import ArtistDiscography, {
   artistDiscographyLoader,
 } from 'routes/artist/subroutes/discography/ArtistDiscography';
 import Artists, { artistsLoader } from 'routes/artists/Artists';
 import Charts from 'routes/charts/Charts';
+import Collection, { collectionLoader } from 'routes/collection/Collection';
+import Collections, { collectionsLoader } from 'routes/collections/Collections';
 import Genre, { genreLoader } from 'routes/genre/Genre';
+import Genres, { genresLoader } from 'routes/genres/Genres';
 import Library, { libraryLoader } from 'routes/library/Library';
 import Login, { loginLoader } from 'routes/login/Login';
 import Playlist, { playlistLoader } from 'routes/playlist/Playlist';
+import Playlists, { playlistsLoader } from 'routes/playlists/Playlists';
 import Queue from 'routes/queue/Queue';
 import Search, { searchLoader } from 'routes/search/Search';
 import Settings, { settingsLoader } from 'routes/settings/Settings';
 import Track, { trackLoader } from 'routes/track/Track';
+import Tracks, { tracksLoader } from 'routes/tracks/Tracks';
 import Titlebar from 'ui/titlebar/Titlebar';
 
 enableReactComponents();
@@ -46,7 +52,12 @@ const router = createBrowserRouter([
         loader: libraryLoader(queryClient),
       },
       {
-        path: '/album/:id',
+        path: '/albums',
+        element: <Albums />,
+        loader: albumsLoader,
+      },
+      {
+        path: '/albums/:id',
         element: <Album />,
         loader: albumLoader,
       },
@@ -56,12 +67,12 @@ const router = createBrowserRouter([
         loader: artistsLoader,
       },
       {
-        path: '/artist/:id',
+        path: '/artists/:id',
         element: <Artist />,
         loader: artistLoader,
       },
       {
-        path: '/artist/:id/discography',
+        path: '/artists/:id/discography',
         element: <ArtistDiscography />,
         loader: artistDiscographyLoader,
       },
@@ -70,12 +81,32 @@ const router = createBrowserRouter([
         element: <Charts />,
       },
       {
-        path: '/genre/:id',
+        path: '/collections',
+        element: <Collections />,
+        loader: collectionsLoader,
+      },
+      {
+        path: '/collections/:id',
+        element: <Collection />,
+        loader: collectionLoader,
+      },
+      {
+        path: '/genres',
+        element: <Genres />,
+        loader: genresLoader,
+      },
+      {
+        path: '/genres/:id',
         element: <Genre />,
         loader: genreLoader,
       },
       {
-        path: '/playlist/:id',
+        path: '/playlists',
+        element: <Playlists />,
+        loader: playlistsLoader,
+      },
+      {
+        path: '/playlists/:id',
         element: <Playlist />,
         loader: playlistLoader,
       },
@@ -94,7 +125,12 @@ const router = createBrowserRouter([
         loader: settingsLoader(queryClient),
       },
       {
-        path: '/track/:id',
+        path: '/tracks',
+        element: <Tracks />,
+        loader: tracksLoader,
+      },
+      {
+        path: '/tracks/:id',
         element: <Track />,
         loader: trackLoader,
       },
@@ -117,7 +153,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           <RouterProvider router={router} />
         </Box>
       </MuiThemeProvider>
-      <ReactQueryDevtools buttonPosition="top-left" initialIsOpen={false} />
+      <ReactQueryDevtools buttonPosition="bottom-right" initialIsOpen={false} />
     </QueryClientProvider>
   </React.StrictMode>
 );

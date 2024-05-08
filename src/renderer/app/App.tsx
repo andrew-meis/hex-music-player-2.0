@@ -1,6 +1,7 @@
 import Menu from 'components/menu/Menu';
-import { redirect, useLocation } from 'react-router-dom';
+import { redirect } from 'react-router-dom';
 import AppController from 'ui/app-controller/AppController';
+import AppNavigation from 'ui/app-navigation/AppNavigation';
 import AppSurface from 'ui/app-surface/AppSurface';
 
 import isAppInit from './init-app';
@@ -15,20 +16,15 @@ export const appLoader = async () => {
   return null;
 };
 
-const App: React.FC = () => {
-  const location = useLocation();
-
-  console.log(location);
-
-  return (
-    <>
-      <QueueUpdater />
-      <AppSurface />
-      <AppController />
-      <Modals />
-      <Menu />
-    </>
-  );
-};
+const App: React.FC = () => (
+  <>
+    <QueueUpdater />
+    <AppNavigation />
+    <AppSurface />
+    <AppController />
+    <Modals />
+    <Menu />
+  </>
+);
 
 export default App;

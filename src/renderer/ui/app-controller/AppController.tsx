@@ -1,35 +1,32 @@
-import { Box, Divider, Paper } from '@mui/material';
+import { reactive } from '@legendapp/state/react';
+import { Box, Paper } from '@mui/material';
 import { motion, PanInfo, useDragControls } from 'framer-motion';
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigation } from 'react-router-dom';
+import React from 'react';
+import { store } from 'state';
 import AppBrowser from 'ui/app-browser/AppBrowser';
 
+import Volume from './audio-controls/Volume';
 import AudioControl from './AudioControl';
-import NavLinks from './NavLinks';
+import NowPlayingThumbnail from './NowPlayingThumbnail';
+
+const MotionDiv = reactive(motion.div);
+const MotionBox = motion(Box);
+const ReactiveBox = reactive(MotionBox);
 
 const AppController: React.FC = () => {
   const dragControls = useDragControls();
-  const location = useLocation();
-  const navigation = useNavigation();
-  const [isBrowserOpen, setBrowserOpen] = useState(false);
-
-  useEffect(() => {
-    if (navigation.state === 'idle') {
-      setBrowserOpen(true);
-    }
-  }, [location.pathname, navigation.state]);
 
   const handleDragEnd = (_event: PointerEvent | MouseEvent | TouchEvent, info: PanInfo) => {
     const dragIcon = document.getElementById('drag-icon') as HTMLInputElement;
     if (dragIcon) {
       dragIcon.setAttribute('data-is-grabbed', 'false');
     }
-    if (isBrowserOpen && info.offset.y > 50) {
-      setBrowserOpen(false);
+    if (store.ui.overlay.peek() && info.offset.y > 50) {
+      store.ui.overlay.set(false);
       return;
     }
-    if (!isBrowserOpen && info.offset.y < -50) {
-      setBrowserOpen(true);
+    if (!store.ui.overlay.peek() && info.offset.y < -50) {
+      store.ui.overlay.set(true);
     }
   };
 
@@ -37,34 +34,54 @@ const AppController: React.FC = () => {
     <Box
       bottom={8}
       display="block"
-      mx={1}
+      marginX={1}
       position="fixed"
       width="-webkit-fill-available"
       zIndex={10}
     >
       <Box marginX="auto" maxWidth={1920}>
-        <motion.div
+        <ReactiveBox
+          $animate={() => ({
+            background: store.ui.overlay.get() ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)',
+          })}
+          sx={{
+            height: 'calc(100vh - 160px)',
+            left: 0,
+            pointerEvents: 'none',
+            position: 'fixed',
+            right: 0,
+            top: 80,
+          }}
+          transition={{
+            background: {
+              duration: 0.3,
+            },
+          }}
+        />
+        <MotionDiv
           layout
+          $animate={() => ({
+            top: store.ui.overlay.get() ? 80 : 'calc(100vh - 84px)',
+          })}
           drag="y"
           dragConstraints={{ top: 0, bottom: 0 }}
           dragControls={dragControls}
           dragElastic={0.5}
           dragListener={false}
           style={{
-            position: 'fixed',
-            top: isBrowserOpen ? 40 : 'calc(100vh - 82px)',
             left: 0,
+            position: 'fixed',
             right: 0,
           }}
           transition={{ type: 'spring', bounce: 0.25 }}
           onDragEnd={handleDragEnd}
         >
           <AppBrowser dragControls={dragControls} />
-        </motion.div>
+        </MotionDiv>
         <Box
           bgcolor="background.default"
           bottom={-8}
-          height={12}
+          height={16}
           left={-8}
           position="absolute"
           width="100vw"
@@ -81,8 +98,8 @@ const AppController: React.FC = () => {
           width="-webkit-fill-available"
         >
           <AudioControl />
-          <Divider orientation="vertical" sx={{ height: 44, margin: 1 }} />
-          <NavLinks isBrowserOpen={isBrowserOpen} setBrowserOpen={setBrowserOpen} />
+          <Volume />
+          <NowPlayingThumbnail />
         </Box>
       </Box>
     </Box>

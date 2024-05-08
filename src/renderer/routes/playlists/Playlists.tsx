@@ -4,7 +4,7 @@ import { createSearchParams, LoaderFunctionArgs, useLoaderData } from 'react-rou
 import RouteContainer from 'routes/RouteContainer';
 import { store } from 'state';
 
-export const artistsLoader = async ({ request }: LoaderFunctionArgs) => {
+export const playlistsLoader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const section = url.searchParams.get('section');
   if (!section) {
@@ -13,15 +13,18 @@ export const artistsLoader = async ({ request }: LoaderFunctionArgs) => {
   return { section };
 };
 
-const Artists: React.FC = () => {
-  const { section } = useLoaderData() as Awaited<ReturnType<typeof artistsLoader>>;
+const Playlists: React.FC = () => {
+  const { section } = useLoaderData() as Awaited<ReturnType<typeof playlistsLoader>>;
 
   useEffect(() => {
     store.ui.breadcrumbs.set([
       { title: 'Home', to: { pathname: '/' } },
       {
-        title: 'Artists',
-        to: { pathname: '/artists', search: createSearchParams({ section: 'Artists' }).toString() },
+        title: 'Playlists',
+        to: {
+          pathname: '/playlists',
+          search: createSearchParams({ section: 'Playlists' }).toString(),
+        },
       },
     ]);
   }, []);
@@ -35,4 +38,4 @@ const Artists: React.FC = () => {
   );
 };
 
-export default Artists;
+export default Playlists;

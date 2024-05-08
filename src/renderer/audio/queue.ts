@@ -19,7 +19,6 @@ const addToQueue = async (
   } else {
     uri = `${library.device.uri}${newItems.key}`;
   }
-  console.log(newItems, uri);
   const url = library.server.getAuthenticatedUrl(`/playQueues/${persistedStore.queueId.peek()}`, {
     uri,
     ...(after && { after }),
@@ -31,7 +30,6 @@ const addToQueue = async (
 };
 
 const createQueue = async (uri: string, shuffle = false, key: string | undefined = undefined) => {
-  console.log(uri, shuffle, key);
   const library = store.library.peek();
   const { id } = await library.createQueue({ uri, shuffle, key });
   persistedStore.queueId.set(id);

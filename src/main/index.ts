@@ -33,7 +33,7 @@ function createWindow() {
     width: mainWindowState.width,
     height: mainWindowState.height,
     minWidth: 800,
-    minHeight: 466,
+    minHeight: 488,
     show: false,
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',

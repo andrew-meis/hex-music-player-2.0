@@ -32,7 +32,7 @@ const SearchHistory: React.FC = observer(function SearchHistory() {
   };
 
   return (
-    <Scroller style={{ height: '-webkit-fill-available', marginBottom: 16, marginTop: 12 }}>
+    <Scroller style={{ height: '100%' }}>
       <Show else={<NoRecentSearches />} if={persistedStore.recentSearches.get().length !== 0}>
         <For optimized each={persistedStore.recentSearches}>
           {(item) => {

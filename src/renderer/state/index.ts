@@ -13,6 +13,7 @@ import {
   Track,
 } from 'api';
 import chroma from 'chroma-js';
+import { To } from 'react-router-dom';
 import { ServerConfig } from 'typescript';
 
 configureObservablePersistence({
@@ -100,10 +101,7 @@ export const store = observable({
     }),
   },
   ui: {
-    nowPlaying: {
-      activeSimilarTracksChip: 0,
-      color: chroma([90, 90, 90]),
-    },
+    breadcrumbs: [{ title: 'Home', to: { pathname: '/' } }] as { title: string; to: To }[],
     menus: {
       anchorPosition: null as null | { mouseX: number; mouseY: number },
     },
@@ -111,6 +109,11 @@ export const store = observable({
       editLyricsTrack: undefined as unknown as Track,
       open: '' as '' | 'lyrics',
     },
+    nowPlaying: {
+      activeSimilarTracksChip: 0,
+      color: chroma([90, 90, 90]),
+    },
+    overlay: false,
     search: {
       input: '',
     },

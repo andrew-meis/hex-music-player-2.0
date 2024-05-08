@@ -1,10 +1,10 @@
-import { Memo, useObserve } from '@legendapp/state/react';
-import { IconButton, InputBase, Paper, SvgIcon, useColorScheme } from '@mui/material';
+import { observer, reactive, useObserve } from '@legendapp/state/react';
+import { IconButton, InputAdornment, InputBase, Paper, SvgIcon } from '@mui/material';
 import { useDebouncedCallback } from '@react-hookz/web';
 import React, { useRef } from 'react';
 import { CgSearch } from 'react-icons/cg';
 import { MdClear } from 'react-icons/md';
-import { Form, useSubmit } from 'react-router-dom';
+import { Form, useSearchParams, useSubmit } from 'react-router-dom';
 import { store } from 'state';
 
 const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
@@ -12,17 +12,19 @@ const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
   'value'
 )?.set;
 
-const SearchInput: React.FC<{ query: string }> = ({ query }) => {
+const ReactiveInputBase = reactive(InputBase);
+
+const SearchInput: React.FC = observer(function SearchInput() {
   const searchForm = useRef<HTMLFormElement | null>(null);
   const searchInput = useRef<HTMLInputElement>(null);
+
+  const [params] = useSearchParams();
   const submit = useSubmit();
 
-  const { mode } = useColorScheme();
-
   useObserve(store.ui.search.input, () => {
-    const searchInputElement = document.getElementById('search-input') as HTMLInputElement;
-    if (searchInputElement) {
-      searchForm.current = searchInputElement.form;
+    const input = document.getElementById('search-input') as HTMLInputElement;
+    if (input) {
+      searchForm.current = input.form;
     }
   });
 
@@ -47,19 +49,22 @@ const SearchInput: React.FC<{ query: string }> = ({ query }) => {
     if (event.target.value.length === 0) {
       submit(searchForm.current);
     }
-    if (searchForm.current && event.target.value.length > 1 && event.target.value !== query) {
+    if (
+      searchForm.current &&
+      event.target.value.length > 1 &&
+      event.target.value !== params.get('query')
+    ) {
       debouncedSubmit();
     }
   };
 
   const handleClear = () => {
     store.ui.search.input.set('');
-    if (searchInput.current) {
-      nativeInputValueSetter?.call(searchInput.current, '');
-      const inputEvent = new Event('input', { bubbles: true });
-      searchInput.current.dispatchEvent(inputEvent);
-      searchInput.current.focus();
-    }
+    const input = document.getElementById('search-input') as HTMLInputElement;
+    nativeInputValueSetter?.call(input, '');
+    const inputEvent = new Event('input', { bubbles: true });
+    input.dispatchEvent(inputEvent);
+    input.focus();
   };
 
   const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -67,54 +72,52 @@ const SearchInput: React.FC<{ query: string }> = ({ query }) => {
   };
 
   return (
-    <Paper
-      component={Form}
-      elevation={mode === 'dark' ? 8 : 2}
-      sx={{ alignItems: 'center', display: 'flex', height: 40 }}
-      onSubmit={(event) => event.preventDefault()}
-    >
-      <Memo>
-        {() => {
-          const value = store.ui.search.input.get();
-          return (
-            <>
-              <IconButton
-                sx={{ height: 40, width: 40 }}
-                onClick={() => searchInput.current?.focus()}
-              >
-                <SvgIcon
-                  sx={{ height: 20, transform: 'rotate(90deg)', width: 20 }}
-                  viewBox="2 0 24 24"
-                >
+    <Paper elevation={2} sx={{ alignItems: 'center', display: 'flex', flexShrink: 0, height: 40 }}>
+      <Form action="/search" style={{ width: '100%' }} onSubmit={(event) => event.preventDefault()}>
+        <ReactiveInputBase
+          fullWidth
+          $endAdornment={
+            store.ui.search.input.get().length > 0 ? (
+              <InputAdornment position="end">
+                <IconButton size="small" onClick={handleClear}>
+                  <MdClear />
+                </IconButton>
+              </InputAdornment>
+            ) : null
+          }
+          $startAdornment={
+            <InputAdornment position="start">
+              <IconButton onClick={() => searchInput.current?.focus()}>
+                <SvgIcon sx={{ height: 20, width: 20 }} viewBox="2 0 24 24">
                   <CgSearch />
                 </SvgIcon>
               </IconButton>
-              <InputBase
-                fullWidth
-                autoComplete="off"
-                id="search-input"
-                inputProps={{ maxLength: 128, spellCheck: false, style: { padding: '2px 0 3px' } }}
-                inputRef={searchInput}
-                name="query"
-                placeholder="Search"
-                value={value}
-                onBlur={handleBlur}
-                onChange={handleChange}
-                onFocus={handleFocus}
-              />
-              {value.length !== 0 && (
-                <IconButton sx={{ height: 40, width: 40 }} onClick={handleClear}>
-                  <SvgIcon>
-                    <MdClear />
-                  </SvgIcon>
-                </IconButton>
-              )}
-            </>
-          );
-        }}
-      </Memo>
+            </InputAdornment>
+          }
+          autoComplete="off"
+          id="search-input"
+          inputProps={{
+            maxLength: 128,
+            spellCheck: false,
+            sx: {
+              fontWeight: 500,
+              padding: '2px 0 3px',
+              '&::placeholder': {
+                opacity: 0.75,
+              },
+            },
+          }}
+          inputRef={searchInput}
+          name="query"
+          placeholder="Search"
+          value={store.ui.search.input.get()}
+          onBlur={handleBlur}
+          onChange={handleChange}
+          onFocus={handleFocus}
+        />
+      </Form>
     </Paper>
   );
-};
+});
 
 export default SearchInput;

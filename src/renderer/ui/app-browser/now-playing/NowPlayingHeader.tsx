@@ -92,9 +92,20 @@ const NowPlayingHeader: React.FC = observer(function NowPlayingHeader() {
           {nowPlaying.track.parentTitle}
         </Typography>
         <Box alignItems="flex-start" display="flex" overflow="hidden">
-          <TrackRating id={nowPlaying.track.id} userRating={nowPlaying.track.userRating / 2 || 0} />
+          <TrackRating
+            id={nowPlaying.track.id}
+            style={{ marginTop: 1 }}
+            userRating={nowPlaying.track.userRating / 2 || 0}
+          />
           <Typography color="text.secondary" display="inline-block" variant="subtitle2">
             &thinsp;&thinsp;—&thinsp;&thinsp;
+          </Typography>
+          <Typography
+            color="text.secondary"
+            display="inline-block"
+            marginTop="1px"
+            variant="subtitle2"
+          >
             {nowPlaying.track.parentYear}
           </Typography>
         </Box>

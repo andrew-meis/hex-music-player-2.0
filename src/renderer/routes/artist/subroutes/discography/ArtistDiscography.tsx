@@ -1,6 +1,8 @@
-import { Box, Typography } from '@mui/material';
-import React from 'react';
-import { LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import { Typography } from '@mui/material';
+import React, { useEffect } from 'react';
+import { createSearchParams, LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import RouteContainer from 'routes/RouteContainer';
+import { store } from 'state';
 
 export const artistDiscographyLoader = async ({ params, request }: LoaderFunctionArgs) => {
   const { id } = params;
@@ -18,16 +20,34 @@ const ArtistDiscography: React.FC = () => {
     ReturnType<typeof artistDiscographyLoader>
   >;
 
-  console.dir(guid);
-  console.dir(id);
+  useEffect(() => {
+    store.ui.breadcrumbs.set([
+      { title: 'Home', to: { pathname: '/' } },
+      {
+        title: 'Artists',
+        to: { pathname: '/artists', search: createSearchParams({ section: 'Artists' }).toString() },
+      },
+      {
+        title,
+        to: { pathname: `/artists/${id}`, search: createSearchParams({ guid, title }).toString() },
+      },
+      {
+        title: 'Discography',
+        to: {
+          pathname: `/artists/${id}/discography`,
+          search: createSearchParams({ guid, title }).toString(),
+        },
+      },
+    ]);
+  }, [id]);
 
   return (
-    <Box marginX={4}>
-      <Typography paddingY={2} variant="h1">
+    <RouteContainer>
+      <Typography paddingBottom={2} variant="h1">
         {title}
         &nbsp;» Discography
       </Typography>
-    </Box>
+    </RouteContainer>
   );
 };
 

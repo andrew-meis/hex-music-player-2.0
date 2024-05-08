@@ -1,24 +1,58 @@
-import { Box, Typography } from '@mui/material';
-import React from 'react';
-import { LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import { Typography } from '@mui/material';
+import React, { useEffect } from 'react';
+import { createSearchParams, LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import RouteContainer from 'routes/RouteContainer';
+import { store } from 'state';
 
-export const albumLoader = async ({ params }: LoaderFunctionArgs) => {
+export const albumLoader = async ({ params, request }: LoaderFunctionArgs) => {
   const { id } = params;
-  if (!id) {
+  const url = new URL(request.url);
+  const guid = url.searchParams.get('guid');
+  const parentGuid = url.searchParams.get('parentGuid');
+  const parentId = url.searchParams.get('parentId');
+  const parentTitle = url.searchParams.get('parentTitle');
+  const title = url.searchParams.get('title');
+  if (!guid || !id || !parentGuid || !parentId || !parentTitle || !title) {
     throw new Error('Missing route loader data');
   }
-  return { id: parseInt(id, 10) };
+  return { guid, id: parseInt(id, 10), parentGuid, parentId, parentTitle, title };
 };
 
 const Album: React.FC = () => {
-  const { id } = useLoaderData() as Awaited<ReturnType<typeof albumLoader>>;
+  const { guid, id, parentGuid, parentId, parentTitle, title } = useLoaderData() as Awaited<
+    ReturnType<typeof albumLoader>
+  >;
+
+  useEffect(() => {
+    store.ui.breadcrumbs.set([
+      { title: 'Home', to: { pathname: '/' } },
+      {
+        title: 'Artists',
+        to: { pathname: '/artists', search: createSearchParams({ section: 'Artists' }).toString() },
+      },
+      {
+        title: parentTitle,
+        to: {
+          pathname: `/artists/${parentId}`,
+          search: createSearchParams({ guid: parentGuid, title: parentTitle }).toString(),
+        },
+      },
+      {
+        title,
+        to: {
+          pathname: `/albums/${id}`,
+          search: createSearchParams({ guid, parentGuid, parentId, parentTitle, title }).toString(),
+        },
+      },
+    ]);
+  }, [id]);
 
   return (
-    <Box marginX={4}>
-      <Typography paddingY={2} variant="h1">
+    <RouteContainer>
+      <Typography paddingBottom={2} variant="h1">
         {id}
       </Typography>
-    </Box>
+    </RouteContainer>
   );
 };
 
