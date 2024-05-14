@@ -1,17 +1,22 @@
 import { useQuery } from '@tanstack/react-query';
-import { Library, Params } from 'api';
+import { Library } from 'api';
+import paramsToObject from 'scripts/params-to-object';
 import { store } from 'state';
 import { QueryKeys } from 'typescript';
 
-export const artistsQuery = (sectionId: number, library: Library, params?: Params) => ({
-  queryKey: [QueryKeys.ARTISTS, params],
-  queryFn: async () => library.artists(sectionId, params),
+export const artistsQuery = (
+  sectionId: number,
+  library: Library,
+  searchParams?: URLSearchParams
+) => ({
+  queryKey: [QueryKeys.ARTISTS, paramsToObject(searchParams?.entries())],
+  queryFn: async () => library.artists(sectionId, searchParams),
 });
 
-const useArtists = (params?: Params) => {
+const useArtists = (searchParams?: URLSearchParams) => {
   const { sectionId } = store.serverConfig.peek();
   const library = store.library.peek();
-  return useQuery(artistsQuery(sectionId, library, params));
+  return useQuery(artistsQuery(sectionId, library, searchParams));
 };
 
 export default useArtists;

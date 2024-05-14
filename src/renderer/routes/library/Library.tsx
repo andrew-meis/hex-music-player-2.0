@@ -9,7 +9,6 @@ import {
   PlaylistContainer,
   TrackContainer,
 } from 'api';
-import isAppInit from 'app/init-app';
 import { motion } from 'framer-motion';
 import { capitalize } from 'lodash';
 import {
@@ -28,6 +27,7 @@ import { IoMdMicrophone } from 'react-icons/io';
 import { LuLayoutGrid } from 'react-icons/lu';
 import { createSearchParams, useLoaderData, useNavigate } from 'react-router-dom';
 import RouteContainer from 'routes/RouteContainer';
+import isAppInit from 'scripts/init-app';
 import { store } from 'state';
 
 const MotionBox = motion(Box);
@@ -48,12 +48,37 @@ export const libraryLoader = (queryClient: QueryClient) => async (): Promise<loa
   await isAppInit();
   const { sectionId } = store.serverConfig.peek();
   const library = store.library.peek();
-  const artistsDataQuery = artistsQuery(sectionId, library, { start: 0, size: 0 });
-  const albumsDataQuery = albumsQuery(sectionId, library, { start: 0, size: 0 });
-  const tracksDataQuery = tracksQuery(sectionId, library, { start: 0, size: 0 });
-  const playlistsDataQuery = playlistsQuery(library, { start: 0, size: 0 });
-  const genresDataQuery = genresQuery(sectionId, library, MediaType.ALBUM, { start: 0, size: 0 });
-  const collectionsDataQuery = collectionsQuery(sectionId, library, { start: 0, size: 0 });
+  const artistsDataQuery = artistsQuery(
+    sectionId,
+    library,
+    new URLSearchParams({ start: '0', size: '0' })
+  );
+  const albumsDataQuery = albumsQuery(
+    sectionId,
+    library,
+    new URLSearchParams({ start: '0', size: '0' })
+  );
+  const tracksDataQuery = tracksQuery(
+    sectionId,
+    library,
+    true,
+    new URLSearchParams({ start: '0', size: '0' })
+  );
+  const playlistsDataQuery = playlistsQuery(
+    library,
+    new URLSearchParams({ start: '0', size: '0' })
+  );
+  const genresDataQuery = genresQuery(
+    sectionId,
+    library,
+    MediaType.ALBUM,
+    new URLSearchParams({ start: '0', size: '0' })
+  );
+  const collectionsDataQuery = collectionsQuery(
+    sectionId,
+    library,
+    new URLSearchParams({ start: '0', size: '0' })
+  );
   return {
     artists:
       queryClient.getQueryData(artistsDataQuery.queryKey) ??

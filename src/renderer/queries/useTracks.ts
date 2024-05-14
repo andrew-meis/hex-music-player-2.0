@@ -1,10 +1,11 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
-import { Library, Params, parseTrackContainer, SORT_BY_DATE_PLAYED, Track } from 'api';
-import { db } from 'app/db';
+import { Library, MediaType, parseTrackContainer, SORT_BY_DATE_PLAYED, Track } from 'api';
+import { db } from 'features/db';
 import ky from 'ky';
 import { LastFMTrack } from 'lastfm-ts-api';
 import { countBy, uniqBy } from 'lodash';
 import { DateTime } from 'luxon';
+import paramsToObject from 'scripts/params-to-object';
 import { persistedStore, store } from 'state';
 import { QueryKeys } from 'typescript';
 
@@ -175,27 +176,33 @@ export const useLastfmMatchTracks = (track: Track, enabled = true) =>
 
 const recentTracksQuery = (track: Track, days: number, enabled: boolean) =>
   queryOptions({
-    queryKey: [QueryKeys.RECENT_TRACKS, track.id],
+    queryKey: [QueryKeys.RECENT_TRACKS, track.id, days],
     queryFn: async () => {
       const { sectionId } = store.serverConfig.peek();
       const library = store.library.peek();
       const time = DateTime.now();
-      const url = library.server.getAuthenticatedUrl('/status/sessions/history/all', {
-        sort: SORT_BY_DATE_PLAYED.desc,
-        librarySectionID: sectionId,
-        metadataItemID: track.grandparentId,
-        'viewedAt<': time.toUnixInteger(),
-        'viewedAt>': time.minus({ days }).toUnixInteger(),
-      });
+      const url = library.server.getAuthenticatedUrl(
+        '/status/sessions/history/all',
+        new URLSearchParams({
+          sort: SORT_BY_DATE_PLAYED.desc,
+          librarySectionID: sectionId.toString(),
+          metadataItemID: track.grandparentId.toString(),
+          'viewedAt<': time.toUnixInteger().toString(),
+          'viewedAt>': time.minus({ days }).toUnixInteger().toString(),
+        })
+      );
       const response = (await ky(url).json()) as Record<string, any>;
       if (response.MediaContainer.size === 0) {
         return [];
       }
       const keys = response.MediaContainer.Metadata.map((record: Track) => record.ratingKey);
       const counts = countBy(keys, Math.floor);
-      const { tracks } = await library.tracks(sectionId, {
-        'track.id': Object.keys(counts).join(','),
-      });
+      const { tracks } = await library.tracks(
+        sectionId,
+        new URLSearchParams({
+          'track.id': Object.keys(counts).join(','),
+        })
+      );
       if (tracks.length > 0) {
         Object.keys(counts).forEach((key) => {
           const match = tracks.find((track) => track.ratingKey === key);
@@ -234,16 +241,51 @@ const similarTracksQuery = (track: Track, enabled: boolean) =>
 export const useSimilarTracks = (track: Track, enabled = true) =>
   useQuery(similarTracksQuery(track, enabled));
 
-export const tracksQuery = (sectionId: number, library: Library, params?: Params) =>
+const topTracksQuery = (
+  track: Track,
+  enabled: boolean,
+  start?: DateTime,
+  end?: DateTime,
+  days?: number
+) =>
   queryOptions({
-    queryKey: [QueryKeys.TRACKS, params],
-    queryFn: async () => library.tracks(sectionId, params),
+    queryKey: [QueryKeys.SIMILAR_TRACKS, track.id],
+    queryFn: async () => {
+      const { sectionId } = store.serverConfig.peek();
+      const library = store.library.peek();
+      const time = DateTime.now();
+      if (days) {
+        return library.topItems(sectionId, MediaType.TRACK, time.minus({ days }), time, 10);
+      }
+      return library.topItems(sectionId, MediaType.TRACK, start!, end!, 10);
+    },
+    enabled,
   });
 
-const useTracks = (params?: Params) => {
+export const useTopTracks = (
+  track: Track,
+  enabled = true,
+  start = undefined,
+  end = undefined,
+  days = undefined
+) => useQuery(topTracksQuery(track, enabled, start, end, days));
+
+export const tracksQuery = (
+  sectionId: number,
+  library: Library,
+  enabled: boolean,
+  searchParams?: URLSearchParams
+) =>
+  queryOptions({
+    queryKey: [QueryKeys.TRACKS, paramsToObject(searchParams?.entries())],
+    queryFn: async () => library.tracks(sectionId, searchParams),
+    enabled,
+  });
+
+const useTracks = (searchParams?: URLSearchParams, enabled = true) => {
   const { sectionId } = store.serverConfig.peek();
   const library = store.library.peek();
-  return useQuery(tracksQuery(sectionId, library, params));
+  return useQuery(tracksQuery(sectionId, library, enabled, searchParams));
 };
 
 export default useTracks;

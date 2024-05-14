@@ -1,14 +1,18 @@
 import Prism from '@zwolf/prism';
+import { schema } from 'normalizr';
 
 import { MediaContainer, toMediaContainer } from './media-container';
 import { createParser } from './parser';
-import { toDateFromSeconds, toNumber } from './types';
+import { toDateFromSeconds, toFloat, toNumber } from './types';
+
+const collectionSchema = new schema.Entity('collection');
 
 export interface Collection {
   _type: string;
   id: number;
 
   addedAt: Date | undefined;
+  art: string;
   childCount: number;
   guid: string;
   index: number;
@@ -17,6 +21,7 @@ export interface Collection {
   minYear: number;
   ratingCount: number;
   ratingKey: string;
+  score: number | undefined;
   subtype: string;
   summary: string;
   thumb: string;
@@ -25,10 +30,13 @@ export interface Collection {
   updatedAt: Date | undefined;
 }
 
+const isCollection = (x: any): x is Collection => x._type === 'collection';
+
 const toCollection = ($data: Prism<any>): Collection => ({
   _type: 'collection',
-  id: $data.get<string>('key').transform(toNumber).value!,
+  id: $data.get<string>('ratingKey').transform(toNumber).value!,
 
+  art: $data.get<string>('art').value,
   addedAt: $data.get<number>('addedAt').transform(toDateFromSeconds).value,
   childCount: $data.get<number>('childCount').value,
   guid: $data.get<string>('guid', { quiet: true }).value,
@@ -38,6 +46,7 @@ const toCollection = ($data: Prism<any>): Collection => ({
   minYear: $data.get<number>('minYear').value,
   ratingCount: $data.get<number>('ratingCount', { quiet: true }).value,
   ratingKey: $data.get<string>('ratingKey').value,
+  score: $data.get<string>('score').transform(toFloat).value,
   subtype: $data.get<string>('subtype').value,
   summary: $data.get<string>('summary', { quiet: true }).value,
   thumb: $data.get<string>('thumb', { quiet: true }).value,
@@ -72,7 +81,7 @@ const toCollectionContainer = ($data: Prism<any>): CollectionContainer => {
 
     _type: 'collectionContainer',
 
-    collections: $data.get('Directory').toArray().map(toCollection),
+    collections: $data.get('Metadata').toArray().map(toCollection),
 
     allowSync: $data.get('allowSync').value,
     art: $data.get('art', { quiet: true }).value,
@@ -90,4 +99,10 @@ const toCollectionContainer = ($data: Prism<any>): CollectionContainer => {
 
 const parseCollectionContainer = createParser('collectionContainer', toCollectionContainer);
 
-export { parseCollectionContainer, toCollection, toCollectionContainer };
+export {
+  collectionSchema,
+  isCollection,
+  parseCollectionContainer,
+  toCollection,
+  toCollectionContainer,
+};

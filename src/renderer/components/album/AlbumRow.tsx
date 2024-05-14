@@ -14,7 +14,9 @@ const AlbumRow: React.FC<{ album: Album; index: number }> = observer(function Al
 }) {
   const library = store.library.get();
 
-  const thumbSrc = library.resizeImage({ url: album.thumb, width: 64, height: 64 });
+  const thumbSrc = library.resizeImage(
+    new URLSearchParams({ url: album.thumb, width: '64', height: '64' })
+  );
 
   const handleLink = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.stopPropagation();

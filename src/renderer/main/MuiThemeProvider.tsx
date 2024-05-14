@@ -66,13 +66,14 @@ const createTheme = () =>
     components: {
       MuiBreadcrumbs: {
         styleOverrides: {
-          li: {
-            fontSize: '0.875rem',
-            fontWeight: 600,
+          ol: {
+            justifyContent: 'center',
           },
-          separator: {
+          root: {
             fontSize: '0.875rem',
             fontWeight: 600,
+            lineHeight: '1.25rem',
+            maxHeight: 36,
           },
         },
       },
@@ -251,6 +252,40 @@ const createTheme = () =>
           track: {
             backgroundColor: grey[500],
             borderRadius: 10,
+          },
+        },
+      },
+      MuiTab: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            borderRadius: 8,
+            minHeight: 32,
+            maxWidth: 'calc(100% / 4)',
+            paddingBottom: 0,
+            paddingTop: 0,
+            textAlign: 'left',
+            textTransform: 'none',
+            '&.Mui-selected': {
+              color: theme.palette.text.primary,
+            },
+            '& > .MuiTab-iconWrapper': {
+              flexShrink: 0,
+            },
+          }),
+        },
+      },
+      MuiTabs: {
+        styleOverrides: {
+          flexContainer: {
+            justifyContent: 'center',
+          },
+          indicator: ({ theme }) => ({
+            backgroundColor: theme.palette.action.selected,
+            borderRadius: 8,
+            height: '100%',
+          }),
+          root: {
+            minHeight: 32,
           },
         },
       },

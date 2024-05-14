@@ -31,7 +31,7 @@ const AppBrowser: React.FC<{
   return (
     <ReactiveBox
       $animate={() => ({
-        height: store.ui.overlay.get() ? 'calc(100vh - 160px)' : '100%',
+        height: store.ui.overlay.get() ? 'calc(100vh - 148px)' : '100%',
       })}
       alignItems="center"
       display="flex"

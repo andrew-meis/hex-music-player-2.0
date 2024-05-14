@@ -13,11 +13,13 @@ const PlaylistRow: React.FC<{ index: number; playlist: Playlist }> = observer(fu
 }) {
   const library = store.library.get();
 
-  const thumbSrc = library.resizeImage({
-    url: playlist.thumb || playlist.composite,
-    width: 64,
-    height: 64,
-  });
+  const thumbSrc = library.resizeImage(
+    new URLSearchParams({
+      url: playlist.thumb || playlist.composite,
+      width: '64',
+      height: '64',
+    })
+  );
 
   const handleLink = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.stopPropagation();

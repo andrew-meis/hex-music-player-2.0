@@ -1,18 +1,23 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
-import { Library, Params } from 'api';
+import { Library } from 'api';
+import paramsToObject from 'scripts/params-to-object';
 import { store } from 'state';
 import { QueryKeys } from 'typescript';
 
-export const collectionsQuery = (sectionId: number, library: Library, params?: Params) =>
+export const collectionsQuery = (
+  sectionId: number,
+  library: Library,
+  searchParams?: URLSearchParams
+) =>
   queryOptions({
-    queryKey: [QueryKeys.COLLECTIONS, params],
-    queryFn: async () => library.collections(sectionId, params),
+    queryKey: [QueryKeys.COLLECTIONS, paramsToObject(searchParams?.entries())],
+    queryFn: async () => library.collections(sectionId, searchParams),
   });
 
-const useCollections = (params?: Params) => {
+const useCollections = (searchParams?: URLSearchParams) => {
   const { sectionId } = store.serverConfig.peek();
   const library = store.library.peek();
-  return useQuery(collectionsQuery(sectionId, library, params));
+  return useQuery(collectionsQuery(sectionId, library, searchParams));
 };
 
 export default useCollections;

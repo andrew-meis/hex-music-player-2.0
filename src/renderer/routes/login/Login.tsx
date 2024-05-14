@@ -1,11 +1,11 @@
 import { Box, Fade, Paper } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { Account, Client, Device, Library, ServerConnection } from 'api';
-import isAppInit from 'app/init-app';
 import { AnimatePresence, motion } from 'framer-motion';
 import ky from 'ky';
 import React, { useEffect, useState } from 'react';
 import { redirect, useLoaderData } from 'react-router-dom';
+import isAppInit from 'scripts/init-app';
 import { PinResponse } from 'src/renderer/api/client';
 
 import LoginSettings from './LoginSettings';

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Track } from 'api';
-import { db, Lyrics } from 'app/db';
+import { db, Lyrics } from 'features/db';
 import ky from 'ky';
 import { QueryKeys } from 'typescript';
 

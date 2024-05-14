@@ -18,6 +18,7 @@
       "assets/*": ["src/renderer/assets/*"],
       "audio": ["src/renderer/audio/index.ts"],
       "components/*": ["src/renderer/components/*"],
+      "features/*": ["src/renderer/features/*"],
       "hooks/*": ["src/renderer/hooks/*"],
       "main/*": [ "src/renderer/main/*" ],
       "queries": ["src/renderer/queries/index.ts"],

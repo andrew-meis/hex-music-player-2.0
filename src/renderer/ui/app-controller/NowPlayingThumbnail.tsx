@@ -8,7 +8,9 @@ const NowPlayingThumbnail: React.FC = observer(function NowPlayingThumbnail() {
   const nowPlaying = store.queue.nowPlaying.get();
 
   const albumThumbSrc = useSelector(() => {
-    return library.resizeImage({ url: nowPlaying?.track.parentThumb, width: 64, height: 64 });
+    return library.resizeImage(
+      new URLSearchParams({ url: nowPlaying?.track.parentThumb, width: '64', height: '64' })
+    );
   });
 
   return (

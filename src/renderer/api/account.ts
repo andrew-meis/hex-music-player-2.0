@@ -127,10 +127,10 @@ export default class Account {
 
   async resources() {
     const res = await this.fetchXML('/api/resources', {
-      searchParams: {
+      searchParams: new URLSearchParams({
         includeHttps: '1',
         includeRelay: '1',
-      },
+      }),
     });
     return parseResourceContainer(res);
   }

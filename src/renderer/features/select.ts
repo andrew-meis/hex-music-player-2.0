@@ -14,6 +14,11 @@ const handleClickAway = (event?: MouseEvent | TouchEvent) => {
 
 const handleSelect = (event: React.MouseEvent, index: number) => {
   const selected = store.ui.select.selected.peek();
+  const canMultiselect = store.ui.select.canMultiselect.peek();
+  if (!canMultiselect) {
+    store.ui.select.selected.set([index]);
+    return;
+  }
   if (event.ctrlKey || event.metaKey) {
     if (selected.includes(index)) {
       store.ui.select.selected.set((value) => value.filter((n) => n !== index));

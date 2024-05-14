@@ -3,6 +3,7 @@ import { schema } from 'normalizr';
 
 import { Album, albumSchema, toAlbum } from './album';
 import { Artist, artistSchema, toArtist } from './artist';
+import { Collection, collectionSchema, toCollection } from './collection';
 import { Genre, genreSchema, toGenre } from './genre';
 import { createParser } from './parser';
 import { Playlist, playlistSchema, toPlaylist } from './playlist';
@@ -19,6 +20,7 @@ const hubSchema = new schema.Entity(
           album: albumSchema,
           track: trackSchema,
           genre: genreSchema,
+          collection: collectionSchema,
         },
         'type'
       )
@@ -49,6 +51,8 @@ const getTransformFunction = (type: string): TransformFunction => {
       return toPlaylist;
     case 'genre':
       return toGenre;
+    case 'collection':
+      return toCollection;
     default:
       return defaultTransformFunction;
   }
@@ -57,7 +61,7 @@ const getTransformFunction = (type: string): TransformFunction => {
 export interface Hub {
   _type: string;
 
-  items: (Artist | Album | Track | Playlist | Genre)[];
+  items: (Artist | Album | Track | Playlist | Genre | Collection)[];
 
   hubIdentifier: string;
   more: boolean;
@@ -69,7 +73,7 @@ export interface Hub {
 const toHub = ($data: Prism<any>): Hub => {
   const transformFunction = getTransformFunction($data.get('type').value);
 
-  let items: (Artist | Album | Track | Playlist | Genre)[] = [];
+  let items: (Artist | Album | Track | Playlist | Genre | Collection)[] = [];
 
   if ($data.has('Directory')) {
     items = $data
@@ -77,7 +81,7 @@ const toHub = ($data: Prism<any>): Hub => {
       .toArray()
       .map(transformFunction)
       .filter(
-        (itemA, index, array): itemA is Artist | Album | Track | Playlist | Genre =>
+        (itemA, index, array): itemA is Artist | Album | Track | Playlist | Genre | Collection =>
           array.slice(index + 1).findIndex((itemB) => itemB.id === itemA.id) < 0
       );
   }
@@ -88,7 +92,7 @@ const toHub = ($data: Prism<any>): Hub => {
       .toArray()
       .map(transformFunction)
       .filter(
-        (itemA, index, array): itemA is Artist | Album | Track | Playlist | Genre =>
+        (itemA, index, array): itemA is Artist | Album | Track | Playlist | Genre | Collection =>
           array.slice(index + 1).findIndex((itemB) => itemB.id === itemA.id) < 0
       );
   }
@@ -112,7 +116,7 @@ export interface HubContainer {
   hubs: Hub[];
 }
 
-const validHubs = ['artist', 'album', 'track', 'playlist', 'genre'];
+const validHubs = ['artist', 'album', 'track', 'playlist', 'genre', 'collection'];
 
 const toHubContainer = ($data: Prism<any>): HubContainer => {
   if ($data.has('MediaContainer')) {

@@ -63,7 +63,8 @@ const AppNavigation: React.FC = () => {
         marginX="auto"
         maxWidth={1920}
         sx={{
-          gridTemplateColumns: '1fr auto 1fr',
+          gap: 1,
+          gridTemplateColumns: '108px auto 108px',
         }}
       >
         <AppMenu />

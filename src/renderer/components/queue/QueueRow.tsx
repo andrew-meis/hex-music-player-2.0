@@ -19,7 +19,9 @@ const QueueRow: React.FC<{ index: number; queueItem: PlayQueueItem }> = observer
   const { track } = queueItem;
   const library = store.library.get();
 
-  const thumbSrc = library.resizeImage({ url: track.thumb, width: 64, height: 64 });
+  const thumbSrc = library.resizeImage(
+    new URLSearchParams({ url: track.thumb, width: '64', height: '64' })
+  );
 
   const handleLink = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.stopPropagation();

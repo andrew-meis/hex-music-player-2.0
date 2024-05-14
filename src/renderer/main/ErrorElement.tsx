@@ -1,8 +1,8 @@
 import { Box, Fade, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import isAppInit from 'app/init-app';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import isAppInit from 'scripts/init-app';
 
 const ErrorElement: React.FC = () => {
   const loggedIn = useQuery({

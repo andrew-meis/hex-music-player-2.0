@@ -1,9 +1,6 @@
-export type Params = Record<string, string | number | boolean>;
-
-const withParams = (url: string, params: Params = {}): string => {
-  if (Object.keys(params).length > 0) {
-    const searchParams = new URLSearchParams(params as Record<string, string>);
-    return `${url}?${searchParams.toString()}`;
+const withParams = (url: string, params: URLSearchParams): string => {
+  if (params.size) {
+    return `${url}?${params.toString()}`;
   }
   return url;
 };
@@ -13,22 +10,19 @@ const withParams = (url: string, params: Params = {}): string => {
  * Important: the `start` parameter is only respected by Plex if you pass the `size` parameter as well.
  */
 
-interface WithContainerParamsOptions {
-  start?: number;
-  size?: number;
-}
-
-type WithContainerParams = Params | WithContainerParamsOptions;
-
-const withContainerParams = (params: WithContainerParams = {}) => {
-  const { start, size, ...searchParams } = params;
+const withContainerParams = (params: URLSearchParams | undefined) => {
+  if (!params) return params;
+  const start = params.get('start');
+  const size = params.get('size');
 
   if (size != null) {
-    searchParams['X-Plex-Container-Size'] = size.toString();
-    searchParams['X-Plex-Container-Start'] = start != null ? start.toString() : '0';
+    params.delete('size');
+    params.append('X-Plex-Container-Size', size);
+    params.delete('start');
+    params.append('X-Plex-Container-Start', start != null ? start.toString() : '0');
   }
 
-  return searchParams;
+  return params;
 };
 
 export { withContainerParams, withParams };

@@ -136,29 +136,41 @@ const toTrack = ($data: Prism<any>): Track => ({
   getRelatedTracks: async function () {
     const library = store.library.peek();
     const { sectionId } = store.serverConfig.peek();
-    const similarArtists = await library.metadataSimilar(this.grandparentId, MediaType.ARTIST, {
-      excludeFields: 'summary',
-      excludeElements: 'Mood,Similar,Genre,Style,Country,Media',
-    });
-    const relatedTracks = await library.sectionItems(sectionId, MediaType.TRACK, {
-      sort: 'lastViewedAt',
-      'track.userRating>': 4,
-      'artist.id': similarArtists.artists.map((artist) => artist.id).join(','),
-      group: 'guid',
-      excludeFields: 'summary',
-      excludeElements: 'Mood,Similar,Genre,Style,Country,Media',
-    });
+    const similarArtists = await library.metadataSimilar(
+      this.grandparentId,
+      MediaType.ARTIST,
+      new URLSearchParams({
+        excludeFields: 'summary',
+        excludeElements: 'Mood,Similar,Genre,Style,Country,Media',
+      })
+    );
+    const relatedTracks = await library.sectionItems(
+      sectionId,
+      MediaType.TRACK,
+      new URLSearchParams({
+        sort: 'lastViewedAt',
+        'track.userRating>': '4',
+        'artist.id': similarArtists.artists.map((artist) => artist.id).join(','),
+        group: 'guid',
+        excludeFields: 'summary',
+        excludeElements: 'Mood,Similar,Genre,Style,Country,Media',
+      })
+    );
     return relatedTracks;
   },
 
   getSimilarTracks: async function () {
     const library = store.library.peek();
-    const similarTracks = await library.metadataNearest(this.id, MediaType.TRACK, {
-      excludeGrandparentID: this.grandparentId,
-      limit: 50,
-      maxDistance: 0.15,
-      sort: 'distance',
-    });
+    const similarTracks = await library.metadataNearest(
+      this.id,
+      MediaType.TRACK,
+      new URLSearchParams({
+        excludeGrandparentID: this.grandparentId.toString(),
+        limit: '50',
+        maxDistance: '0.15',
+        sort: 'distance',
+      })
+    );
     return similarTracks;
   },
 

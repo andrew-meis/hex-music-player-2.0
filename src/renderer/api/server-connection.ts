@@ -1,5 +1,5 @@
 import Account from './account';
-import { Params, withParams } from './utils/params';
+import { withParams } from './utils/params';
 import { requestJSON, RequestOptions } from './utils/request';
 
 /**
@@ -28,8 +28,8 @@ export default class ServerConnection {
    * Given a path, return a fully qualified URL
    */
 
-  getUrl(path: string, params: Params = {}) {
-    return withParams(this.uri + path, params);
+  getUrl(path: string, searchParams: URLSearchParams = new URLSearchParams()) {
+    return withParams(this.uri + path, searchParams);
   }
 
   /**
@@ -37,11 +37,9 @@ export default class ServerConnection {
    * Includes the X-Plex-Token parameter in the URL
    */
 
-  getAuthenticatedUrl(path: string, params: Params = {}) {
-    return this.getUrl(path, {
-      ...params,
-      'X-Plex-Token': this.headers()['X-Plex-Token'],
-    });
+  getAuthenticatedUrl(path: string, searchParams: URLSearchParams = new URLSearchParams()) {
+    searchParams.append('X-Plex-Token', this.headers()['X-Plex-Token']);
+    return this.getUrl(path, searchParams);
   }
 
   /**

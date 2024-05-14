@@ -1,7 +1,9 @@
 import { Album, Artist, Playlist, PlayQueueItem, Track } from 'api';
-import { audio, queueActions } from 'audio';
+import { audio } from 'audio';
 import { store } from 'state';
 import { v4 } from 'uuid';
+
+import { queueActions } from './queue';
 
 const playAlbumRadio = async (album: Album) => {
   const { sectionId } = store.serverConfig.peek();

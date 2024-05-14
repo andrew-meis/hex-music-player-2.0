@@ -19,12 +19,15 @@ const addToQueue = async (
   } else {
     uri = `${library.device.uri}${newItems.key}`;
   }
-  const url = library.server.getAuthenticatedUrl(`/playQueues/${persistedStore.queueId.peek()}`, {
-    uri,
-    ...(after && { after }),
-    ...(end && { end: 1 }),
-    ...(next && { next: 1 }),
-  });
+  const url = library.server.getAuthenticatedUrl(
+    `/playQueues/${persistedStore.queueId.peek()}`,
+    new URLSearchParams({
+      uri,
+      ...(after && { after: after.toString() }),
+      ...(end && { end: '1' }),
+      ...(next && { next: '1' }),
+    })
+  );
   await ky.put(url);
   store.events.updateQueue.set(true);
 };

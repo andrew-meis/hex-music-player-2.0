@@ -1,7 +1,8 @@
 import { observer, useObserve } from '@legendapp/state/react';
 import { Divider, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { PlayQueueItem } from 'api';
-import { playbackActions, queueActions } from 'audio';
+import { playbackActions } from 'features/playback';
+import { queueActions } from 'features/queue';
 import React, { useRef } from 'react';
 import { BsPlayFill } from 'react-icons/bs';
 import { CgRowFirst } from 'react-icons/cg';

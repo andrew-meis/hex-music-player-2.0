@@ -6,13 +6,29 @@ export { genresQuery, default as useGenres } from './useGenres';
 export { lyricsQuery, default as useLyrics } from './useLyrics';
 export { playlistsQuery, default as usePlaylists } from './usePlaylists';
 export { queueQuery, default as useQueue } from './useQueue';
-export { searchQuery, default as useSearch } from './useSearch';
+export {
+  searchAlbums,
+  searchArtists,
+  searchCollections,
+  searchGenres,
+  searchPlaylists,
+  searchQuery,
+  searchTracks,
+  default as useSearch,
+  useSearchAlbums,
+  useSearchArtists,
+  useSearchCollections,
+  useSearchGenres,
+  useSearchPlaylists,
+  useSearchTracks,
+} from './useSearch';
 export {
   tracksQuery,
   useLastfmMatchTracks,
   useRecentTracks,
   useRelatedTracks,
   useSimilarTracks,
+  useTopTracks,
   default as useTracks,
 } from './useTracks';
 export { userQuery, default as useUser } from './useUser';

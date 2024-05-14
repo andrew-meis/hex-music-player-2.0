@@ -19,6 +19,7 @@ export default defineConfig({
         assets: resolve('src/renderer/assets'),
         audio: resolve('src/renderer/audio/index.ts'),
         components: resolve('src/renderer/components'),
+        features: resolve('src/renderer/features'),
         hooks: resolve('src/renderer/hooks'),
         main: resolve('src/renderer/main'),
         queries: resolve('src/renderer/queries/index.ts'),

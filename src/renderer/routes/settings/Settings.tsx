@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import { QueryClient } from '@tanstack/react-query';
 import { User } from 'api';
-import isAppInit from 'app/init-app';
 import Scroller from 'components/scroller/Scroller';
 import { userQuery } from 'queries';
 import React, { useEffect, useRef } from 'react';
@@ -22,6 +21,7 @@ import { TbExternalLink } from 'react-icons/tb';
 import { useLoaderData } from 'react-router-dom';
 import RouteContainer from 'routes/RouteContainer';
 import RouteHeader from 'routes/RouteHeader';
+import isAppInit from 'scripts/init-app';
 import { persistedStore, store } from 'state';
 
 const ReactiveTextField = reactive(TextField);
@@ -68,7 +68,9 @@ const Settings: React.FC = () => {
     if (!library) {
       return undefined;
     }
-    const newThumb = library.resizeImage({ url: user.thumb, width: 80, height: 80 });
+    const newThumb = library.resizeImage(
+      new URLSearchParams({ url: user.thumb, width: '80', height: '80' })
+    );
     thumb.current = newThumb;
     return newThumb;
   });

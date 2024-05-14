@@ -1,3 +1,6 @@
+import Fuse from 'fuse.js';
+import { DateTime } from 'luxon';
+
 import ServerConnection from './server-connection';
 import { Album, AlbumContainer, parseAlbumContainer } from './types/album';
 import { Artist, ArtistContainer, parseArtistContainer } from './types/artist';
@@ -22,7 +25,7 @@ import { parseStyleArray } from './types/style';
 import { parseSubformatArray } from './types/subformat';
 import { parseTrackContainer, Track, TrackContainer } from './types/track';
 import { parseYearArray } from './types/year';
-import { Params, withContainerParams, withParams } from './utils/params';
+import { withContainerParams, withParams } from './utils/params';
 import { RequestOptions } from './utils/request';
 
 export enum MediaType {
@@ -169,15 +172,35 @@ export default class Library {
   async sectionItems<T extends MediaType>(
     sectionId: number,
     type: T,
-    searchParams: Params = {}
+    searchParams: URLSearchParams = new URLSearchParams()
   ): Promise<ContainerReturnType<T>> {
     const path = `/library/sections/${sectionId}/all`;
+    searchParams.append('type', type.toString());
     const response = await this.fetch(path, {
-      searchParams: {
-        ...searchParams,
-        type,
-      },
+      searchParams,
     });
+    return parseContainerType<T>(type, response) as ContainerReturnType<T>;
+  }
+
+  /**
+   * Get all items in a section
+   */
+
+  async topItems<T extends MediaType>(
+    sectionId: number,
+    type: T,
+    start: DateTime,
+    end: DateTime,
+    limit: number,
+    searchParams: URLSearchParams = new URLSearchParams()
+  ): Promise<ContainerReturnType<T>> {
+    const path = '/library/all/top';
+    searchParams.append('type', type.toString());
+    searchParams.append('librarySectionID', sectionId.toString());
+    searchParams.append('viewedAt>', start.toUnixInteger().toString());
+    searchParams.append('viewedAt<', end.toUnixInteger().toString());
+    searchParams.append('limit', limit.toString());
+    const response = await this.fetch(path, { searchParams });
     return parseContainerType<T>(type, response) as ContainerReturnType<T>;
   }
 
@@ -185,7 +208,11 @@ export default class Library {
    * Build library URI for use in creating queues and playlists
    */
 
-  buildLibraryURI(uuid: string, path: string, searchParams: Params = {}) {
+  buildLibraryURI(
+    uuid: string,
+    path: string,
+    searchParams: URLSearchParams = new URLSearchParams()
+  ) {
     const uri = withParams(path, searchParams);
     const encodedURI = encodeURIComponent(uri);
     return `library://${uuid}/directory/${encodedURI}`;
@@ -198,7 +225,7 @@ export default class Library {
   async metadata<T extends MediaType>(
     id: number,
     type: T,
-    searchParams: Params = {}
+    searchParams: URLSearchParams = new URLSearchParams()
   ): Promise<ContainerReturnType<T>> {
     const path = `/library/metadata/${id}`;
     const response = await this.fetch(path, { searchParams });
@@ -212,7 +239,7 @@ export default class Library {
   async metadataChildren<T extends MediaType>(
     id: number,
     type: T,
-    searchParams: Params = {}
+    searchParams: URLSearchParams = new URLSearchParams()
   ): Promise<ContainerReturnType<T>> {
     const path = `/library/metadata/${id}/children`;
     const response = await this.fetch(path, { searchParams });
@@ -222,7 +249,7 @@ export default class Library {
   async metadataNearest<T extends MediaType>(
     id: number,
     type: T,
-    searchParams: Params = {}
+    searchParams: URLSearchParams = new URLSearchParams()
   ): Promise<ContainerReturnType<T>> {
     const path = `/library/metadata/${id}/nearest`;
     const response = await this.fetch(path, { searchParams });
@@ -232,21 +259,21 @@ export default class Library {
   async metadataSimilar<T extends MediaType>(
     id: number,
     type: T,
-    searchParams: Params = {}
+    searchParams: URLSearchParams = new URLSearchParams()
   ): Promise<ContainerReturnType<T>> {
     const path = `/library/metadata/${id}/similar`;
     const response = await this.fetch(path, { searchParams });
     return parseContainerType<T>(type, response);
   }
 
-  async unmatch(id: number, params: Params = {}) {
-    const path = `/library/metadata/${id}/unmatch`;
-    await this.fetch(path, { method: 'PUT', ...params });
+  async refreshMetadata(id: number, searchParams: URLSearchParams = new URLSearchParams()) {
+    const path = `/library/metadata/${id}/refresh`;
+    await this.fetch(path, { method: 'PUT', ...searchParams });
   }
 
-  async refreshMetadata(id: number, params: Params = {}) {
-    const path = `/library/metadata/${id}/refresh`;
-    await this.fetch(path, { method: 'PUT', ...params });
+  async unmatch(id: number, searchParams: URLSearchParams = new URLSearchParams()) {
+    const path = `/library/metadata/${id}/unmatch`;
+    await this.fetch(path, { method: 'PUT', ...searchParams });
   }
 
   // ==========================================================================
@@ -263,14 +290,14 @@ export default class Library {
   // GENRES
   // ==========================================================================
 
-  async genres(sectionId: number, type: MediaType, searchParams: Params = {}) {
+  async genres(
+    sectionId: number,
+    type: MediaType,
+    searchParams: URLSearchParams = new URLSearchParams()
+  ) {
     const path = `/library/sections/${sectionId}/genre`;
-    const response = await this.fetch(path, {
-      searchParams: {
-        ...searchParams,
-        type,
-      },
-    });
+    searchParams.append('type', type.toString());
+    const response = await this.fetch(path, { searchParams });
     return parseGenreContainer(response);
   }
 
@@ -280,7 +307,10 @@ export default class Library {
 
   async styles(sectionId: number, type: MediaType) {
     const path = `/library/sections/${sectionId}/style`;
-    const response = await this.fetch(path, { searchParams: { type } });
+    const searchParams = new URLSearchParams({
+      type: type.toString(),
+    });
+    const response = await this.fetch(path, { searchParams });
     return parseStyleArray(response);
   }
 
@@ -290,7 +320,10 @@ export default class Library {
 
   async moods(sectionId: number, type: MediaType) {
     const path = `/library/sections/${sectionId}/mood`;
-    const response = await this.fetch(path, { searchParams: { type } });
+    const searchParams = new URLSearchParams({
+      type: type.toString(),
+    });
+    const response = await this.fetch(path, { searchParams });
     return parseMoodArray(response);
   }
 
@@ -300,7 +333,10 @@ export default class Library {
 
   async decades(sectionId: number, type: MediaType) {
     const path = `/library/sections/${sectionId}/decade`;
-    const response = await this.fetch(path, { searchParams: { type } });
+    const searchParams = new URLSearchParams({
+      type: type.toString(),
+    });
+    const response = await this.fetch(path, { searchParams });
     return parseDecadeArray(response);
   }
 
@@ -310,7 +346,10 @@ export default class Library {
 
   async years(sectionId: number, type: MediaType) {
     const path = `/library/sections/${sectionId}/year`;
-    const response = await this.fetch(path, { searchParams: { type } });
+    const searchParams = new URLSearchParams({
+      type: type.toString(),
+    });
+    const response = await this.fetch(path, { searchParams });
     return parseYearArray(response);
   }
 
@@ -320,7 +359,10 @@ export default class Library {
 
   async formats(sectionId: number, type: MediaType) {
     const path = `/library/sections/${sectionId}/format`;
-    const response = await this.fetch(path, { searchParams: { type } });
+    const searchParams = new URLSearchParams({
+      type: type.toString(),
+    });
+    const response = await this.fetch(path, { searchParams });
     return parseFormatArray(response);
   }
 
@@ -330,7 +372,10 @@ export default class Library {
 
   async subformats(sectionId: number, type: MediaType) {
     const path = `/library/sections/${sectionId}/subformat`;
-    const response = await this.fetch(path, { searchParams: { type } });
+    const searchParams = new URLSearchParams({
+      type: type.toString(),
+    });
+    const response = await this.fetch(path, { searchParams });
     return parseSubformatArray(response);
   }
 
@@ -340,7 +385,10 @@ export default class Library {
 
   async studios(sectionId: number, type: MediaType) {
     const path = `/library/sections/${sectionId}/studio`;
-    const response = await this.fetch(path, { searchParams: { type } });
+    const searchParams = new URLSearchParams({
+      type: type.toString(),
+    });
+    const response = await this.fetch(path, { searchParams });
     return parseStudioArray(response);
   }
 
@@ -352,7 +400,7 @@ export default class Library {
    * Query all the collections in the library
    */
 
-  async collections(sectionId: number, searchParams: Params = {}) {
+  async collections(sectionId: number, searchParams: URLSearchParams = new URLSearchParams()) {
     const collections = await this.sectionItems(sectionId, MediaType.COLLECTION, searchParams);
     return collections;
   }
@@ -365,7 +413,7 @@ export default class Library {
    * Query all the tracks in the library
    */
 
-  async tracks(sectionId: number, searchParams: Params = {}) {
+  async tracks(sectionId: number, searchParams: URLSearchParams = new URLSearchParams()) {
     const tracks = await this.sectionItems(sectionId, MediaType.TRACK, searchParams);
     return tracks;
   }
@@ -387,7 +435,7 @@ export default class Library {
    * Query all albums in the library
    */
 
-  async albums(sectionId: number, searchParams: Params = {}) {
+  async albums(sectionId: number, searchParams: URLSearchParams = new URLSearchParams()) {
     const albums = await this.sectionItems(sectionId, MediaType.ALBUM, searchParams);
     return albums;
   }
@@ -405,7 +453,7 @@ export default class Library {
    * Get the tracks related to an album
    */
 
-  async albumTracks(albumId: number, searchParams: Params = {}) {
+  async albumTracks(albumId: number, searchParams: URLSearchParams = new URLSearchParams()) {
     const albumTracks = await this.metadataChildren(albumId, MediaType.TRACK, searchParams);
     return albumTracks;
   }
@@ -418,7 +466,7 @@ export default class Library {
    * Query all artists in the library
    */
 
-  async artists(sectionId: number, searchParams: Params = {}) {
+  async artists(sectionId: number, searchParams: URLSearchParams = new URLSearchParams()) {
     const artists = await this.sectionItems(sectionId, MediaType.ARTIST, searchParams);
     return artists;
   }
@@ -429,9 +477,13 @@ export default class Library {
 
   async artist(artistId: number, options: { includePopular?: boolean } = {}) {
     const { includePopular = false } = options;
-    const artist = await this.metadata(artistId, MediaType.ARTIST, {
-      includePopularLeaves: includePopular ? 1 : 0,
-    });
+    const artist = await this.metadata(
+      artistId,
+      MediaType.ARTIST,
+      new URLSearchParams({
+        includePopularLeaves: includePopular ? '1' : '0',
+      })
+    );
     return artist;
   }
 
@@ -439,7 +491,7 @@ export default class Library {
    * Get the albums related to an artist
    */
 
-  async artistAlbums(artistId: number, searchParams: Params = {}) {
+  async artistAlbums(artistId: number, searchParams: URLSearchParams = new URLSearchParams()) {
     const artistAlbums = await this.metadataChildren(artistId, MediaType.ALBUM, searchParams);
     return artistAlbums;
   }
@@ -451,12 +503,12 @@ export default class Library {
   async createSmartPlaylist(title: string, uri: string) {
     const response = await this.fetch('/playlists', {
       method: 'POST',
-      searchParams: {
+      searchParams: new URLSearchParams({
         type: 'audio',
         title,
-        smart: 1,
+        smart: '1',
         uri,
-      },
+      }),
     });
     return parsePlaylistContainer(response);
   }
@@ -465,29 +517,33 @@ export default class Library {
    * Fetch all playlists on the server
    */
 
-  async playlists(searchParams: Params = {}) {
+  async playlists(searchParams: URLSearchParams = new URLSearchParams()) {
     const path = '/playlists/all';
-    const response = await this.fetch(path, {
-      searchParams: {
-        ...searchParams,
-        type: MediaType.PLAYLIST,
-      },
-    });
+    searchParams.append('type', MediaType.PLAYLIST.toString());
+    searchParams.append('playlistType', 'audio');
+    const response = await this.fetch(path, { searchParams });
     return parsePlaylistContainer(response);
   }
+
+  /**
+   * Fetch information about one playlist
+   */
 
   async playlist(id: number) {
     const response = await this.fetch(`/playlists/${id}`);
     return parsePlaylistContainer(response);
   }
 
-  async playlistTracks(id: number, searchParams: Params = {}) {
+  async playlistTracks(id: number, searchParams: URLSearchParams = new URLSearchParams()) {
     const path = `/playlists/${id}/items`;
     const response = await this.fetch(path, { searchParams });
     return parsePlaylist(response);
   }
 
-  async editPlaylistDetails(playlistId: number, searchParams: Params = {}) {
+  async editPlaylistDetails(
+    playlistId: number,
+    searchParams: URLSearchParams = new URLSearchParams()
+  ) {
     const response = await this.fetch(`/library/metadata/${playlistId}`, {
       method: 'PUT',
       searchParams,
@@ -496,21 +552,21 @@ export default class Library {
   }
 
   async editPlaylistTitle(playlistId: number, title: string) {
-    const response = await this.editPlaylistDetails(playlistId, { title });
+    const response = await this.editPlaylistDetails(playlistId, new URLSearchParams({ title }));
     return response;
   }
 
   async editPlaylistSummary(playlistId: number, summary: string) {
-    const response = await this.editPlaylistDetails(playlistId, { summary });
+    const response = await this.editPlaylistDetails(playlistId, new URLSearchParams({ summary }));
     return response;
   }
 
   async addToPlaylist(playlistId: number, uri: string) {
     const response = await this.fetch(`/playlists/${playlistId}/items`, {
       method: 'PUT',
-      searchParams: {
+      searchParams: new URLSearchParams({
         uri,
-      },
+      }),
     });
     return response;
   }
@@ -518,9 +574,9 @@ export default class Library {
   async movePlaylistItem(playlistId: number, itemId: number, afterId: number) {
     const response = await this.fetch(`/playlists/${playlistId}/items/${itemId}/move`, {
       method: 'PUT',
-      searchParams: {
-        after: afterId,
-      },
+      searchParams: new URLSearchParams({
+        after: afterId.toString(),
+      }),
     });
     return parsePlaylistContainer(response);
   }
@@ -549,28 +605,135 @@ export default class Library {
 
   async searchAll(query: string, limit = 3) {
     const response = await this.fetch('/hubs/search', {
-      searchParams: {
+      searchParams: new URLSearchParams({
+        includeCollections: '1',
         query,
-        limit,
-      },
+        limit: limit.toString(),
+      }),
     });
     return parseHubContainer(response);
+  }
+
+  /**
+   * Search the library for albums matching a query
+   */
+
+  async searchAlbums(sectionId: number, query: string, limit = 5) {
+    const fuseOptions = {
+      keys: [{ name: 'title', weight: 3 }, 'parentTitle'],
+    };
+    const params = new URLSearchParams();
+    params.append('type', '9');
+    params.append('push', '1');
+    params.append('artist.title', query);
+    params.append('or', '1');
+    params.append('album.title', query);
+    params.append('pop', '1');
+    params.append('limit', limit.toString());
+    const response = await this.fetch(`/library/sections/${sectionId}/search`, {
+      searchParams: params,
+    });
+    const albumContainer = parseAlbumContainer(response);
+    const fuse = new Fuse(albumContainer.albums, fuseOptions);
+    return fuse.search(query).map((value) => value.item);
+  }
+
+  /**
+   * Search the library for artists matching a query
+   */
+
+  async searchArtists(sectionId: number, query: string, limit = 5) {
+    const fuseOptions = {
+      keys: ['title'],
+    };
+    const params = new URLSearchParams();
+    params.append('type', '8');
+    params.append('artist.title', query);
+    params.append('limit', limit.toString());
+    const response = await this.fetch(`/library/sections/${sectionId}/search`, {
+      searchParams: params,
+    });
+    const artistContainer = parseArtistContainer(response);
+    const fuse = new Fuse(artistContainer.artists, fuseOptions);
+    return fuse.search(query).map((value) => value.item);
+  }
+
+  /**
+   * Search the library for collections matching a query
+   */
+
+  async searchCollections(sectionId: number, query: string, limit = 5) {
+    const fuseOptions = {
+      keys: ['title'],
+    };
+    const params = new URLSearchParams();
+    params.append('type', '18');
+    params.append('title', query);
+    params.append('limit', limit.toString());
+    const response = await this.fetch(`/library/sections/${sectionId}/search`, {
+      searchParams: params,
+    });
+    const collectionContainer = parseCollectionContainer(response);
+    const fuse = new Fuse(collectionContainer.collections, fuseOptions);
+    return fuse.search(query).map((value) => value.item);
+  }
+
+  /**
+   * Search the library for genres matching a query
+   */
+
+  async searchGenres(sectionId: number, query: string) {
+    const response = await this.genres(sectionId, 10);
+    return response.genres.filter((value) =>
+      value.title.toLowerCase().includes(query.toLowerCase())
+    );
+  }
+
+  /**
+   * Search the library for artists matching a query
+   */
+
+  async searchPlaylists(query: string, limit = 5) {
+    const fuseOptions = {
+      keys: ['title'],
+    };
+    const params = new URLSearchParams();
+    params.append('type', '15');
+    params.append('playlistType', 'audio');
+    params.append('title', query);
+    params.append('limit', limit.toString());
+    const response = await this.fetch('/playlists/all', {
+      searchParams: params,
+    });
+    const playlistContainer = parsePlaylistContainer(response);
+    const fuse = new Fuse(playlistContainer.playlists, fuseOptions);
+    return fuse.search(query).map((value) => value.item);
   }
 
   /**
    * Search the library for tracks matching a query
    */
 
-  async searchTracks(sectionId: number, artist: string, title: string, limit = 5) {
+  async searchTracks(sectionId: number, query: string, limit = 5) {
+    const fuseOptions = {
+      keys: [{ name: 'title', weight: 3 }, 'parentTitle', 'grandparentTitle', 'originalTitle'],
+    };
+    const params = new URLSearchParams();
+    params.append('type', '10');
+    params.append('push', '1');
+    params.append('artist.title', query);
+    params.append('or', '1');
+    params.append('album.title', query);
+    params.append('or', '1');
+    params.append('track.title', query);
+    params.append('pop', '1');
+    params.append('limit', limit.toString());
     const response = await this.fetch(`/library/sections/${sectionId}/search`, {
-      searchParams: {
-        type: MediaType.TRACK,
-        artist,
-        title,
-        limit,
-      },
+      searchParams: params,
     });
-    return parseTrackContainer(response);
+    const trackContainer = parseTrackContainer(response);
+    const fuse = new Fuse(trackContainer.tracks, fuseOptions);
+    return fuse.search(query).map((value) => value.item);
   }
 
   // ==========================================================================
@@ -581,11 +744,13 @@ export default class Library {
    * Resize a photo to a specific size
    */
 
-  resizeImage(searchParams: Params = {}): string | undefined {
-    if (!searchParams.url) {
+  resizeImage(searchParams: URLSearchParams = new URLSearchParams()): string | undefined {
+    const url = searchParams.get('url');
+    if (!url || url === 'undefined') {
       return undefined;
     }
-    return this.server.getAuthenticatedUrl('/photo/:/transcode', { ...searchParams, minSize: 1 });
+    searchParams.append('minSize', '1');
+    return this.server.getAuthenticatedUrl('/photo/:/transcode', searchParams);
   }
 
   // ==========================================================================
@@ -612,11 +777,11 @@ export default class Library {
   async rate(trackId: number, rating: number) {
     const response = await this.fetch('/:/rate', {
       method: 'PUT',
-      searchParams: {
-        key: trackId,
+      searchParams: new URLSearchParams({
+        key: trackId.toString(),
         identifier: 'com.plexapp.plugins.library',
-        rating,
-      },
+        rating: rating.toString(),
+      }),
     });
     return response;
   }
@@ -651,16 +816,16 @@ export default class Library {
   ) {
     const response = await this.fetch('/playQueues', {
       method: 'POST',
-      searchParams: {
+      searchParams: new URLSearchParams({
         type: 'audio',
-        ...(options.playlistId && { playlistID: options.playlistId }),
+        ...(options.playlistId && { playlistID: options.playlistId.toString() }),
         ...(options.uri && { uri: options.uri }),
         ...(options.key && { key: options.key }),
-        shuffle: options.shuffle ? 1 : 0,
-        repeat: options.repeat ? 1 : 0,
-        includeChapters: options.includeChapters ? 1 : 0,
-        includeRelated: options.includeRelated ? 1 : 0,
-      },
+        shuffle: options.shuffle ? '1' : '0',
+        repeat: options.repeat ? '1' : '0',
+        includeChapters: options.includeChapters ? '1' : '0',
+        includeRelated: options.includeRelated ? '1' : '0',
+      }),
     });
     return parsePlayQueue(response);
   }
@@ -671,11 +836,11 @@ export default class Library {
 
   async playQueue(playQueueId: number, center: number | undefined, repeat: 1 | 0) {
     const response = await this.fetch(`/playQueues/${playQueueId}`, {
-      searchParams: {
-        window: 30,
-        ...(center && { center }),
-        repeat,
-      },
+      searchParams: new URLSearchParams({
+        window: '30',
+        ...(center && { center: center.toString() }),
+        repeat: repeat.toString(),
+      }),
     });
     return parsePlayQueue(response);
   }
@@ -687,9 +852,9 @@ export default class Library {
   async movePlayQueueItem(playQueueId: number, itemId: number, afterId: number) {
     const response = await this.fetch(`/playQueues/${playQueueId}/items/${itemId}/move`, {
       method: 'PUT',
-      searchParams: {
-        after: afterId,
-      },
+      searchParams: new URLSearchParams({
+        after: afterId.toString(),
+      }),
     });
     return parsePlayQueue(response);
   }
@@ -742,15 +907,15 @@ export default class Library {
   }) {
     const { currentTime, duration, queueItemId, ratingKey, key, playerState } = options;
     const response = await this.fetch('/:/timeline', {
-      searchParams: {
-        hasMDE: 1,
+      searchParams: new URLSearchParams({
+        hasMDE: '1',
         ratingKey,
         key,
-        playQueueItemID: queueItemId,
+        playQueueItemID: queueItemId.toString(),
         state: playerState,
-        time: currentTime,
-        duration,
-      },
+        time: currentTime.toString(),
+        duration: duration.toString(),
+      }),
     });
     return response;
   }
@@ -778,12 +943,12 @@ export default class Library {
 
     const response = await this.server.fetch(`/library/sections/${sectionId}/all`, {
       method: 'PUT',
-      searchParams: {
+      searchParams: new URLSearchParams({
         ...params,
-        type,
-        id,
-        [`${prop}.locked`]: 1,
-      },
+        type: type.toString(),
+        id: id.toString(),
+        [`${prop}.locked`]: '1',
+      }),
     });
     return response;
   }

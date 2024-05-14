@@ -23,4 +23,116 @@ const useSearch = (query: string, limit: number) => {
   return useQuery(searchQuery(library, query, limit));
 };
 
+export const searchAlbums = (
+  sectionId: number,
+  library: Library,
+  query: string,
+  limit: number,
+  enabled: boolean
+) =>
+  queryOptions({
+    queryKey: ['search-albums', query, limit],
+    queryFn: () => library.searchAlbums(sectionId, query, limit),
+    enabled,
+    refetchOnWindowFocus: false,
+  });
+
+export const useSearchAlbums = (query: string, limit: number, enabled = true) => {
+  const { sectionId } = store.serverConfig.peek();
+  const library = store.library.get();
+  return useQuery(searchAlbums(sectionId, library, query, limit, enabled));
+};
+
+export const searchArtists = (
+  sectionId: number,
+  library: Library,
+  query: string,
+  limit: number,
+  enabled: boolean
+) =>
+  queryOptions({
+    queryKey: ['search-artists', query, limit],
+    queryFn: () => library.searchArtists(sectionId, query, limit),
+    enabled,
+    refetchOnWindowFocus: false,
+  });
+
+export const useSearchArtists = (query: string, limit: number, enabled = true) => {
+  const { sectionId } = store.serverConfig.peek();
+  const library = store.library.get();
+  return useQuery(searchArtists(sectionId, library, query, limit, enabled));
+};
+
+export const searchCollections = (
+  sectionId: number,
+  library: Library,
+  query: string,
+  limit: number,
+  enabled: boolean
+) =>
+  queryOptions({
+    queryKey: ['search-collections', query, limit],
+    queryFn: () => library.searchCollections(sectionId, query, limit),
+    enabled,
+    refetchOnWindowFocus: false,
+  });
+
+export const useSearchCollections = (query: string, limit: number, enabled = true) => {
+  const { sectionId } = store.serverConfig.peek();
+  const library = store.library.get();
+  return useQuery(searchCollections(sectionId, library, query, limit, enabled));
+};
+
+export const searchGenres = (
+  sectionId: number,
+  library: Library,
+  query: string,
+  enabled: boolean
+) =>
+  queryOptions({
+    queryKey: ['search-genres', query],
+    queryFn: () => library.searchGenres(sectionId, query),
+    enabled,
+    refetchOnWindowFocus: false,
+  });
+
+export const useSearchGenres = (query: string, enabled = true) => {
+  const { sectionId } = store.serverConfig.peek();
+  const library = store.library.get();
+  return useQuery(searchGenres(sectionId, library, query, enabled));
+};
+
+export const searchPlaylists = (library: Library, query: string, limit: number, enabled: boolean) =>
+  queryOptions({
+    queryKey: ['search-playlists', query, limit],
+    queryFn: () => library.searchPlaylists(query, limit),
+    enabled,
+    refetchOnWindowFocus: false,
+  });
+
+export const useSearchPlaylists = (query: string, limit: number, enabled = true) => {
+  const library = store.library.get();
+  return useQuery(searchPlaylists(library, query, limit, enabled));
+};
+
+export const searchTracks = (
+  sectionId: number,
+  library: Library,
+  query: string,
+  limit: number,
+  enabled: boolean
+) =>
+  queryOptions({
+    queryKey: ['search-tracks', query, limit],
+    queryFn: () => library.searchTracks(sectionId, query, limit),
+    enabled,
+    refetchOnWindowFocus: false,
+  });
+
+export const useSearchTracks = (query: string, limit: number, enabled = true) => {
+  const { sectionId } = store.serverConfig.peek();
+  const library = store.library.get();
+  return useQuery(searchTracks(sectionId, library, query, limit, enabled));
+};
+
 export default useSearch;

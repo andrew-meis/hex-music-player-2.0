@@ -1,7 +1,7 @@
 import { useSelector } from '@legendapp/state/react';
 import { Box, BoxProps } from '@mui/material';
+import { selectActions } from 'features/select';
 import { store } from 'state';
-import { selectActions } from 'ui/select';
 
 export interface RowOptions {
   showType?: boolean;

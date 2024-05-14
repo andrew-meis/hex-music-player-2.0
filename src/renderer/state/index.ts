@@ -5,6 +5,7 @@ import {
   Account,
   Album,
   Artist,
+  Collection,
   Genre,
   Library,
   Playlist,
@@ -110,15 +111,22 @@ export const store = observable({
       open: '' as '' | 'lyrics',
     },
     nowPlaying: {
-      activeSimilarTracksChip: 0,
+      activeTab: '0',
       color: chroma([90, 90, 90]),
+      tabIsAnimating: false,
     },
     overlay: false,
     search: {
       input: '',
+      tabIsAnimating: false,
     },
     select: {
-      items: [] as (Artist | Album | Track | Playlist | Genre | PlayQueueItem)[],
+      items: [] as (Artist | Album | Track | Playlist | Genre | PlayQueueItem | Collection)[],
+      canMultiselect: computed(() => {
+        const items = store.ui.select.items.get();
+        const value = (new Set(items.map((item) => item._type)).size <= 1) as boolean;
+        return value;
+      }),
       selected: [] as number[],
       selectedItems: computed(() => {
         const items = store.ui.select.items.get();

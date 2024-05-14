@@ -1,10 +1,8 @@
 import { XMLParser } from 'fast-xml-parser';
 import ky, { Options as KyOptions, ResponsePromise } from 'ky';
 
-import { Params } from './params';
-
 export interface RequestOptions extends KyOptions {
-  searchParams?: Params;
+  searchParams?: URLSearchParams;
   headers?: Record<string, string>;
 }
 

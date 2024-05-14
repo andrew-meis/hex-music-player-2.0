@@ -12,6 +12,7 @@ export { isAlbum, parseAlbumContainer } from './types/album';
 export type { Artist, ArtistContainer } from './types/artist';
 export { isArtist, parseArtistContainer } from './types/artist';
 export type { Collection, CollectionContainer } from './types/collection';
+export { isCollection } from './types/collection';
 export { parseCollectionContainer } from './types/collection';
 export type { Country } from './types/country';
 export type { Decade } from './types/decade';
@@ -41,7 +42,6 @@ export type { Track, TrackContainer } from './types/track';
 export { isTrack, parseTrackContainer } from './types/track';
 export type { Profile, Service, Subscription, User, UserSubscription } from './types/user';
 export type { Year } from './types/year';
-export type { Params } from './utils/params';
 
 const sort = (asc: string, desc = `${asc}:desc`) => ({
   asc,

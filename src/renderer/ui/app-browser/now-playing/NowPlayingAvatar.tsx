@@ -36,11 +36,15 @@ const NowPlayingAvatar: React.FC<{ scrollYProgress: MotionValue<number> }> = obs
     });
 
     const artistThumbSrc = useSelector(() => {
-      return library.resizeImage({ url: nowPlaying.track.grandparentThumb, width: 64, height: 64 });
+      return library.resizeImage(
+        new URLSearchParams({ url: nowPlaying.track.grandparentThumb, width: '64', height: '64' })
+      );
     });
 
     const albumThumbSrc = useSelector(() => {
-      return library.resizeImage({ url: nowPlaying.track.parentThumb, width: 64, height: 64 });
+      return library.resizeImage(
+        new URLSearchParams({ url: nowPlaying.track.parentThumb, width: '64', height: '64' })
+      );
     });
 
     return (

@@ -1,5 +1,7 @@
-import { IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
+import { Box, IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
+import useHistoryStack from 'hooks/useHistoryStack';
 import React from 'react';
+import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
 import { LuLibrary } from 'react-icons/lu';
 import { MdSettings } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -7,6 +9,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 const AppMenu: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { backward, forward } = useHistoryStack();
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -27,9 +31,15 @@ const AppMenu: React.FC = () => {
   };
 
   return (
-    <>
-      <IconButton sx={{ justifySelf: 'start' }} onClick={handleClick}>
+    <Box display="flex" justifySelf="start">
+      <IconButton onClick={handleClick}>
         <LuLibrary />
+      </IconButton>
+      <IconButton disabled={!backward} onClick={() => navigate(-1)}>
+        <IoChevronBack />
+      </IconButton>
+      <IconButton disabled={!forward} onClick={() => navigate(1)}>
+        <IoChevronForward />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         <MenuItem onClick={handleSelect}>
@@ -39,7 +49,7 @@ const AppMenu: React.FC = () => {
           <ListItemText>Settings</ListItemText>
         </MenuItem>
       </Menu>
-    </>
+    </Box>
   );
 };
 

@@ -1,12 +1,13 @@
 import { Show } from '@legendapp/state/react';
-import { Box, ClickAwayListener } from '@mui/material';
+import { ClickAwayListener } from '@mui/material';
 import QueueRow from 'components/queue/QueueRow';
 import Scroller from 'components/virtuoso/Scroller';
+import { selectActions } from 'features/select';
 import React, { useEffect } from 'react';
 import { Virtuoso } from 'react-virtuoso';
+import RouteContainer from 'routes/RouteContainer';
 import RouteHeader from 'routes/RouteHeader';
 import { store } from 'state';
-import { selectActions } from 'ui/select';
 
 const Queue: React.FC = () => {
   useEffect(() => {
@@ -29,7 +30,7 @@ const Queue: React.FC = () => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" height={1} marginX={4}>
+    <RouteContainer>
       <Show ifReady={store.queue.currentQueue.items}>
         {() => {
           const queue = store.queue.currentQueue.get();
@@ -58,7 +59,7 @@ const Queue: React.FC = () => {
           );
         }}
       </Show>
-    </Box>
+    </RouteContainer>
   );
 };
 

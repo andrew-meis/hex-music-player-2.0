@@ -4,7 +4,6 @@ import { BsViewList } from 'react-icons/bs';
 import { CgSearch } from 'react-icons/cg';
 import { TiChartLine } from 'react-icons/ti';
 import { useNavigate } from 'react-router-dom';
-import { store } from 'state';
 
 type Buttons = 'search' | 'charts' | 'queue';
 
@@ -20,9 +19,6 @@ const AppLinks: React.FC<{
   const navigate = useNavigate();
 
   const handleButtonClick = (buttonClicked: Buttons) => {
-    if (store.ui.overlay.peek()) {
-      store.ui.overlay.set(false);
-    }
     switch (buttonClicked) {
       case 'search':
         if (location.pathname === '/search') return;

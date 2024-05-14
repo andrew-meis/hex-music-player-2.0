@@ -16,7 +16,9 @@ const TrackRow: React.FC<{ index: number; options?: RowOptions; track: Track }> 
   function TrackRow({ index, options, track }) {
     const library = store.library.get();
 
-    const thumbSrc = library.resizeImage({ url: track.thumb, width: 64, height: 64 });
+    const thumbSrc = library.resizeImage(
+      new URLSearchParams({ url: track.thumb, width: '64', height: '64' })
+    );
 
     const handleLink = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
       event.stopPropagation();

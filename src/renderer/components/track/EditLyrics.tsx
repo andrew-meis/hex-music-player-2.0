@@ -9,9 +9,9 @@ import {
 } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { Track } from 'api';
-import { db } from 'app/db';
 import Scroller from 'components/scroller/Scroller';
 import { inPlaceSort } from 'fast-sort';
+import { db } from 'features/db';
 import { useLyrics } from 'queries';
 import React, { useMemo, useState } from 'react';
 import { FileWithPath, useDropzone } from 'react-dropzone';

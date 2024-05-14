@@ -45,12 +45,12 @@ const AppController: React.FC = () => {
             background: store.ui.overlay.get() ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)',
           })}
           sx={{
-            height: 'calc(100vh - 160px)',
+            height: 'calc(100vh - 148px)',
             left: 0,
             pointerEvents: 'none',
             position: 'fixed',
             right: 0,
-            top: 80,
+            top: 74,
           }}
           transition={{
             background: {
@@ -61,7 +61,7 @@ const AppController: React.FC = () => {
         <MotionDiv
           layout
           $animate={() => ({
-            top: store.ui.overlay.get() ? 80 : 'calc(100vh - 84px)',
+            top: store.ui.overlay.get() ? 74 : 'calc(100vh - 84px)',
           })}
           drag="y"
           dragConstraints={{ top: 0, bottom: 0 }}

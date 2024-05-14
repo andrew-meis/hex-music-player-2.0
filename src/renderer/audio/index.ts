@@ -1,9 +1,6 @@
 import PreciseAudio from '@synesthesia-project/precise-audio';
 import { persistedStore, store } from 'state';
 
-export { playbackActions } from './playback';
-export { queueActions } from './queue';
-
 export const audio = new PreciseAudio();
 
 window.audio = audio;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigationType } from 'react-router-dom';
+import { store } from 'state';
 
 interface LocationState {
   title: string;
@@ -15,6 +16,9 @@ const useHistoryStack = () => {
   const activeIndex = stack.findIndex((entry) => entry.key === activeKey);
 
   useEffect(() => {
+    if (store.ui.overlay.peek()) {
+      store.ui.overlay.set(false);
+    }
     if (type === 'POP') {
       setActiveKey(key);
       return;
@@ -25,7 +29,10 @@ const useHistoryStack = () => {
     }
   }, [key, type]);
 
-  return { activeKey, stack };
+  return {
+    backward: activeIndex !== 0,
+    forward: activeIndex < stack.length - 1,
+  };
 };
 
 export default useHistoryStack;
