@@ -1,6 +1,6 @@
 import { observer } from '@legendapp/state/react';
 import chroma from 'chroma-js';
-import { useColorThiefColor } from 'queries';
+import { useColorThiefColor, useColorThiefPalette } from 'queries';
 import React, { useEffect } from 'react';
 import { store } from 'state';
 
@@ -15,13 +15,23 @@ const NowPlayingColor: React.FC = observer(function NowPlayingColor() {
     url: library.server.getAuthenticatedUrl(nowPlaying.track.thumb),
   });
 
+  const { data: palette } = useColorThiefPalette({
+    id: nowPlaying.track.thumb,
+    url: library.server.getAuthenticatedUrl(nowPlaying.track.thumb),
+  });
+
   useEffect(() => {
     if (color) {
       store.ui.nowPlaying.color.set(color);
     } else {
       store.ui.nowPlaying.color.set(defaultColor);
     }
-  }, [color]);
+    if (palette) {
+      store.ui.nowPlaying.palette.set(palette);
+    } else {
+      store.ui.nowPlaying.palette.set([defaultColor, defaultColor]);
+    }
+  }, [color, palette]);
 
   return null;
 });

@@ -1,17 +1,48 @@
 import { observer } from '@legendapp/state/react';
 import { Menu as MuiMenu } from '@mui/material';
-import { isAlbum, isArtist, isPlaylist, isPlayQueueItem, isTrack } from 'api';
+import {
+  Album,
+  Artist,
+  isAlbum,
+  isArtist,
+  isPlaylist,
+  isPlayQueueItem,
+  isTrack,
+  Playlist,
+  PlayQueueItem,
+  Track,
+} from 'api';
 import AlbumMenu from 'components/album/AlbumMenu';
 import ArtistMenu from 'components/artist/ArtistMenu';
 import PlaylistMenu from 'components/playlist/PlaylistMenu';
 import QueueMenu from 'components/queue/QueueMenu';
 import TrackMenu from 'components/track/TrackMenu';
 import { isEmpty } from 'lodash';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { queueSelectState } from 'routes/queue/Queue';
+import { searchSelectState } from 'routes/search/SearchResults';
 import { store } from 'state';
+import { ActiveMenu } from 'typescript';
+import { nowPlayingSelectState } from 'ui/app-browser/now-playing/NowPlayingSimilar';
 
 const Menu: React.FC = observer(function Menu() {
-  const items = store.ui.select.selectedItems.get();
+  const activeMenu = store.ui.menus.activeMenu.get();
+  const state = useMemo(() => {
+    switch (activeMenu) {
+      case ActiveMenu.NOW_PLAYING:
+        return nowPlayingSelectState;
+      case ActiveMenu.QUEUE:
+        return queueSelectState;
+      case ActiveMenu.SEARCH:
+        return searchSelectState;
+      default: {
+        return undefined;
+      }
+    }
+  }, [activeMenu]);
+  if (!state) return null;
+
+  const items = state.selectedItems.get();
   const anchorPosition = store.ui.menus.anchorPosition.get();
 
   const handleClose = () => {
@@ -28,13 +59,23 @@ const Menu: React.FC = observer(function Menu() {
       anchorReference="anchorPosition"
       open={anchorPosition !== null}
       onClose={handleClose}
-      onTransitionExited={() => store.ui.select.selected.set([])}
+      onTransitionExited={() => state.selectedIndexes.set([])}
     >
-      {!isEmpty(items) && items.every((item) => isAlbum(item)) && <AlbumMenu />}
-      {!isEmpty(items) && items.every((item) => isArtist(item)) && <ArtistMenu />}
-      {!isEmpty(items) && items.every((item) => isPlaylist(item)) && <PlaylistMenu />}
-      {!isEmpty(items) && items.every((item) => isPlayQueueItem(item)) && <QueueMenu />}
-      {!isEmpty(items) && items.every((item) => isTrack(item)) && <TrackMenu />}
+      {!isEmpty(items) && items.every((item) => isAlbum(item)) && (
+        <AlbumMenu albums={items as Album[]} />
+      )}
+      {!isEmpty(items) && items.every((item) => isArtist(item)) && (
+        <ArtistMenu artists={items as Artist[]} />
+      )}
+      {!isEmpty(items) && items.every((item) => isPlaylist(item)) && (
+        <PlaylistMenu playlists={items as Playlist[]} />
+      )}
+      {!isEmpty(items) && items.every((item) => isPlayQueueItem(item)) && (
+        <QueueMenu items={items as PlayQueueItem[]} />
+      )}
+      {!isEmpty(items) && items.every((item) => isTrack(item)) && (
+        <TrackMenu tracks={items as Track[]} />
+      )}
     </MuiMenu>
   );
 });

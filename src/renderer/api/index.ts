@@ -20,6 +20,8 @@ export type { Connection, Device } from './types/device';
 export type { Format } from './types/format';
 export type { Genre, GenreContainer } from './types/genre';
 export { isGenre, parseGenreContainer } from './types/genre';
+export type { HistoryContainer, HistoryEntry } from './types/history';
+export { parseHistoryContainer } from './types/history';
 export type { Hub, HubContainer } from './types/hub';
 export { parseHubContainer } from './types/hub';
 export type { Media } from './types/media';
@@ -30,7 +32,12 @@ export type { Pin } from './types/pin';
 export type { PlayQueue, PlayQueueItem } from './types/play-queue';
 export { isPlayQueueItem, parsePlayQueue } from './types/play-queue';
 export type { Playlist, PlaylistContainer, PlaylistItem } from './types/playlist';
-export { isPlaylist, parsePlaylistContainer } from './types/playlist';
+export {
+  isPlaylist,
+  isPlaylistItem,
+  isSmartPlaylistItem,
+  parsePlaylistContainer,
+} from './types/playlist';
 export type { ResourceContainer } from './types/resources';
 export type { Section, SectionContainer } from './types/section';
 export type { Stream } from './types/stream';

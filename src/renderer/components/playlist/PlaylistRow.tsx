@@ -1,58 +1,21 @@
-import { observer } from '@legendapp/state/react';
-import { Avatar, Box, Typography } from '@mui/material';
 import { Playlist } from 'api';
-import Row from 'components/row/Row';
+import TableRow from 'components/row/TableRow';
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { createPlaylistNavigate } from 'scripts/navigate-generators';
-import { store } from 'state';
+import { ItemProps } from 'react-virtuoso';
+import { DragTypes, SelectObservable } from 'typescript';
 
-const PlaylistRow: React.FC<{ index: number; playlist: Playlist }> = observer(function PlaylistRow({
-  index,
-  playlist,
-}) {
-  const library = store.library.get();
-
-  const thumbSrc = library.resizeImage(
-    new URLSearchParams({
-      url: playlist.thumb || playlist.composite,
-      width: '64',
-      height: '64',
-    })
-  );
-
-  const handleLink = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    event.stopPropagation();
-  };
-
+const PlaylistRow: React.FC<
+  {
+    children: React.ReactNode;
+    index: number;
+    state: SelectObservable;
+  } & ItemProps<Playlist>
+> = ({ children, index, state, ...props }) => {
   return (
-    <Row index={index}>
-      <Avatar
-        alt={playlist.title}
-        src={thumbSrc}
-        sx={{ height: 48, marginX: 1, width: 48 }}
-        variant="rounded"
-      />
-      <Box>
-        <Typography fontFamily="Rubik" lineHeight={1.2} variant="body1">
-          <Link
-            className="link"
-            to={createPlaylistNavigate(playlist)}
-            onClick={(event) => handleLink(event)}
-          >
-            {playlist.title}
-          </Link>
-        </Typography>
-        <Typography variant="subtitle1">
-          {playlist.type}
-          &nbsp; · &nbsp;
-          {playlist.leafCount}
-          &nbsp;
-          {playlist.leafCount > 1 || playlist.leafCount === 0 ? 'tracks' : 'track'}
-        </Typography>
-      </Box>
-    </Row>
+    <TableRow index={index} state={state} type={DragTypes.PLAYLIST} {...props}>
+      {children}
+    </TableRow>
   );
-});
+};
 
 export default PlaylistRow;

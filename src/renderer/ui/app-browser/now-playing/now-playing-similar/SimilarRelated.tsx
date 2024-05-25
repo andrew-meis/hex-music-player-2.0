@@ -1,20 +1,35 @@
 import { observer, useUnmount } from '@legendapp/state/react';
 import { ClickAwayListener } from '@mui/material';
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { Track } from 'api';
+import { trackColumns } from 'components/track/columns';
+import TrackRow from 'components/track/TrackRow';
 import Scroller from 'components/virtuoso/Scroller';
 import { selectActions } from 'features/select';
 import { useRelatedTracks } from 'queries';
-import React from 'react';
-import { Virtuoso } from 'react-virtuoso';
+import React, { useMemo } from 'react';
+import { ItemProps, TableProps, TableVirtuoso } from 'react-virtuoso';
 import { store } from 'state';
+import { ActiveMenu } from 'typescript';
 
-import { Item } from '../NowPlayingSimilar';
+import { nowPlayingSelectState } from '../NowPlayingSimilar';
 
 const SimilarRelated: React.FC = observer(function SimilarRelated() {
+  const columns = useMemo(() => trackColumns, []);
+
   const tabIsAnimating = store.ui.nowPlaying.tabIsAnimating.get();
   const nowPlaying = store.queue.nowPlaying.get();
   const { data: relatedTracks } = useRelatedTracks(nowPlaying.track, !tabIsAnimating);
 
-  useUnmount(() => selectActions.handleClickAway());
+  useUnmount(() => selectActions.handleClickAway(nowPlayingSelectState));
+
+  const table = useReactTable({
+    data: relatedTracks || [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  const { rows } = table.getRowModel();
 
   const handleScrollState = (isScrolling: boolean) => {
     if (isScrolling) {
@@ -29,26 +44,48 @@ const SimilarRelated: React.FC = observer(function SimilarRelated() {
 
   return (
     <ClickAwayListener
-      onClickAway={(event) => {
-        if (store.ui.select.items.peek() === relatedTracks) {
-          selectActions.handleClickAway(event);
-        }
-      }}
+      onClickAway={(event) => selectActions.handleClickAway(nowPlayingSelectState, event)}
     >
-      <Virtuoso
+      <TableVirtuoso
         components={{
           Scroller,
+          Table: ({ style, ...props }: TableProps) => (
+            <table
+              {...props}
+              style={{
+                ...style,
+                width: '-webkit-fill-available',
+                tableLayout: 'fixed',
+              }}
+            />
+          ),
+          TableRow: (props: ItemProps<Track>) => {
+            const index = props['data-index'];
+            const row = rows[index];
+
+            return (
+              <TrackRow index={index} state={nowPlayingSelectState} {...props}>
+                {row.getVisibleCells().map((cell) => (
+                  <td className={cell.column.id} key={cell.id} style={{ padding: '0 8px' }}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </TrackRow>
+            );
+          },
         }}
-        data={relatedTracks}
         isScrolling={handleScrollState}
-        itemContent={(index, data) => <Item data={data} index={index} />}
         style={{
           height: 'calc(100% - 16px)',
           marginTop: 16,
           overscrollBehavior: 'contain',
           width: '100%',
         }}
-        onMouseOver={() => store.ui.select.items.set(relatedTracks)}
+        totalCount={rows.length}
+        onMouseOver={() => {
+          store.ui.menus.activeMenu.set(ActiveMenu.NOW_PLAYING);
+          nowPlayingSelectState.items.set(relatedTracks);
+        }}
       />
     </ClickAwayListener>
   );

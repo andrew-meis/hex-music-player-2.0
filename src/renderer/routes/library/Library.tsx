@@ -71,7 +71,7 @@ export const libraryLoader = (queryClient: QueryClient) => async (): Promise<loa
   const genresDataQuery = genresQuery(
     sectionId,
     library,
-    MediaType.ALBUM,
+    MediaType.TRACK,
     new URLSearchParams({ start: '0', size: '0' })
   );
   const collectionsDataQuery = collectionsQuery(

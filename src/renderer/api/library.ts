@@ -1,6 +1,7 @@
 import Fuse from 'fuse.js';
 import { DateTime } from 'luxon';
 
+import { SORT_BY_DATE_PLAYED } from './index';
 import ServerConnection from './server-connection';
 import { Album, AlbumContainer, parseAlbumContainer } from './types/album';
 import { Artist, ArtistContainer, parseArtistContainer } from './types/artist';
@@ -10,6 +11,7 @@ import { parseDecadeArray } from './types/decade';
 import { Device } from './types/device';
 import { parseFormatArray } from './types/format';
 import { parseGenreContainer } from './types/genre';
+import { parseHistoryContainer } from './types/history';
 import { parseHubContainer } from './types/hub';
 import { parseMoodArray } from './types/mood';
 import { parsePlayQueue } from './types/play-queue';
@@ -163,6 +165,22 @@ export default class Library {
   async section(sectionId: number) {
     const response = await this.fetch(`/library/sections/${sectionId}`);
     return parseSection(response);
+  }
+
+  /**
+   * Get item history
+   */
+
+  async history(id: number, sectionId: number) {
+    const path = '/status/sessions/history/all';
+    const response = await this.fetch(path, {
+      searchParams: new URLSearchParams({
+        sort: SORT_BY_DATE_PLAYED.desc,
+        librarySectionID: sectionId.toString(),
+        metadataItemID: id.toString(),
+      }),
+    });
+    return parseHistoryContainer(response);
   }
 
   /**

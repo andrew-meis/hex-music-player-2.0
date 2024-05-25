@@ -29,6 +29,9 @@ export interface PlaylistItem {
   track: Track;
 }
 
+const isPlaylistItem = (x: any): x is PlaylistItem => x._type === 'playlistItem' && !x.smart;
+const isSmartPlaylistItem = (x: any): x is PlaylistItem => x._type === 'playlistItem' && x.smart;
+
 export interface NormalizedPlaylistItem extends Omit<PlaylistItem, 'track'> {
   track: number;
 }
@@ -151,6 +154,8 @@ const parsePlaylistContainer = createParser('playlistContainer', toPlaylistConta
 
 export {
   isPlaylist,
+  isPlaylistItem,
+  isSmartPlaylistItem,
   parsePlaylist,
   parsePlaylistContainer,
   playlistContainerSchema,

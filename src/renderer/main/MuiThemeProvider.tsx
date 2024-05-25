@@ -190,33 +190,15 @@ const createTheme = () =>
           size: 'small',
         },
         styleOverrides: {
-          root: ({ theme }) => ({
-            color: theme.palette.text.secondary,
+          root: {
             '& .MuiSlider-thumb': {
               display: 'none',
             },
             ':hover': {
-              color: theme.palette.primary.main,
               '& .MuiSlider-thumb': {
                 display: 'flex',
               },
             },
-          }),
-          thumb: ({ theme }) => ({
-            borderRadius: 4,
-            boxShadow: theme.shadows[1],
-            color: theme.palette.common.white,
-            ':hover': {
-              boxShadow: theme.shadows[3],
-              color: theme.palette.common.white,
-            },
-          }),
-          thumbColorPrimary: {
-            transition: 'none',
-          },
-          track: {
-            border: 'none',
-            transition: 'none',
           },
         },
       },
@@ -277,7 +259,7 @@ const createTheme = () =>
       MuiTabs: {
         styleOverrides: {
           flexContainer: {
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
           },
           indicator: ({ theme }) => ({
             backgroundColor: theme.palette.action.selected,
@@ -286,6 +268,10 @@ const createTheme = () =>
           }),
           root: {
             minHeight: 32,
+            overflow: 'visible',
+          },
+          scroller: {
+            overflow: 'visible !important',
           },
         },
       },
@@ -321,17 +307,23 @@ const createTheme = () =>
       MuiTooltip: {
         styleOverrides: {
           arrow: ({ theme }) => ({
-            color: theme.palette.Button.inheritContainedBg,
+            color: theme.palette.background.paper,
           }),
-          tooltip: ({ theme }) => ({
-            backgroundColor: theme.palette.Button.inheritContainedBg,
+          tooltip: ({ theme, ownerState }) => ({
+            backgroundColor: theme.palette.background.paper,
             maxWidth: 500,
-            padding: 0,
+            padding: ownerState.placement === 'top' ? 2 : '',
           }),
         },
       },
       MuiTypography: {
         variants: [
+          {
+            props: { variant: 'body1' },
+            style: {
+              // lineHeight: 1.3,
+            },
+          },
           {
             props: { variant: 'h1' },
             style: {

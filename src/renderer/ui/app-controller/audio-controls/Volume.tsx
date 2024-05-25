@@ -1,5 +1,5 @@
 import { Memo, useObserve } from '@legendapp/state/react';
-import { Box, IconButton, Slider, SvgIcon, Tooltip } from '@mui/material';
+import { Box, IconButton, Slider, sliderClasses, styled, SvgIcon, Tooltip } from '@mui/material';
 import { audio } from 'audio';
 import React, { useState } from 'react';
 import { RiVolumeDownFill, RiVolumeMuteFill, RiVolumeUpFill } from 'react-icons/ri';
@@ -10,6 +10,34 @@ const getViewbox = (volume: number) => {
   if (volume !== 0 && volume <= 60) return '3 0 24 24';
   return '0 0 24 24';
 };
+
+const StyledSlider = styled(Slider)(({ theme }) => {
+  return {
+    color: theme.palette.text.secondary,
+    '&:hover': {
+      color: theme.palette.primary.main,
+    },
+    [`& .${sliderClasses.rail}`]: {
+      '&:hover': {
+        color: 'inherit',
+      },
+    },
+    [`& .${sliderClasses.thumb}`]: {
+      borderRadius: 4,
+      boxShadow: theme.shadows[1],
+      color: theme.palette.common.white,
+      '&:hover': {
+        boxShadow: theme.shadows[3],
+        color: theme.palette.common.white,
+      },
+    },
+    [`& .${sliderClasses.track}`]: {
+      '&:hover': {
+        color: 'inherit',
+      },
+    },
+  };
+});
 
 const Volume = () => {
   const [prevVolume, setPrevVolume] = useState(0);
@@ -84,7 +112,7 @@ const Volume = () => {
         <Box alignItems="center" display="flex" height={124}>
           <Memo>
             {() => (
-              <Slider
+              <StyledSlider
                 orientation="vertical"
                 shiftStep={5}
                 sx={{

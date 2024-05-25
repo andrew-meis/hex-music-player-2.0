@@ -1,24 +1,55 @@
-import { observer, useObserve, useSelector } from '@legendapp/state/react';
+import { computed, observable } from '@legendapp/state';
+import { observer, useObserve } from '@legendapp/state/react';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Tab, Typography } from '@mui/material';
 import { Track } from 'api';
-import TrackRow from 'components/track/TrackRow';
 import React from 'react';
 import { FiRadio } from 'react-icons/fi';
 import { ImLastfm } from 'react-icons/im';
 import { IoMdMicrophone } from 'react-icons/io';
 import { PiWaveform } from 'react-icons/pi';
 import { store } from 'state';
+import { SelectObservable } from 'typescript';
 
+import MoreByArtist from './now-playing-similar/MoreByArtist';
 import SimilarLastfm from './now-playing-similar/SimilarLastfm';
-import SimilarMoreByArtist from './now-playing-similar/SimilarMoreByArtist';
 import SimilarRelated from './now-playing-similar/SimilarRelated';
 import SimilarSonically from './now-playing-similar/SimilarSonically';
 
-export const Item: React.FC<{
-  data: Track;
-  index: number;
-}> = ({ data, index }) => <TrackRow index={index} track={data} />;
+export const nowPlayingSelectState: SelectObservable = observable({
+  items: [] as Track[],
+  canMultiselect: computed(() => {
+    const items = nowPlayingSelectState.items.get();
+    if (!items) return false;
+    return new Set(items.map((item) => item._type)).size <= 1;
+  }),
+  selectedIndexes: [] as number[],
+  selectedItems: computed(() => {
+    const items = nowPlayingSelectState.items.get();
+    if (!items) return [];
+    const selectedIndexes = nowPlayingSelectState.selectedIndexes.get();
+    return items.filter((_item, index) => selectedIndexes.includes(index));
+  }),
+});
+
+const tabs = [
+  {
+    label: 'More by Artist',
+    icon: <IoMdMicrophone />,
+  },
+  {
+    label: 'Sonically Similar',
+    icon: <PiWaveform />,
+  },
+  {
+    label: 'Related Tracks',
+    icon: <FiRadio />,
+  },
+  {
+    label: 'last.fm Similar',
+    icon: <ImLastfm viewBox="0 0 17 17" />,
+  },
+];
 
 const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
   const activeTab = store.ui.nowPlaying.activeTab.get();
@@ -26,33 +57,6 @@ const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
   useObserve(store.queue.nowPlaying.id, ({ value, previous }) => {
     if (value === previous) return;
     store.ui.nowPlaying.activeTab.set('0');
-  });
-
-  const tabs = useSelector(() => {
-    const nowPlaying = store.queue.nowPlaying.get();
-    return [
-      {
-        label: `More by${' '}
-        ${
-          nowPlaying.track.grandparentTitle === 'Various Artists'
-            ? nowPlaying.track.originalTitle
-            : nowPlaying.track.grandparentTitle
-        }`,
-        icon: <IoMdMicrophone />,
-      },
-      {
-        label: 'Sonically Similar',
-        icon: <PiWaveform />,
-      },
-      {
-        label: 'Related Tracks',
-        icon: <FiRadio />,
-      },
-      {
-        label: 'last.fm Similar',
-        icon: <ImLastfm viewBox="0 0 17 17" />,
-      },
-    ];
   });
 
   const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
@@ -86,7 +90,7 @@ const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
           ))}
         </TabList>
         <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="0">
-          <SimilarMoreByArtist />
+          <MoreByArtist />
         </TabPanel>
         <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="1">
           <SimilarSonically />

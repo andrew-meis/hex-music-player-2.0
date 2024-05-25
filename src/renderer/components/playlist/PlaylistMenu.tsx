@@ -1,4 +1,3 @@
-import { observer } from '@legendapp/state/react';
 import { ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { Playlist } from 'api';
 import { playbackActions } from 'features/playback';
@@ -9,9 +8,7 @@ import { CgRowFirst, CgRowLast } from 'react-icons/cg';
 import { RiShuffleFill } from 'react-icons/ri';
 import { persistedStore, store } from 'state';
 
-const PlaylistMenu: React.FC = observer(function PlaylistMenu() {
-  const playlists = store.ui.select.selectedItems.get() as Playlist[];
-
+const PlaylistMenu: React.FC<{ playlists: Playlist[] }> = ({ playlists }) => {
   const handlePlay = (shuffle = false) => {
     playbackActions.playPlaylist(playlists[0], shuffle);
     setTimeout(() => store.ui.menus.anchorPosition.set(null), 300);
@@ -55,6 +52,6 @@ const PlaylistMenu: React.FC = observer(function PlaylistMenu() {
       </MenuItem>
     </>
   );
-});
+};
 
 export default PlaylistMenu;

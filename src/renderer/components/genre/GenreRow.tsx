@@ -1,36 +1,20 @@
-import { Avatar, Box, SvgIcon, Typography } from '@mui/material';
 import { Genre } from 'api';
-import Row from 'components/row/Row';
+import TableRow from 'components/row/TableRow';
 import React from 'react';
-import { FaTags } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import { createGenreNavigate } from 'scripts/navigate-generators';
+import { ItemProps } from 'react-virtuoso';
+import { DragTypes, SelectObservable } from 'typescript';
 
-const GenreRow: React.FC<{ genre: Genre; index: number }> = ({ genre, index }) => {
-  const handleLink = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    event.stopPropagation();
-  };
-
+const GenreRow: React.FC<
+  {
+    children: React.ReactNode;
+    index: number;
+    state: SelectObservable;
+  } & ItemProps<Genre>
+> = ({ children, index, state, ...props }) => {
   return (
-    <Row index={index}>
-      <Avatar alt={genre.title} sx={{ height: 48, marginX: 1, width: 48 }} variant="rounded">
-        <SvgIcon>
-          <FaTags />
-        </SvgIcon>
-      </Avatar>
-      <Box>
-        <Typography fontFamily="Rubik" lineHeight={1.2} variant="body1">
-          <Link
-            className="link"
-            to={createGenreNavigate(genre)}
-            onClick={(event) => handleLink(event)}
-          >
-            {genre.title}
-          </Link>
-        </Typography>
-        <Typography variant="subtitle1">genre</Typography>
-      </Box>
-    </Row>
+    <TableRow index={index} state={state} type={DragTypes.GENRE} {...props}>
+      {children}
+    </TableRow>
   );
 };
 

@@ -1,4 +1,3 @@
-import { observer } from '@legendapp/state/react';
 import { ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { Track } from 'api';
 import { playbackActions } from 'features/playback';
@@ -9,9 +8,7 @@ import { CgRowFirst, CgRowLast } from 'react-icons/cg';
 import { FiRadio } from 'react-icons/fi';
 import { persistedStore, store } from 'state';
 
-const TrackMenu: React.FC = observer(function TrackMenu() {
-  const tracks = store.ui.select.selectedItems.get() as Track[];
-
+const TrackMenu: React.FC<{ tracks: Track[] }> = ({ tracks }) => {
   const handlePlay = () => {
     playbackActions.playLibraryItems(tracks);
     setTimeout(() => store.ui.menus.anchorPosition.set(null), 300);
@@ -62,6 +59,6 @@ const TrackMenu: React.FC = observer(function TrackMenu() {
       </MenuItem>
     </>
   );
-});
+};
 
 export default TrackMenu;

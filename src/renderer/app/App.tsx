@@ -16,15 +16,17 @@ export const appLoader = async () => {
   return null;
 };
 
-const App: React.FC = () => (
-  <>
-    <QueueUpdater />
-    <AppNavigation />
-    <AppSurface />
-    <AppController />
-    <Modals />
-    <Menu />
-  </>
-);
+const App: React.FC = () => {
+  return (
+    <>
+      <QueueUpdater />
+      <AppNavigation />
+      <AppSurface />
+      <AppController />
+      <Modals />
+      <Menu />
+    </>
+  );
+};
 
 export default App;

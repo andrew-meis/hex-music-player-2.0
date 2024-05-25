@@ -1,60 +1,21 @@
-import { observer } from '@legendapp/state/react';
-import { Avatar, Box, SvgIcon, Typography } from '@mui/material';
 import { Artist } from 'api';
-import Row from 'components/row/Row';
+import TableRow from 'components/row/TableRow';
 import React from 'react';
-import { IoMdMicrophone } from 'react-icons/io';
-import { Link } from 'react-router-dom';
-import { createArtistNavigate } from 'scripts/navigate-generators';
-import { store } from 'state';
+import { ItemProps } from 'react-virtuoso';
+import { DragTypes, SelectObservable } from 'typescript';
 
-const ArtistRow: React.FC<{ artist: Artist; index: number }> = observer(function ArtistRow({
-  artist,
-  index,
-}) {
-  const library = store.library.get();
-
-  const thumbSrc = library.resizeImage(
-    new URLSearchParams({ url: artist.thumb, width: '64', height: '64' })
-  );
-
-  const handleLink = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    event.stopPropagation();
-  };
-
+const ArtistRow: React.FC<
+  {
+    children: React.ReactNode;
+    index: number;
+    state: SelectObservable;
+  } & ItemProps<Artist>
+> = ({ children, index, state, ...props }) => {
   return (
-    <Row index={index}>
-      <Avatar alt={artist.title} src={thumbSrc} sx={{ height: 48, marginX: 1, width: 48 }}>
-        <SvgIcon>
-          <IoMdMicrophone />
-        </SvgIcon>
-      </Avatar>
-      <Box>
-        <Typography fontFamily="Rubik" lineHeight={1.2} variant="body1">
-          <Link
-            className="link"
-            to={createArtistNavigate(artist)}
-            onClick={(event) => handleLink(event)}
-          >
-            {artist.title}
-          </Link>
-        </Typography>
-        <Typography variant="subtitle1">
-          {artist.type}
-          &nbsp; · &nbsp;
-          <Link
-            className="link"
-            to={createArtistNavigate(artist, 'discography')}
-            onClick={(event) => handleLink(event)}
-          >
-            {artist.childCount > 1
-              ? `${artist.childCount} releases`
-              : `${artist.childCount} release`}
-          </Link>
-        </Typography>
-      </Box>
-    </Row>
+    <TableRow index={index} state={state} type={DragTypes.ARTIST} {...props}>
+      {children}
+    </TableRow>
   );
-});
+};
 
 export default ArtistRow;

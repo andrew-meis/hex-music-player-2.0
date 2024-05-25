@@ -1,4 +1,3 @@
-import { observer } from '@legendapp/state/react';
 import { ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { Artist } from 'api';
 import { playbackActions } from 'features/playback';
@@ -10,9 +9,7 @@ import { FiRadio } from 'react-icons/fi';
 import { RiShuffleFill } from 'react-icons/ri';
 import { persistedStore, store } from 'state';
 
-const ArtistMenu: React.FC = observer(function ArtistMenu() {
-  const artists = store.ui.select.selectedItems.get() as Artist[];
-
+const ArtistMenu: React.FC<{ artists: Artist[] }> = ({ artists }) => {
   const handlePlay = (shuffle = false) => {
     playbackActions.playLibraryItems(artists, shuffle);
     setTimeout(() => store.ui.menus.anchorPosition.set(null), 300);
@@ -69,6 +66,6 @@ const ArtistMenu: React.FC = observer(function ArtistMenu() {
       </MenuItem>
     </>
   );
-});
+};
 
 export default ArtistMenu;

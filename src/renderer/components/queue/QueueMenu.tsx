@@ -1,4 +1,4 @@
-import { observer, useObserve } from '@legendapp/state/react';
+import { useObserve } from '@legendapp/state/react';
 import { Divider, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { PlayQueueItem } from 'api';
 import { playbackActions } from 'features/playback';
@@ -9,8 +9,7 @@ import { CgRowFirst } from 'react-icons/cg';
 import { MdClear } from 'react-icons/md';
 import { store } from 'state';
 
-const QueueMenu: React.FC = observer(function QueueMenu() {
-  const items = store.ui.select.selectedItems.get() as PlayQueueItem[];
+const QueueMenu: React.FC<{ items: PlayQueueItem[] }> = ({ items }) => {
   const nowPlayingRef = useRef<PlayQueueItem | undefined>();
 
   useObserve(store.queue.nowPlaying, ({ value }) => {
@@ -70,6 +69,6 @@ const QueueMenu: React.FC = observer(function QueueMenu() {
       </MenuItem>
     </>
   );
-});
+};
 
 export default QueueMenu;

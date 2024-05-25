@@ -1,7 +1,8 @@
 import { range } from 'lodash';
 import { store } from 'state';
+import { SelectObservable } from 'typescript';
 
-const handleClickAway = (event?: MouseEvent | TouchEvent) => {
+const handleClickAway = (state: SelectObservable, event?: MouseEvent | TouchEvent) => {
   if (
     event &&
     event.target instanceof Element &&
@@ -9,45 +10,45 @@ const handleClickAway = (event?: MouseEvent | TouchEvent) => {
   )
     return;
   if (store.ui.menus.anchorPosition.peek() !== null) return;
-  store.ui.select.selected.set([]);
+  state.selectedIndexes.set([]);
 };
 
-const handleSelect = (event: React.MouseEvent, index: number) => {
-  const selected = store.ui.select.selected.peek();
-  const canMultiselect = store.ui.select.canMultiselect.peek();
+const handleSelect = (event: React.MouseEvent, index: number, state: SelectObservable) => {
+  const selectedIndexes = state.selectedIndexes.peek();
+  const canMultiselect = state.canMultiselect.peek();
   if (!canMultiselect) {
-    store.ui.select.selected.set([index]);
+    state.selectedIndexes.set([index]);
     return;
   }
   if (event.ctrlKey || event.metaKey) {
-    if (selected.includes(index)) {
-      store.ui.select.selected.set((value) => value.filter((n) => n !== index));
+    if (selectedIndexes.includes(index)) {
+      state.selectedIndexes.set((value) => value.filter((n) => n !== index));
       return;
     }
-    if (!selected.includes(index)) {
-      store.ui.select.selected.set((selected) => [...selected, index]);
+    if (!selectedIndexes.includes(index)) {
+      state.selectedIndexes.set((selected) => [...selected, index]);
       return;
     }
   }
   if (event.shiftKey) {
-    if (selected.length === 0) {
-      store.ui.select.selected.set(range(0, index + 1));
+    if (selectedIndexes.length === 0) {
+      state.selectedIndexes.set(range(0, index + 1));
       return;
     }
-    if (index < Math.max(...selected)) {
-      store.ui.select.selected.set(range(index, Math.max(...selected) + 1));
+    if (index < Math.max(...selectedIndexes)) {
+      state.selectedIndexes.set(range(index, Math.max(...selectedIndexes) + 1));
       return;
     }
-    if (index > Math.min(...selected)) {
-      store.ui.select.selected.set(range(Math.min(...selected), index + 1));
+    if (index > Math.min(...selectedIndexes)) {
+      state.selectedIndexes.set(range(Math.min(...selectedIndexes), index + 1));
       return;
     }
   }
-  if (selected.length === 1 && selected.includes(index)) {
-    store.ui.select.selected.set([]);
+  if (selectedIndexes.length === 1 && selectedIndexes.includes(index)) {
+    state.selectedIndexes.set([]);
     return;
   }
-  store.ui.select.selected.set([index]);
+  state.selectedIndexes.set([index]);
 };
 
 export const selectActions = {

@@ -1,21 +1,10 @@
 import { computed, observable } from '@legendapp/state';
 import { configureObservablePersistence, persistObservable } from '@legendapp/state/persist';
 import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/local-storage';
-import {
-  Account,
-  Album,
-  Artist,
-  Collection,
-  Genre,
-  Library,
-  Playlist,
-  PlayQueue,
-  PlayQueueItem,
-  Track,
-} from 'api';
+import { Account, Library, PlayQueue, PlayQueueItem, Track } from 'api';
 import chroma from 'chroma-js';
 import { To } from 'react-router-dom';
-import { ServerConfig } from 'typescript';
+import { ActiveMenu, ServerConfig } from 'typescript';
 
 configureObservablePersistence({
   pluginLocal: ObservablePersistLocalStorage,
@@ -56,54 +45,59 @@ export const store = observable({
   },
   queue: {
     currentQueue: undefined as unknown as PlayQueue,
-    srcs: computed(() => {
+    currentIndex: computed((): number => {
+      const currentQueue = store.queue.currentQueue.get();
+      if (!currentQueue) return -1;
+      return currentQueue.items.findIndex((item) => item.id === currentQueue.selectedItemId);
+    }),
+    srcs: computed((): string[] => {
       const currentQueue = store.queue.currentQueue.get();
       if (!currentQueue) return [];
       const currentIndex = currentQueue.items.findIndex(
         (item) => item.id === currentQueue.selectedItemId
       );
-      const value = currentQueue.items
-        .slice(currentIndex)
-        .map((item) => item.track.getTrackSrc()) as string[];
-      return value;
+      return currentQueue.items.slice(currentIndex).map((item) => item.track.getTrackSrc());
     }),
-    nowPlaying: computed(() => {
+    nowPlaying: computed((): PlayQueueItem => {
       const currentQueue = store.queue.currentQueue.get();
       if (!currentQueue) return undefined as unknown as PlayQueueItem;
       const currentIndex = currentQueue.items.findIndex(
         (item) => item.id === currentQueue.selectedItemId
       );
-      const value = currentQueue.items[currentIndex] as PlayQueueItem;
-      return value;
+      return currentQueue.items[currentIndex];
     }),
-    next: computed(() => {
+    next: computed((): PlayQueueItem | undefined => {
       const currentQueue = store.queue.currentQueue.get();
-      if (!currentQueue) return undefined as unknown as PlayQueueItem;
+      if (!currentQueue) return undefined;
       const currentIndex = currentQueue.items.findIndex(
         (item) => item.id === currentQueue.selectedItemId
       );
       if (currentQueue.items[currentIndex + 1]) {
-        const value = currentQueue.items[currentIndex + 1] as PlayQueueItem;
-        return value;
+        return currentQueue.items[currentIndex + 1];
       }
       return undefined;
     }),
-    previous: computed(() => {
+    previous: computed((): PlayQueueItem | undefined => {
       const currentQueue = store.queue.currentQueue.get();
-      if (!currentQueue) return undefined as unknown as PlayQueueItem;
+      if (!currentQueue) return undefined;
       const currentIndex = currentQueue.items.findIndex(
         (item) => item.id === currentQueue.selectedItemId
       );
       if (currentQueue.items[currentIndex - 1]) {
-        const value = currentQueue.items[currentIndex - 1] as PlayQueueItem;
-        return value;
+        return currentQueue.items[currentIndex - 1];
       }
       return undefined;
     }),
   },
   ui: {
     breadcrumbs: [{ title: 'Home', to: { pathname: '/' } }] as { title: string; to: To }[],
+    queue: {
+      activeTab: '0',
+      isOverIndex: -1,
+    },
+    isDragging: false,
     menus: {
+      activeMenu: -1 as ActiveMenu,
       anchorPosition: null as null | { mouseX: number; mouseY: number },
     },
     modals: {
@@ -113,34 +107,13 @@ export const store = observable({
     nowPlaying: {
       activeTab: '0',
       color: chroma([90, 90, 90]),
+      palette: [chroma([90, 90, 90]), chroma([90, 90, 90])],
       tabIsAnimating: false,
     },
     overlay: false,
     search: {
       input: '',
       tabIsAnimating: false,
-    },
-    select: {
-      items: [] as (Artist | Album | Track | Playlist | Genre | PlayQueueItem | Collection)[],
-      canMultiselect: computed(() => {
-        const items = store.ui.select.items.get();
-        const value = (new Set(items.map((item) => item._type)).size <= 1) as boolean;
-        return value;
-      }),
-      selected: [] as number[],
-      selectedItems: computed(() => {
-        const items = store.ui.select.items.get();
-        const selected = store.ui.select.selected.get();
-        const value = items.filter((_item, index) => selected.includes(index)) as (
-          | Artist
-          | Album
-          | Track
-          | Playlist
-          | Genre
-          | PlayQueueItem
-        )[];
-        return value;
-      }),
     },
   },
 });

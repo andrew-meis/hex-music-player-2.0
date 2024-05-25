@@ -1,26 +1,11 @@
+import { computed, observable } from '@legendapp/state';
 import { useUnmount } from '@legendapp/state/react';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { ClickAwayListener, Tab, Typography } from '@mui/material';
-import {
-  Album,
-  Artist,
-  Collection,
-  Genre,
-  isAlbum,
-  isArtist,
-  isCollection,
-  isGenre,
-  isPlaylist,
-  isTrack,
-  Playlist,
-  Track,
-} from 'api';
-import AlbumRow from 'components/album/AlbumRow';
-import ArtistRow from 'components/artist/ArtistRow';
-import CollectionRow from 'components/collection/CollectionRow';
-import GenreRow from 'components/genre/GenreRow';
-import PlaylistRow from 'components/playlist/PlaylistRow';
-import TrackRow from 'components/track/TrackRow';
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { Album, Artist, Collection, Genre, isArtist, Playlist, Track } from 'api';
+import { searchColumns } from 'components/search/columns';
+import SearchRow from 'components/search/SearchRow';
 import Scroller from 'components/virtuoso/Scroller';
 import { selectActions } from 'features/select';
 import {
@@ -31,10 +16,29 @@ import {
   useSearchPlaylists,
   useSearchTracks,
 } from 'queries';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { createSearchParams, useNavigate } from 'react-router-dom';
-import { Virtuoso } from 'react-virtuoso';
+import { ItemProps, TableProps, TableVirtuoso } from 'react-virtuoso';
 import { store } from 'state';
+import { ActiveMenu, DragTypes, SelectObservable } from 'typescript';
+
+export type Result = Artist | Album | Track | Playlist | Genre | Collection;
+
+export const searchSelectState: SelectObservable = observable({
+  items: [] as Result[],
+  canMultiselect: computed(() => {
+    const items = searchSelectState.items.get();
+    if (!items) return false;
+    return new Set(items.map((item) => item._type)).size <= 1;
+  }),
+  selectedIndexes: [] as number[],
+  selectedItems: computed(() => {
+    const items = searchSelectState.items.get();
+    if (!items) return [];
+    const selectedIndexes = searchSelectState.selectedIndexes.get();
+    return items.filter((_item, index) => selectedIndexes.includes(index));
+  }),
+});
 
 const tabs = [
   {
@@ -67,24 +71,31 @@ const tabs = [
   },
 ];
 
-const Item: React.FC<{
-  data: Artist | Album | Track | Playlist | Genre | Collection;
-  index: number;
-}> = ({ data, index }) => (
-  <>
-    {isAlbum(data) && <AlbumRow album={data} index={index} />}
-    {isArtist(data) && <ArtistRow artist={data} index={index} />}
-    {isCollection(data) && <CollectionRow collection={data} index={index} />}
-    {isGenre(data) && <GenreRow genre={data} index={index} />}
-    {isPlaylist(data) && <PlaylistRow index={index} playlist={data} />}
-    {isTrack(data) && <TrackRow index={index} options={{ showType: true }} track={data} />}
-  </>
-);
+interface TypeMap {
+  [key: string]: DragTypes;
+}
 
-const ResultsLists: React.FC<{
-  results: (Artist | Album | Track | Playlist | Genre | Collection)[] | undefined;
+const typeMap: TypeMap = {
+  album: DragTypes.ALBUM,
+  artist: DragTypes.ARTIST,
+  collection: DragTypes.COLLECTION,
+  genre: DragTypes.GENRE,
+  playlist: DragTypes.PLAYLIST,
+  track: DragTypes.TRACK,
+};
+
+const Table: React.FC<{
+  results: Result[] | undefined;
 }> = ({ results }) => {
-  useUnmount(() => selectActions.handleClickAway());
+  useUnmount(() => selectActions.handleClickAway(searchSelectState));
+  const columns = useMemo(() => searchColumns, []);
+  const table = useReactTable({
+    data: results || [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  const { rows } = table.getRowModel();
 
   const handleScrollState = (isScrolling: boolean) => {
     if (isScrolling) {
@@ -95,29 +106,50 @@ const ResultsLists: React.FC<{
     }
   };
 
-  if (!results) return null;
-
   return (
     <ClickAwayListener
-      onClickAway={(event) => {
-        if (store.ui.select.items.peek() === results) {
-          selectActions.handleClickAway(event);
-        }
-      }}
+      onClickAway={(event) => selectActions.handleClickAway(searchSelectState, event)}
     >
-      <Virtuoso
+      <TableVirtuoso
         components={{
           Scroller,
+          Table: ({ style, ...props }: TableProps) => (
+            <table
+              {...props}
+              style={{
+                ...style,
+                width: '-webkit-fill-available',
+                tableLayout: 'fixed',
+              }}
+            />
+          ),
+          TableRow: (props: ItemProps<Result>) => {
+            const index = props['data-index'];
+            const row = rows[index];
+
+            return (
+              <SearchRow
+                index={index}
+                state={searchSelectState}
+                type={typeMap[row.original._type]}
+                {...props}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <td className={cell.column.id} key={cell.id} style={{ padding: '0 8px' }}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </SearchRow>
+            );
+          },
         }}
-        data={results}
         isScrolling={handleScrollState}
-        itemContent={(index, data) => <Item data={data} index={index} />}
-        style={{
-          height: 'calc(100% - 16px)',
-          marginTop: 16,
-          width: '100%',
+        style={{ height: 'calc(100% - 16px)', marginTop: 16 }}
+        totalCount={rows.length}
+        onMouseOver={() => {
+          store.ui.menus.activeMenu.set(ActiveMenu.SEARCH);
+          searchSelectState.items.set(results);
         }}
-        onMouseOver={() => store.ui.select.items.set(results)}
       />
     </ClickAwayListener>
   );
@@ -181,25 +213,25 @@ const SearchResults: React.FC<{
         ))}
       </TabList>
       <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="top">
-        <ResultsLists results={searchResults?.slice(0, 10)} />
+        <Table results={searchResults?.slice(0, 10)} />
       </TabPanel>
       <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="artists">
-        <ResultsLists results={searchResults?.filter((value) => isArtist(value))} />
+        <Table results={searchResults?.filter((value) => isArtist(value))} />
       </TabPanel>
       <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="albums">
-        <ResultsLists results={albumResults} />
+        <Table results={albumResults} />
       </TabPanel>
       <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="tracks">
-        <ResultsLists results={trackResults} />
+        <Table results={trackResults} />
       </TabPanel>
       <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="playlists">
-        <ResultsLists results={playlistResults} />
+        <Table results={playlistResults} />
       </TabPanel>
       <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="collections">
-        <ResultsLists results={collectionResults} />
+        <Table results={collectionResults} />
       </TabPanel>
       <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="genres">
-        <ResultsLists results={genreResults} />
+        <Table results={genreResults} />
       </TabPanel>
     </TabContext>
   );

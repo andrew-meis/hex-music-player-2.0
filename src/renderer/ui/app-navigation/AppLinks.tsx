@@ -1,11 +1,50 @@
+import { reactive } from '@legendapp/state/react';
 import { Box, IconButton } from '@mui/material';
 import React from 'react';
+import { useDrop } from 'react-dnd';
 import { BsViewList } from 'react-icons/bs';
 import { CgSearch } from 'react-icons/cg';
 import { TiChartLine } from 'react-icons/ti';
 import { useNavigate } from 'react-router-dom';
+import { store } from 'state';
+import { DragTypes } from 'typescript';
+
+const ReactiveIconButton = reactive(IconButton);
 
 type Buttons = 'search' | 'charts' | 'queue';
+
+const QueueLink: React.FC<{
+  handleButtonClick: (buttonClicked: Buttons) => void;
+}> = ({ handleButtonClick }) => {
+  const [{ canDrop, isOver }, drop] = useDrop(
+    () => ({
+      accept: [DragTypes.TRACK],
+      drop: (item) => console.log(item),
+      collect: (monitor) => ({ canDrop: monitor.canDrop(), isOver: monitor.isOver() }),
+    }),
+    []
+  );
+
+  return (
+    <ReactiveIconButton
+      $className={() =>
+        (location.pathname === '/queue' && !store.ui.overlay.get()) || isOver ? 'selected' : ''
+      }
+      ref={drop}
+      sx={{
+        fontSize: '1.375rem',
+        height: 36,
+        width: 36,
+        outline: canDrop ? '2px solid var(--mui-palette-primary-main)' : '',
+      }}
+      onClick={() => handleButtonClick('queue')}
+      onDragEnter={() => setTimeout(() => handleButtonClick('queue'), 500)}
+    >
+      <BsViewList viewBox="0 3 16 16" />
+      <BsViewList style={{ position: 'absolute' }} viewBox="0 -12 16 16" />
+    </ReactiveIconButton>
+  );
+};
 
 const AppLinks: React.FC<{
   locations: React.MutableRefObject<{
@@ -21,15 +60,24 @@ const AppLinks: React.FC<{
   const handleButtonClick = (buttonClicked: Buttons) => {
     switch (buttonClicked) {
       case 'search':
-        if (location.pathname === '/search') return;
+        if (location.pathname === '/search') {
+          store.ui.overlay.set(false);
+          return;
+        }
         navigate(locations.current.search);
         break;
       case 'charts':
-        if (location.pathname === '/charts') return;
+        if (location.pathname === '/charts') {
+          store.ui.overlay.set(false);
+          return;
+        }
         navigate(locations.current.charts);
         break;
       case 'queue':
-        if (location.pathname === '/queue') return;
+        if (location.pathname === '/queue') {
+          store.ui.overlay.set(false);
+          return;
+        }
         navigate(locations.current.queue);
         break;
       default:
@@ -39,26 +87,23 @@ const AppLinks: React.FC<{
 
   return (
     <Box display="flex" justifySelf="end">
-      <IconButton
-        className={location.pathname === '/search' ? 'selected' : ''}
+      <ReactiveIconButton
+        $className={() =>
+          location.pathname === '/search' && !store.ui.overlay.get() ? 'selected' : ''
+        }
         onClick={() => handleButtonClick('search')}
       >
         <CgSearch viewBox="1 -1 25 24" />
-      </IconButton>
-      <IconButton
-        className={location.pathname === '/charts' ? 'selected' : ''}
+      </ReactiveIconButton>
+      <ReactiveIconButton
+        $className={() =>
+          location.pathname === '/charts' && !store.ui.overlay.get() ? 'selected' : ''
+        }
         onClick={() => handleButtonClick('charts')}
       >
         <TiChartLine />
-      </IconButton>
-      <IconButton
-        className={location.pathname === '/queue' ? 'selected' : ''}
-        sx={{ fontSize: '1.375rem', height: 36, width: 36 }}
-        onClick={() => handleButtonClick('queue')}
-      >
-        <BsViewList viewBox="0 3 16 16" />
-        <BsViewList style={{ position: 'absolute' }} viewBox="0 -12 16 16" />
-      </IconButton>
+      </ReactiveIconButton>
+      <QueueLink handleButtonClick={handleButtonClick} />
     </Box>
   );
 };

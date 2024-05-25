@@ -8,9 +8,9 @@ const Titlebar: React.FC = () => (
       alt="logo"
       src={favicon}
       style={{
-        height: 32,
-        width: 32,
-        marginLeft: '4px',
+        height: 24,
+        width: 24,
+        marginLeft: '8px',
       }}
     />
   </Box>

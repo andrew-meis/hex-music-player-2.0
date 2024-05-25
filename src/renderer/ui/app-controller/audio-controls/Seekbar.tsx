@@ -1,9 +1,37 @@
 import { observer, useObserveEffect } from '@legendapp/state/react';
-import { Grid, Slider, Typography } from '@mui/material';
+import { Grid, Slider, sliderClasses, styled, Typography } from '@mui/material';
 import { audio } from 'audio';
 import React, { useRef } from 'react';
 import formatTime from 'scripts/format-time';
 import { persistedStore, store } from 'state';
+
+const StyledSlider = styled(Slider)(({ theme }) => {
+  return {
+    color: theme.palette.text.secondary,
+    '&:hover': {
+      color: theme.palette.primary.main,
+    },
+    [`& .${sliderClasses.rail}`]: {
+      '&:hover': {
+        color: 'inherit',
+      },
+    },
+    [`& .${sliderClasses.thumb}`]: {
+      borderRadius: 4,
+      boxShadow: theme.shadows[1],
+      color: theme.palette.common.white,
+      '&:hover': {
+        boxShadow: theme.shadows[3],
+        color: theme.palette.common.white,
+      },
+    },
+    [`& .${sliderClasses.track}`]: {
+      '&:hover': {
+        color: 'inherit',
+      },
+    },
+  };
+});
 
 const Seekbar: React.FC = observer(function Seekbar() {
   const elapsed = useRef<HTMLSpanElement>(null);
@@ -60,7 +88,7 @@ const Seekbar: React.FC = observer(function Seekbar() {
   return (
     <Grid container flexBasis="100%" marginX={1} paddingY={1}>
       <Grid item xs alignItems="center" display="flex" height={30} marginRight={1}>
-        <Slider
+        <StyledSlider
           disabled={!nowPlaying}
           max={nowPlaying?.track.duration || 0}
           min={0}

@@ -17,8 +17,6 @@ const store = new Store<{
   };
 }>();
 
-// app.commandLine.appendSwitch('disable-features', 'WidgetLayering');
-
 function createWindow() {
   // Load previous window state
   const mainWindowState = windowStateKeeper({

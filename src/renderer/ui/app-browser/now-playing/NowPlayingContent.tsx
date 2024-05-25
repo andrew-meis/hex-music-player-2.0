@@ -8,6 +8,7 @@ import React, { useEffect, useRef } from 'react';
 import NowPlayingAbout from './NowPlayingAbout';
 import NowPlayingAvatar from './NowPlayingAvatar';
 import NowPlayingHeader from './NowPlayingHeader';
+import NowPlayingHistory from './NowPlayingHistory';
 import NowPlayingLyrics from './NowPlayingLyrics';
 import NowPlayingMetadata from './NowPlayingMetadata';
 import NowPlayingNavigation from './NowPlayingNavigation';
@@ -151,7 +152,9 @@ const NowPlayingContent: React.FC = () => {
       <Section>
         <NowPlayingMetadata />
       </Section>
-      <Section>Track play history</Section>
+      <Section>
+        <NowPlayingHistory />
+      </Section>
       <Section>
         <NowPlayingSimilar />
       </Section>

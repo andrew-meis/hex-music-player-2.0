@@ -42,7 +42,9 @@ const AppController: React.FC = () => {
       <Box marginX="auto" maxWidth={1920}>
         <ReactiveBox
           $animate={() => ({
-            background: store.ui.overlay.get() ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)',
+            background: store.ui.overlay.get()
+              ? 'rgba(var(--mui-palette-background-defaultChannel) / 0.5)'
+              : 'rgba(var(--mui-palette-background-defaultChannel) / 0)',
           })}
           sx={{
             height: 'calc(100vh - 148px)',
