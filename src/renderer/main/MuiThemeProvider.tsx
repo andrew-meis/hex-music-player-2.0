@@ -146,6 +146,7 @@ const createTheme = () =>
         defaultProps: {
           primaryTypographyProps: {
             fontSize: '0.875rem',
+            lineHeight: '1.5rem',
           },
         },
       },

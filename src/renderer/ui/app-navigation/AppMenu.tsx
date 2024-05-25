@@ -1,10 +1,89 @@
-import { Box, IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
+import {
+  Box,
+  Divider,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+} from '@mui/material';
 import useHistoryStack from 'hooks/useHistoryStack';
 import React from 'react';
+import { BiSolidAlbum } from 'react-icons/bi';
+import { BsMusicNote, BsMusicNoteList } from 'react-icons/bs';
+import { FaTags } from 'react-icons/fa';
+import { IoMdMicrophone } from 'react-icons/io';
 import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
-import { LuLibrary } from 'react-icons/lu';
-import { MdSettings } from 'react-icons/md';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { LuLayoutGrid, LuLibrary } from 'react-icons/lu';
+import { MdHome, MdSettings } from 'react-icons/md';
+import { createSearchParams, Path, useLocation, useNavigate } from 'react-router-dom';
+
+const menuItems: {
+  label: string;
+  icon: JSX.Element;
+  to: Partial<Path>;
+}[] = [
+  {
+    label: 'Artists',
+    icon: <IoMdMicrophone />,
+    to: {
+      pathname: '/artists',
+      search: createSearchParams({
+        section: 'Artists',
+      }).toString(),
+    },
+  },
+  {
+    label: 'Albums',
+    icon: <BiSolidAlbum />,
+    to: {
+      pathname: '/albums',
+      search: createSearchParams({
+        section: 'Albums',
+      }).toString(),
+    },
+  },
+  {
+    label: 'Tracks',
+    icon: <BsMusicNote />,
+    to: {
+      pathname: '/tracks',
+      search: createSearchParams({
+        section: 'Tracks',
+      }).toString(),
+    },
+  },
+  {
+    label: 'Playlists',
+    icon: <BsMusicNoteList />,
+    to: {
+      pathname: '/playlists',
+      search: createSearchParams({
+        section: 'Playlists',
+      }).toString(),
+    },
+  },
+  {
+    label: 'Genres',
+    icon: <FaTags />,
+    to: {
+      pathname: '/genres',
+      search: createSearchParams({
+        section: 'Genres',
+      }).toString(),
+    },
+  },
+  {
+    label: 'Collections',
+    icon: <LuLayoutGrid />,
+    to: {
+      pathname: '/collections',
+      search: createSearchParams({
+        section: 'Collections',
+      }).toString(),
+    },
+  },
+];
 
 const AppMenu: React.FC = () => {
   const location = useLocation();
@@ -23,9 +102,9 @@ const AppMenu: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const handleSelect = () => {
-    if (location.pathname !== '/settings') {
-      navigate('/settings');
+  const handleSelect = (to: Partial<Path>) => {
+    if (location.pathname !== to.pathname) {
+      navigate(to);
     }
     setTimeout(() => setAnchorEl(null), 300);
   };
@@ -42,7 +121,21 @@ const AppMenu: React.FC = () => {
         <IoChevronForward />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem onClick={handleSelect}>
+        <MenuItem onClick={() => handleSelect({ pathname: '/' })}>
+          <ListItemIcon>
+            <MdHome />
+          </ListItemIcon>
+          <ListItemText>Home</ListItemText>
+        </MenuItem>
+        <Divider sx={{ margin: '4px !important' }} />
+        {menuItems.map((item) => (
+          <MenuItem key={item.label} onClick={() => handleSelect(item.to)}>
+            <ListItemIcon>{item.icon}</ListItemIcon>
+            <ListItemText>{item.label}</ListItemText>
+          </MenuItem>
+        ))}
+        <Divider sx={{ margin: '4px !important' }} />
+        <MenuItem onClick={() => handleSelect({ pathname: '/settings' })}>
           <ListItemIcon>
             <MdSettings />
           </ListItemIcon>
