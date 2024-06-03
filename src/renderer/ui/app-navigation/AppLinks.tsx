@@ -75,6 +75,7 @@ const AppLinks: React.FC<{
         break;
       case 'queue':
         if (location.pathname === '/queue') {
+          store.ui.queue.activeTab.set('0');
           store.ui.overlay.set(false);
           return;
         }

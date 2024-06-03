@@ -67,6 +67,7 @@ function createWindow() {
   mainWindowState.manage(mainWindow);
 
   ipcMain.handle('set-mode', (_event, mode) => {
+    if (process.platform !== 'win32') return;
     if (mode === 'dark') {
       mainWindow.setTitleBarOverlay({
         color: '#00000000',
