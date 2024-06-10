@@ -169,7 +169,9 @@ const QueueTabs: React.FC = () => {
     () => ({
       accept: [DragTypes.PLAYQUEUE_ITEM],
       drop: (item) => console.log(item),
-      collect: (monitor) => ({ canDrop: monitor.canDrop() }),
+      collect: (monitor) => ({
+        canDrop: monitor.canDrop() && store.ui.queue.activeTab.peek() !== '0',
+      }),
     }),
     []
   );

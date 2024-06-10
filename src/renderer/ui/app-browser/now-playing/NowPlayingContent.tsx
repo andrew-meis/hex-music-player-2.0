@@ -1,18 +1,16 @@
 import { useObservable } from '@legendapp/state/react';
-import { Box, Paper } from '@mui/material';
+import { Box } from '@mui/material';
 import { useMotionValueEvent, useScroll } from 'framer-motion';
 import { inRange } from 'lodash';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import React, { useEffect, useRef } from 'react';
 
 import NowPlayingAbout from './NowPlayingAbout';
-import NowPlayingAvatar from './NowPlayingAvatar';
 import NowPlayingHeader from './NowPlayingHeader';
 import NowPlayingHistory from './NowPlayingHistory';
 import NowPlayingLyrics from './NowPlayingLyrics';
-import NowPlayingMetadata from './NowPlayingMetadata';
 import NowPlayingNavigation from './NowPlayingNavigation';
-import NowPlayingSectionActions from './NowPlayingSectionActions';
+import { LyricsActions } from './NowPlayingSectionActions';
 import NowPlayingSimilar from './NowPlayingSimilar';
 
 const Section = ({ children }: { children: React.ReactNode }) => {
@@ -20,7 +18,7 @@ const Section = ({ children }: { children: React.ReactNode }) => {
 };
 
 const NowPlayingContent: React.FC = () => {
-  const activeSection = useObservable<number | undefined>(undefined);
+  const activeSection = useObservable<number>(1);
   const ref = useRef<HTMLElement | null>(null);
   const { scrollYProgress } = useScroll({ container: ref });
 
@@ -28,27 +26,23 @@ const NowPlayingContent: React.FC = () => {
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     const fixedLatest = Math.round(latest * 1e2) / 1e2;
-    if (inRange(fixedLatest, 0, 0.2)) {
+    if (inRange(fixedLatest, 0, 0.25)) {
       activeSection.set(1);
       return;
     }
-    if (inRange(fixedLatest, 0.2, 0.4)) {
+    if (inRange(fixedLatest, 0.25, 0.5)) {
       activeSection.set(2);
       return;
     }
-    if (inRange(fixedLatest, 0.4, 0.6)) {
+    if (inRange(fixedLatest, 0.5, 0.75)) {
       activeSection.set(3);
       return;
     }
-    if (inRange(fixedLatest, 0.6, 0.8)) {
+    if (inRange(fixedLatest, 0.75, 1)) {
       activeSection.set(4);
       return;
     }
-    if (inRange(fixedLatest, 0.8, 1)) {
-      activeSection.set(5);
-      return;
-    }
-    if (fixedLatest === 1) activeSection.set(6);
+    if (fixedLatest === 1) activeSection.set(5);
   });
 
   const [initialize] = useOverlayScrollbars({
@@ -90,67 +84,41 @@ const NowPlayingContent: React.FC = () => {
       }}
     >
       <Box
-        height={1}
+        height="calc(100% - 2px)"
+        left={0}
         position="sticky"
-        right={0}
         sx={{
-          float: 'right',
-          marginRight: '-100%',
+          float: 'left',
+          marginLeft: '-100%',
         }}
-        top={0}
-        width={64}
-        zIndex={10}
+        top={1}
+        width={48}
+        zIndex={500}
       >
-        <div
-          style={{
-            height: 'calc(100% - 32px)',
-            left: '50%',
-            position: 'absolute',
-            top: '50%',
-            transform: 'translateX(-50%) translateY(-50%)',
-            width: 32,
-            zIndex: 500,
-          }}
+        <Box
+          alignItems="center"
+          display="flex"
+          flexDirection="column"
+          height={1}
+          position="absolute"
+          width={48}
         >
-          <Box
-            borderRadius={4}
-            component={Paper}
-            elevation={4}
-            height={1}
-            position="absolute"
-            sx={(theme) => ({
-              background: theme.palette.background.paper,
-            })}
-            width={1}
+          <NowPlayingNavigation
+            activeSection={activeSection}
+            handleScrollClick={handleScrollClick}
+            scrollYProgress={scrollYProgress}
           />
-          <Box
-            alignItems="center"
-            display="flex"
-            flexDirection="column"
-            height={1}
-            position="absolute"
-            width={32}
-          >
-            <NowPlayingAvatar scrollYProgress={scrollYProgress} />
-            <NowPlayingNavigation
-              handleScrollClick={handleScrollClick}
-              scrollYProgress={scrollYProgress}
-            />
-            <NowPlayingSectionActions activeSection={activeSection} />
-          </Box>
-        </div>
+        </Box>
       </Box>
       <Section>
-        <NowPlayingHeader />
+        <NowPlayingHeader activeSection={activeSection} />
       </Section>
       <Section>
         <NowPlayingLyrics />
+        <LyricsActions activeSection={activeSection} />
       </Section>
       <Section>
         <NowPlayingAbout />
-      </Section>
-      <Section>
-        <NowPlayingMetadata />
       </Section>
       <Section>
         <NowPlayingHistory />

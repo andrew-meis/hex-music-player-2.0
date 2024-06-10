@@ -69,7 +69,8 @@ const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
       flexDirection="column"
       height="-webkit-fill-available"
       margin={2}
-      width="calc(100% - 80px)"
+      marginLeft={6}
+      width="calc(100% - 64px)"
     >
       <TabContext value={activeTab}>
         <TabList onChange={handleChange}>

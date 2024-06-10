@@ -17,7 +17,8 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Album, { albumLoader } from 'routes/album/Album';
 import Albums, { albumsLoader } from 'routes/albums/Albums';
-import Artist, { artistLoader } from 'routes/artist/Artist';
+import Artist from 'routes/artist/Artist';
+import { artistLoader } from 'routes/artist/loader';
 import ArtistDiscography, {
   artistDiscographyLoader,
 } from 'routes/artist/subroutes/discography/ArtistDiscography';
@@ -159,7 +160,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           </Box>
         </DndProvider>
       </MuiThemeProvider>
-      <ReactQueryDevtools buttonPosition="bottom-right" initialIsOpen={false} />
+      <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
     </QueryClientProvider>
   </React.StrictMode>
 );

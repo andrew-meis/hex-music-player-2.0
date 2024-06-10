@@ -1,10 +1,12 @@
 import { observer, useSelector } from '@legendapp/state/react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useColorScheme } from '@mui/material';
 import { audio } from 'audio';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import { useLyrics } from 'queries';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { store } from 'state';
+import { persistedStore, store } from 'state';
+
+const fontSizes = [1, 1.25, 1.5, 1.75, 2, 2.25, 2.5];
 
 const getTextStyle = (playerOffset: number, startOffset: number, nextOffset: number) => {
   if (playerOffset > startOffset && playerOffset < nextOffset) {
@@ -68,12 +70,19 @@ const SyncedLine: React.FC<{
     return getTextStyle(currentTimeMillis, startOffset, nextOffset || nowPlaying.track.duration);
   });
 
+  const fontSize = useSelector(() => {
+    const index = persistedStore.lyricsSize.get();
+    return `${fontSizes[index]}rem`;
+  });
+
   return (
     <Typography
+      fontSize={fontSize}
       ref={shouldSetRef ? setLine : null}
       sx={{
         color,
         cursor: 'pointer',
+        width: 'calc(100% - 96px)',
         '&:hover': {
           color: 'text.primary',
         },
@@ -90,6 +99,7 @@ const SyncedLine: React.FC<{
 const SyncedLyrics: React.FC<{
   syncedLyrics: ReturnType<typeof processSyncedLyrics>;
 }> = ({ syncedLyrics }) => {
+  const { mode } = useColorScheme();
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -102,7 +112,12 @@ const SyncedLyrics: React.FC<{
         debounce: null,
       },
       scrollbars: {
-        visibility: 'hidden',
+        autoHide: 'leave',
+        autoHideDelay: 500,
+        autoHideSuspend: true,
+        theme: mode === 'dark' ? 'os-theme-light' : 'os-theme-dark',
+        clickScroll: true,
+        visibility: 'visible',
       },
     },
   });
@@ -125,9 +140,10 @@ const SyncedLyrics: React.FC<{
     <Box
       height="-webkit-fill-available"
       margin={2}
+      marginLeft={6}
       overflow="auto"
       ref={ref}
-      width="calc(100% - 80px)"
+      width="calc(100% - 64px)"
     >
       <Box color="text.primary" height="fit-content">
         {syncedLyrics.map((value, index) => (
@@ -141,7 +157,13 @@ const SyncedLyrics: React.FC<{
 const PlainLyrics: React.FC<{
   plainLyrics: ReturnType<typeof processPlainLyrics>;
 }> = ({ plainLyrics }) => {
+  const { mode } = useColorScheme();
   const ref = useRef<HTMLDivElement | null>(null);
+
+  const fontSize = useSelector(() => {
+    const index = persistedStore.lyricsSize.get();
+    return `${fontSizes[index]}rem`;
+  });
 
   useEffect(() => {
     ref.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -153,7 +175,12 @@ const PlainLyrics: React.FC<{
         debounce: null,
       },
       scrollbars: {
-        visibility: 'hidden',
+        autoHide: 'leave',
+        autoHideDelay: 500,
+        autoHideSuspend: true,
+        theme: mode === 'dark' ? 'os-theme-light' : 'os-theme-dark',
+        clickScroll: true,
+        visibility: 'visible',
       },
     },
   });
@@ -172,13 +199,15 @@ const PlainLyrics: React.FC<{
     <Box
       height="-webkit-fill-available"
       margin={2}
+      marginLeft={6}
       overflow="auto"
       ref={ref}
-      width="calc(100% - 80px)"
+      width="calc(100% - 64px)"
     >
       <Box color="text.primary" height="fit-content">
         {plainLyrics.map((value, index) => (
           <Typography
+            fontSize={fontSize}
             key={index}
             sx={{
               color: 'text.secondary',
@@ -226,8 +255,9 @@ const NowPlayingLyrics: React.FC = observer(function NowPlayingLyrics() {
         height="-webkit-fill-available"
         justifyContent="center"
         margin={2}
+        marginLeft={6}
         overflow="auto"
-        width="calc(100% - 80px)"
+        width="calc(100% - 64px)"
       >
         <Box color="text.primary" height="fit-content">
           <Typography
@@ -252,8 +282,9 @@ const NowPlayingLyrics: React.FC = observer(function NowPlayingLyrics() {
         height="-webkit-fill-available"
         justifyContent="center"
         margin={2}
+        marginLeft={6}
         overflow="auto"
-        width="calc(100% - 80px)"
+        width="calc(100% - 64px)"
       >
         <Box color="text.primary" height="fit-content">
           <Typography

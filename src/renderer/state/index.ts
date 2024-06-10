@@ -18,6 +18,7 @@ export const persistedStore = observable({
   // User state
   displayRemainingTime: true,
   lastfmApiKey: '',
+  lyricsSize: 2,
   queueId: 0,
   recentSearches: [] as string[],
 });
@@ -102,10 +103,12 @@ export const store = observable({
     },
     modals: {
       editLyricsTrack: undefined as unknown as Track,
-      open: '' as '' | 'lyrics',
+      editMetadataTrack: undefined as unknown as Track,
+      open: false,
     },
     nowPlaying: {
       activeTab: '0',
+      artHovered: false,
       color: chroma([90, 90, 90]),
       palette: [chroma([90, 90, 90]), chroma([90, 90, 90])],
       tabIsAnimating: false,

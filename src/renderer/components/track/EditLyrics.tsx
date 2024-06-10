@@ -122,11 +122,18 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
     };
     await db.lyrics.update(lyricsRecord.id, newLyrics);
     queryClient.refetchQueries({ queryKey: [QueryKeys.LYRICS, track.id] });
-    store.ui.modals.open.set('');
+    store.ui.modals.open.set(false);
   };
 
   return (
-    <>
+    <Box
+      display="flex"
+      flexDirection="column"
+      height="-webkit-fill-available"
+      padding={2}
+      paddingBottom={2}
+      width={1}
+    >
       <Typography variant="h4">Edit Lyrics</Typography>
       <FormControlLabel
         control={<Checkbox checked={instrumental} onChange={handleChange} />}
@@ -137,9 +144,9 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
         bgcolor="background.default"
         border="1px solid var(--mui-palette-action-disabled)"
         borderRadius={1}
-        height={256}
+        height="calc(100% - 134px)"
       >
-        <Scroller style={{ height: 256 }}>
+        <Scroller style={{ height: '100%' }}>
           <Box overflow="auto">
             <InputBase
               fullWidth
@@ -162,13 +169,13 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
         </Scroller>
       </Box>
       <FormHelperText sx={sx}>{text}</FormHelperText>
-      <Box bottom={13} display="flex" gap={0.5} position="absolute" right={20}>
+      <Box display="flex" gap={0.5} marginLeft="auto">
         <Button
           color="error"
           disabled={!lyricsEdited}
           size="small"
           variant="contained"
-          onClick={() => store.ui.modals.open.set('')}
+          onClick={() => store.ui.modals.open.set(false)}
         >
           Cancel
         </Button>
@@ -182,7 +189,7 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
           Save
         </Button>
       </Box>
-    </>
+    </Box>
   );
 };
 

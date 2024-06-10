@@ -493,13 +493,29 @@ export default class Library {
    * Get information about a single artist
    */
 
-  async artist(artistId: number, options: { includePopular?: boolean } = {}) {
-    const { includePopular = false } = options;
+  async artist(
+    artistId: number,
+    options: {
+      includeChildren?: boolean;
+      includePopularLeaves?: boolean;
+      includeRelated?: boolean;
+      includeRelatedCount?: number;
+    } = {}
+  ) {
+    const {
+      includeChildren = false,
+      includePopularLeaves = false,
+      includeRelated = false,
+      includeRelatedCount = 20,
+    } = options;
     const artist = await this.metadata(
       artistId,
       MediaType.ARTIST,
       new URLSearchParams({
-        includePopularLeaves: includePopular ? '1' : '0',
+        includeChildren: includeChildren ? '1' : '0',
+        includePopularLeaves: includePopularLeaves ? '1' : '0',
+        includeRelated: includeRelated ? '1' : '0',
+        includeRelatedCount: includeRelated ? includeRelatedCount.toString() : '0',
       })
     );
     return artist;

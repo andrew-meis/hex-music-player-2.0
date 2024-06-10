@@ -22,6 +22,7 @@ export interface Track {
   parentId: number;
   grandparentId: number;
 
+  collections: Tag[];
   fields: Field[];
   genres: Tag[];
   mbid: Tag[];
@@ -83,6 +84,7 @@ const toTrack = ($data: Prism<any>): Track => ({
   parentId: $data.get<string>('parentRatingKey').transform(toNumber).value!,
   grandparentId: $data.get<string>('grandparentRatingKey').transform(toNumber).value!,
 
+  collections: $data.get('Collection', { quiet: true }).transform(toTagList).value,
   fields: $data.get('Field', { quiet: true }).transform(toFieldList).value,
   genres: $data.get('Genre', { quiet: true }).transform(toTagList).value,
   mbid: $data.get('Guid', { quiet: true }).transform(toTagList).value,

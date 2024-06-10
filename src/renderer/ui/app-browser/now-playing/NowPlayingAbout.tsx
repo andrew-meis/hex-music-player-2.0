@@ -59,7 +59,8 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
             background: 'transparent',
             borderRadius: 4,
             height: 'auto',
-            margin: 2,
+            marginLeft: 6,
+            marginTop: 2,
             marginBottom: 'auto',
             width: 400,
           }}
@@ -70,8 +71,7 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
         display="flex"
         height="-webkit-fill-available"
         margin={2}
-        marginRight={8}
-        marginTop={2}
+        marginLeft={6}
         position="absolute"
         sx={{
           background: `url(${artistBannerSrc}) no-repeat`,
@@ -81,7 +81,7 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
         width="-webkit-fill-available"
       />
       {data && (
-        <Box bottom={0} padding={4} paddingBottom={2} paddingRight={10} position="absolute">
+        <Box bottom={0} padding={4} paddingBottom={2} paddingLeft={8} position="absolute">
           <Typography color="text.primary" lineHeight={3} variant="h6">
             {(+data.artist.stats.listeners).toLocaleString()} last.fm listeners
           </Typography>

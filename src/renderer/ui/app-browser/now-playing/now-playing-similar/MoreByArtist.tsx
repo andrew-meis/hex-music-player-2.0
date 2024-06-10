@@ -1,12 +1,12 @@
 import { observer, useUnmount } from '@legendapp/state/react';
 import { ClickAwayListener } from '@mui/material';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { Track } from 'api';
+import { SORT_TRACKS_BY_PLAYS, Track } from 'api';
 import { trackColumns } from 'components/track/columns';
 import TrackRow from 'components/track/TrackRow';
 import Scroller from 'components/virtuoso/Scroller';
 import { selectActions } from 'features/select';
-import { useRecentTracks } from 'queries';
+import { useArtistTracks } from 'queries';
 import React, { useMemo } from 'react';
 import { ItemProps, TableProps, TableVirtuoso } from 'react-virtuoso';
 import { store } from 'state';
@@ -19,13 +19,20 @@ const MoreByArtist: React.FC = observer(function SimilarMoreByArtist() {
 
   const tabIsAnimating = store.ui.nowPlaying.tabIsAnimating.get();
   const nowPlaying = store.queue.nowPlaying.get();
-  const { data: recentTracks } = useRecentTracks(nowPlaying.track, 90, !tabIsAnimating);
+  const { data: artistTracks } = useArtistTracks(
+    nowPlaying.track.grandparentGuid,
+    nowPlaying.track.grandparentId,
+    SORT_TRACKS_BY_PLAYS.desc,
+    nowPlaying.track.grandparentTitle,
+    !tabIsAnimating,
+    true
+  );
 
   useUnmount(() => selectActions.handleClickAway(nowPlayingSelectState));
 
   const slicedTracks = useMemo(
-    () => recentTracks?.filter((track) => track.guid !== nowPlaying.track.guid).slice(0, 10),
-    [recentTracks]
+    () => artistTracks?.tracks.filter((track) => track.guid !== nowPlaying.track.guid).slice(0, 50),
+    [artistTracks]
   );
 
   const table = useReactTable({
@@ -45,7 +52,7 @@ const MoreByArtist: React.FC = observer(function SimilarMoreByArtist() {
     }
   };
 
-  if (!recentTracks) return null;
+  if (!artistTracks) return null;
 
   return (
     <ClickAwayListener

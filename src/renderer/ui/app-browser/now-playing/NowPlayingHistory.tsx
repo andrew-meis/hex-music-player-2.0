@@ -227,18 +227,24 @@ const NowPlayingHistory: React.FC = observer(function NowPlayingHistory() {
   }
 
   return (
-    <Box display="flex" height="-webkit-fill-available" margin={2} width="calc(100% - 80px)">
+    <Box
+      display="flex"
+      height="-webkit-fill-available"
+      margin={2}
+      marginLeft={6}
+      width="calc(100% - 64px)"
+    >
+      <Box height="calc(100% - 32px)" position="absolute" right={16} width="calc(64% - 64px)">
+        <Table history={history} />
+      </Box>
       <Box
         flexShrink={0}
         height="calc(100% - 32px)"
-        marginLeft="60%"
+        marginLeft="-3%"
         marginY={2}
         width={history.entries.length === 0 ? 1 : 0.6}
       >
         <Chart history={history} />
-      </Box>
-      <Box height="calc(100% - 32px)" position="absolute" width="calc(64% - 64px)">
-        <Table history={history} />
       </Box>
     </Box>
   );

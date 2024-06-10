@@ -1,6 +1,7 @@
 import { Memo } from '@legendapp/state/react';
 import { Box, Paper, SvgIcon } from '@mui/material';
 import noiseImage from 'assets/noise.bmp?url';
+import { round } from 'lodash';
 import React from 'react';
 import { LiaMinusSolid } from 'react-icons/lia';
 import { store } from 'state';
@@ -35,7 +36,7 @@ const NowPlayingSurface: React.FC<{
           display: 'flex',
           marginLeft: 'auto',
           marginRight: 'auto',
-          width: `calc(${(314 / 466) * 100}vh * (21 / 9))`,
+          width: `calc(${round((314 / 466) * 100, 4)}vh * (21 / 9))`,
         }}
       >
         <div

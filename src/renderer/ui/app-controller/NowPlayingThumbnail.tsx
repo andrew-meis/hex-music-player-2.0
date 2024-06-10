@@ -1,7 +1,10 @@
-import { observer, useSelector } from '@legendapp/state/react';
-import { Avatar, Paper } from '@mui/material';
+import { observer, reactive, Show, useSelector } from '@legendapp/state/react';
+import { Avatar } from '@mui/material';
 import React from 'react';
+import { IoChevronDown } from 'react-icons/io5';
 import { store } from 'state';
+
+const ReactiveAvatar = reactive(Avatar);
 
 const NowPlayingThumbnail: React.FC = observer(function NowPlayingThumbnail() {
   const library = store.library.get();
@@ -14,20 +17,38 @@ const NowPlayingThumbnail: React.FC = observer(function NowPlayingThumbnail() {
   });
 
   return (
-    <Avatar
-      component={Paper}
-      elevation={4}
-      src={albumThumbSrc}
-      sx={{
-        cursor: 'pointer',
-        flexShrink: 0,
-        height: 48,
-        marginLeft: 1,
-        width: 48,
-      }}
-      variant="rounded"
-      onClick={() => store.ui.overlay.toggle()}
-    />
+    <>
+      <ReactiveAvatar
+        $sx={() => ({
+          boxShadow: 'var(--mui-shadows-2)',
+          cursor: 'pointer',
+          flexShrink: 0,
+          height: 48,
+          marginLeft: 1,
+          opacity: store.ui.overlay.get() ? 0 : 1,
+          width: 48,
+        })}
+        src={albumThumbSrc}
+        variant="rounded"
+        onClick={() => store.ui.overlay.toggle()}
+      />
+      <Show if={store.ui.overlay}>
+        <Avatar
+          sx={(theme) => ({
+            background: 'transparent',
+            color: theme.palette.text.secondary,
+            position: 'absolute',
+            pointerEvents: 'none',
+            right: 8,
+            height: 48,
+            width: 48,
+          })}
+          variant="rounded"
+        >
+          <IoChevronDown />
+        </Avatar>
+      </Show>
+    </>
   );
 });
 

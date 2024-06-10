@@ -263,9 +263,7 @@ const createTheme = () =>
             justifyContent: 'flex-start',
           },
           indicator: ({ theme }) => ({
-            backgroundColor: theme.palette.action.selected,
-            borderRadius: 8,
-            height: '100%',
+            backgroundColor: theme.palette.text.primary,
           }),
           root: {
             minHeight: 32,
@@ -319,12 +317,6 @@ const createTheme = () =>
       },
       MuiTypography: {
         variants: [
-          {
-            props: { variant: 'body1' },
-            style: {
-              // lineHeight: 1.3,
-            },
-          },
           {
             props: { variant: 'h1' },
             style: {

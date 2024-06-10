@@ -1,5 +1,12 @@
 export { albumsQuery, default as useAlbums } from './useAlbums';
-export { artistsQuery, default as useArtists } from './useArtists';
+export {
+  artistQuery,
+  artistsQuery,
+  artistTracksQuery,
+  useArtist,
+  default as useArtists,
+  useArtistTracks,
+} from './useArtists';
 export { collectionsQuery, default as useCollections } from './useCollections';
 export { useColorThiefColor, useColorThiefPalette } from './useColorThief';
 export { genresQuery, default as useGenres } from './useGenres';

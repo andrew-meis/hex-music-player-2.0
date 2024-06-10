@@ -1,15 +1,14 @@
 import Prism from '@zwolf/prism';
 import { schema } from 'normalizr';
 
+import { Album, toAlbum } from './album';
+import { Field, toFieldList } from './field';
+import { artistSchema, Hub, toHub } from './hub';
 import { MediaContainer, toMediaContainer } from './media-container';
 import { createParser } from './parser';
 import { Tag, toTagList } from './tag';
-import { toTrack, Track, trackSchema } from './track';
+import { toTrack, Track } from './track';
 import { toDateFromSeconds, toFloat, toNumber } from './types';
-
-const artistSchema = new schema.Entity('artists', {
-  popularTracks: new schema.Array(trackSchema),
-});
 
 const artistContainerSchema = new schema.Object({
   artists: new schema.Array(artistSchema),
@@ -26,9 +25,13 @@ export interface Artist {
   _type: string;
   id: number;
 
+  albums: Album[];
   country: Tag[];
+  fields: Field[];
   genre: Tag[];
+  hubs: Hub[];
   mbid: Tag[];
+  moods: Tag[];
   popularTracks: Track[];
 
   addedAt: Date | undefined;
@@ -56,9 +59,13 @@ const toArtist = ($data: Prism<any>): Artist => ({
   _type: 'artist',
   id: $data.get('ratingKey').transform(toNumber).value!,
 
+  albums: $data.get('Children', { quiet: true }).get('Metadata').toArray().map(toAlbum),
   country: $data.get('Country', { quiet: true }).transform(toTagList).value,
+  fields: $data.get('Field', { quiet: true }).transform(toFieldList).value,
   genre: $data.get('Genre', { quiet: true }).transform(toTagList).value,
+  hubs: $data.get('Related').get('Hub').toArray().map(toHub),
   mbid: $data.get('Guid', { quiet: true }).transform(toTagList).value,
+  moods: $data.get('Mood', { quiet: true }).transform(toTagList).value,
   popularTracks: $data.transform(toPopularTracks).value,
 
   addedAt: $data.get<number>('addedAt').transform(toDateFromSeconds).value,

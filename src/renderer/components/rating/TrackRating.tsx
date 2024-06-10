@@ -56,6 +56,7 @@ const Rating: React.FC<
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (mouseLeft) return;
     setIsHovered(true);
     setHoverActiveStar(calculateRating(e));
   };

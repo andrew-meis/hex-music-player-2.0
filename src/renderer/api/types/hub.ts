@@ -2,12 +2,16 @@ import Prism from '@zwolf/prism';
 import { schema } from 'normalizr';
 
 import { Album, albumSchema, toAlbum } from './album';
-import { Artist, artistSchema, toArtist } from './artist';
+import { Artist, toArtist } from './artist';
 import { Collection, collectionSchema, toCollection } from './collection';
 import { Genre, genreSchema, toGenre } from './genre';
 import { createParser } from './parser';
 import { Playlist, playlistSchema, toPlaylist } from './playlist';
 import { toTrack, Track, trackSchema } from './track';
+
+const artistSchema = new schema.Entity('artists', {
+  popularTracks: new schema.Array(trackSchema),
+});
 
 const hubSchema = new schema.Entity(
   'hubs',
@@ -137,4 +141,4 @@ const toHubContainer = ($data: Prism<any>): HubContainer => {
 
 const parseHubContainer = createParser('hubContainer', toHubContainer);
 
-export { hubContainerSchema, hubSchema, parseHubContainer };
+export { artistSchema, hubContainerSchema, hubSchema, parseHubContainer, toHub };

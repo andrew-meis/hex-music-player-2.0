@@ -86,7 +86,7 @@ const Seekbar: React.FC = observer(function Seekbar() {
   };
 
   return (
-    <Grid container flexBasis="100%" marginX={1} paddingY={1}>
+    <Grid container flexBasis="100%" marginX={1} maxWidth={600} paddingY={1}>
       <Grid item xs alignItems="center" display="flex" height={30} marginRight={1}>
         <StyledSlider
           disabled={!nowPlaying}
