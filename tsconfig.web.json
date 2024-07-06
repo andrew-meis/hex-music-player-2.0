@@ -1,11 +1,10 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
   "include": [
-    "src/assets/**/*.bmp",
     "src/preload/*.d.ts",
+    "src/api/**/*",
     "src/renderer/env.d.ts",
     "src/renderer/**/*",
-    "src/renderer/**/*.tsx",
     "src/typescript/**/*",
   ],
   "compilerOptions": {
@@ -13,7 +12,7 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "api": ["src/renderer/api/index.ts"],
+      "api": ["src/api/index.ts"],
       "app/*": ["src/renderer/app/*"],
       "assets/*": ["src/renderer/assets/*"],
       "audio": ["src/renderer/audio/index.ts"],

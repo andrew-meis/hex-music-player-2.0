@@ -33,9 +33,9 @@ const Modals: React.FC = () => {
         elevation: 2,
         sx: {
           flexDirection: 'row',
-          height: 'calc(100% - 152px)',
+          height: 'calc(100% - 162px)',
           justifyContent: 'center',
-          margin: '0 16px',
+          margin: '0 8px',
           maxHeight: 512,
           maxWidth: 900,
           width: `calc(${round((314 / 466) * 100, 4)}vh * (21 / 9))`,

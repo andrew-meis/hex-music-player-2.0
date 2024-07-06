@@ -1,6 +1,7 @@
 import { ElectronAPI } from '@electron-toolkit/preload';
-import PreciseAudio from '@synesthesia-project/precise-audio/lib';
 import { AppInfo, ServerConfig } from 'typescript';
+
+import { PersistedStore } from './index';
 
 declare global {
   interface Window {
@@ -9,8 +10,9 @@ declare global {
       getAppInfo: () => Promise<AppInfo>;
       getServerConfig: () => Promise<ServerConfig>;
       setServerConfig: (serverConfig: ServerConfig) => Promise<ServerConfig>;
+      getPersistedStore: () => Promise<PersistedStore>;
+      setPersistedStore: (persistedStore: PersistedStore) => Promise<PersistedStore>;
       setMode: (mode: 'dark' | 'light') => Promise<void>;
     };
-    audio: PreciseAudio;
   }
 }

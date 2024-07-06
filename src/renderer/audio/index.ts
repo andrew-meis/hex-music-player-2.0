@@ -3,8 +3,6 @@ import { persistedStore, store } from 'state';
 
 export const audio = new PreciseAudio();
 
-window.audio = audio;
-
 audio.thresholds.decodeThresholdSeconds = 360;
 audio.thresholds.downloadThresholdSeconds = 360;
 

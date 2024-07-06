@@ -89,6 +89,13 @@ const createTheme = () =>
           },
         },
       },
+      MuiDialog: {
+        styleOverrides: {
+          container: {
+            height: 'calc(100% - 9px)',
+          },
+        },
+      },
       MuiIconButton: {
         defaultProps: {
           disableRipple: true,

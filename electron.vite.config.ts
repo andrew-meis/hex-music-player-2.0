@@ -14,7 +14,7 @@ export default defineConfig({
     assetsInclude: ['**/*.bmp'],
     resolve: {
       alias: {
-        api: resolve('src/renderer/api/index.ts'),
+        api: resolve('src/api/index.ts'),
         app: resolve('src/renderer/app'),
         assets: resolve('src/renderer/assets'),
         audio: resolve('src/renderer/audio/index.ts'),

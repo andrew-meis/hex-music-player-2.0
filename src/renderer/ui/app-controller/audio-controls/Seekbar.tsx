@@ -86,8 +86,13 @@ const Seekbar: React.FC = observer(function Seekbar() {
   };
 
   return (
-    <Grid container flexBasis="100%" marginX={1} maxWidth={600} paddingY={1}>
-      <Grid item xs alignItems="center" display="flex" height={30} marginRight={1}>
+    <Grid container flexBasis="100%" marginX={1} maxWidth={600}>
+      <Grid item display="flex" justifyContent="flex-end" width="50px">
+        <Typography mr={1} mt="4px" position="absolute" variant="subtitle2">
+          <span ref={elapsed} />
+        </Typography>
+      </Grid>
+      <Grid item xs alignItems="center" display="flex" height={30} marginX={1}>
         <StyledSlider
           disabled={!nowPlaying}
           max={nowPlaying?.track.duration || 0}
@@ -108,14 +113,6 @@ const Seekbar: React.FC = observer(function Seekbar() {
           onChangeCommitted={commitPosition}
         />
       </Grid>
-      <Grid item display="flex" justifyContent="flex-end" width="50px">
-        <Typography mr={1} mt="4px" position="absolute" variant="subtitle2">
-          <span ref={elapsed} />
-        </Typography>
-      </Grid>
-      <Typography mt="4px" variant="subtitle2">
-        /
-      </Typography>
       <Grid
         item
         display="flex"

@@ -200,7 +200,3 @@ th.viewedAt {
   height: 32px;
   -webkit-app-region: drag;
 }
-
-#drag-icon[data-is-grabbed="true"] {
-  cursor: grabbing;
-}

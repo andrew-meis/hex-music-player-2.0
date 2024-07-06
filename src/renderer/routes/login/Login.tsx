@@ -6,7 +6,7 @@ import ky from 'ky';
 import React, { useEffect, useState } from 'react';
 import { redirect, useLoaderData } from 'react-router-dom';
 import isAppInit from 'scripts/init-app';
-import { PinResponse } from 'src/renderer/api/client';
+import { PinResponse } from 'src/api/client';
 
 import LoginSettings from './LoginSettings';
 import PlexLibrary from './PlexLibrary';

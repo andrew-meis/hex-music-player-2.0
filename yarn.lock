@@ -1245,6 +1245,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@namhong2001/binary-search@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@namhong2001/binary-search@npm:1.0.1"
+  checksum: 10/cec8fb54dcfa36e31bbfe189b49d2b4a6b62bc2ee51736eb8aab9a39fdab7aca733e45ea8b772a13a173a1d4395741ef8e0ddae94ce0e0ec1b508a10e42499f4
+  languageName: node
+  linkType: hard
+
+"@namhong2001/react-textfit@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@namhong2001/react-textfit@npm:2.0.0"
+  dependencies:
+    "@namhong2001/binary-search": "npm:^1.0.1"
+    react: "npm:^18.2.0"
+    react-dom: "npm:^18.2.0"
+  checksum: 10/7c2233389771d8a63eb7357feb33a400854e397f76a9e2ccfc0a1399b7da6c4baf7fba24312d9008aa3ccb8162de3d0e7a7a98163795bbe551348fe197395588
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -5198,6 +5216,7 @@ __metadata:
     "@mui/lab": "npm:^5.0.0-alpha.170"
     "@mui/material": "npm:^5.15.18"
     "@mui/x-charts": "npm:^7.4.0"
+    "@namhong2001/react-textfit": "npm:^2.0.0"
     "@react-hookz/web": "npm:^24.0.4"
     "@synesthesia-project/precise-audio": "npm:^0.3.1"
     "@tanstack/react-query": "npm:^5.36.2"
@@ -5246,6 +5265,7 @@ __metadata:
     react-dom: "npm:^18.2.0"
     react-dropzone: "npm:^14.2.3"
     react-icons: "npm:^5.2.1"
+    react-intersection-observer: "npm:^9.10.3"
     react-router-dom: "npm:^6.22.2"
     react-virtuoso: "npm:^4.7.4"
     typescript: "npm:^5.3.3"
@@ -7384,6 +7404,19 @@ __metadata:
   peerDependencies:
     react: "*"
   checksum: 10/8cdf49a9583488f9bb58cbab21f10a5e1993dd9d4f5a62f30fbbce249e4868e8e2c34eb1888adb22014a4319633d1035079bcf5d33b1a8596d745809632699c8
+  languageName: node
+  linkType: hard
+
+"react-intersection-observer@npm:^9.10.3":
+  version: 9.10.3
+  resolution: "react-intersection-observer@npm:9.10.3"
+  peerDependencies:
+    react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+  checksum: 10/0c9d1b1aa48bfb9f47396ab8b9428c825a1dce3a9a0319ae36a2113e96c30befbce36a0821d9e0cc6d6727f61b1905652b2a5576192b2675504f1e53b1d101e5
   languageName: node
   linkType: hard
 

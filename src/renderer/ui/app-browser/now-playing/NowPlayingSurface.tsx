@@ -1,18 +1,14 @@
 import { Memo } from '@legendapp/state/react';
-import { Box, Paper, SvgIcon } from '@mui/material';
+import { Box, Paper } from '@mui/material';
 import noiseImage from 'assets/noise.bmp?url';
 import { round } from 'lodash';
 import React from 'react';
-import { LiaMinusSolid } from 'react-icons/lia';
 import { store } from 'state';
 
 import NowPlayingColor from './NowPlayingColor';
 import NowPlayingContent from './NowPlayingContent';
 
-const NowPlayingSurface: React.FC<{
-  startDrag: (event: React.PointerEvent<SVGSVGElement>) => void;
-  endDrag: () => void;
-}> = ({ startDrag, endDrag }) => {
+const NowPlayingSurface: React.FC = () => {
   return (
     <Box
       alignItems="center"
@@ -69,26 +65,6 @@ const NowPlayingSurface: React.FC<{
           }}
         </Memo>
         <NowPlayingContent />
-        <SvgIcon
-          data-is-grabbed="false"
-          id="drag-icon"
-          sx={{
-            color: 'text.secondary',
-            cursor: 'grab',
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: -4,
-            margin: 'auto',
-            '&:hover': {
-              color: 'text.primary',
-            },
-          }}
-          onPointerDown={startDrag}
-          onPointerUp={endDrag}
-        >
-          <LiaMinusSolid />
-        </SvgIcon>
       </Box>
     </Box>
   );

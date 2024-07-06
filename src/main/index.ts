@@ -8,14 +8,7 @@ import { AppInfo } from 'typescript';
 
 import icon from '../../resources/icon.png?asset';
 
-const store = new Store<{
-  config: {
-    clientId?: string;
-    sectionId?: number;
-    serverName?: string;
-    token?: string;
-  };
-}>();
+const store = new Store();
 
 function createWindow() {
   // Load previous window state
@@ -31,7 +24,7 @@ function createWindow() {
     width: mainWindowState.width,
     height: mainWindowState.height,
     minWidth: 800,
-    minHeight: 488,
+    minHeight: 500,
     show: false,
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',
@@ -130,6 +123,15 @@ app.whenReady().then(() => {
   ipcMain.handle('set-server-config', (_event, serverConfig) => {
     store.set('server-config', serverConfig);
     return store.get('server-config');
+  });
+
+  ipcMain.handle('get-persisted-store', () => {
+    return store.get('persisted-store');
+  });
+
+  ipcMain.handle('set-persisted-store', (_event, persistedStore) => {
+    store.set('persisted-store', persistedStore);
+    return store.get('persisted-store');
   });
 
   app.on('activate', function () {

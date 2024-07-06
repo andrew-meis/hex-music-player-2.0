@@ -1,37 +1,45 @@
 import { observer, reactive, Show, useSelector } from '@legendapp/state/react';
-import { Avatar } from '@mui/material';
+import { Avatar, SvgIcon } from '@mui/material';
+import { motion } from 'framer-motion';
 import React from 'react';
+import { BiSolidAlbum } from 'react-icons/bi';
 import { IoChevronDown } from 'react-icons/io5';
 import { store } from 'state';
 
-const ReactiveAvatar = reactive(Avatar);
+const MotionAvatar = motion(Avatar);
+const ReactiveMotionAvatar = reactive(MotionAvatar);
 
-const NowPlayingThumbnail: React.FC = observer(function NowPlayingThumbnail() {
+const NowPlayingInfo: React.FC = observer(function ToggleOverlay() {
   const library = store.library.get();
   const nowPlaying = store.queue.nowPlaying.get();
 
   const albumThumbSrc = useSelector(() => {
     return library.resizeImage(
-      new URLSearchParams({ url: nowPlaying?.track.parentThumb, width: '64', height: '64' })
+      new URLSearchParams({ url: nowPlaying?.track.parentThumb, width: '100', height: '100' })
     );
   });
 
   return (
     <>
-      <ReactiveAvatar
-        $sx={() => ({
+      <ReactiveMotionAvatar
+        $animate={() => ({
+          opacity: store.ui.overlay.get() ? 0 : 1,
+        })}
+        src={albumThumbSrc}
+        sx={{
           boxShadow: 'var(--mui-shadows-2)',
           cursor: 'pointer',
           flexShrink: 0,
-          height: 48,
-          marginLeft: 1,
-          opacity: store.ui.overlay.get() ? 0 : 1,
-          width: 48,
-        })}
-        src={albumThumbSrc}
+          height: 58,
+          width: 58,
+        }}
         variant="rounded"
         onClick={() => store.ui.overlay.toggle()}
-      />
+      >
+        <SvgIcon>
+          <BiSolidAlbum />
+        </SvgIcon>
+      </ReactiveMotionAvatar>
       <Show if={store.ui.overlay}>
         <Avatar
           sx={(theme) => ({
@@ -39,9 +47,9 @@ const NowPlayingThumbnail: React.FC = observer(function NowPlayingThumbnail() {
             color: theme.palette.text.secondary,
             position: 'absolute',
             pointerEvents: 'none',
-            right: 8,
-            height: 48,
-            width: 48,
+            left: 8,
+            height: 58,
+            width: 58,
           })}
           variant="rounded"
         >
@@ -52,4 +60,4 @@ const NowPlayingThumbnail: React.FC = observer(function NowPlayingThumbnail() {
   );
 });
 
-export default NowPlayingThumbnail;
+export default NowPlayingInfo;

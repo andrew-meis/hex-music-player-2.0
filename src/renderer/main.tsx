@@ -14,7 +14,7 @@ import React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createHashRouter, RouterProvider } from 'react-router-dom';
 import Album, { albumLoader } from 'routes/album/Album';
 import Albums, { albumsLoader } from 'routes/albums/Albums';
 import Artist from 'routes/artist/Artist';
@@ -43,7 +43,7 @@ enableReactComponents();
 
 export const queryClient = new QueryClient();
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '/',
     element: <App />,
@@ -160,7 +160,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           </Box>
         </DndProvider>
       </MuiThemeProvider>
-      <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
+      {/* <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} /> */}
     </QueryClientProvider>
   </React.StrictMode>
 );

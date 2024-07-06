@@ -29,6 +29,7 @@
     "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.18",
     "@mui/x-charts": "^7.4.0",
+    "@namhong2001/react-textfit": "^2.0.0",
     "@react-hookz/web": "^24.0.4",
     "@synesthesia-project/precise-audio": "^0.3.1",
     "@tanstack/react-query": "^5.36.2",
@@ -58,6 +59,7 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dropzone": "^14.2.3",
     "react-icons": "^5.2.1",
+    "react-intersection-observer": "^9.10.3",
     "react-router-dom": "^6.22.2",
     "react-virtuoso": "^4.7.4",
     "uuid": "^9.0.1"

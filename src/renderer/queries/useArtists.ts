@@ -24,7 +24,8 @@ export const useArtist = (id: number) => {
 
 export const artistTracksQuery = (
   enabled: boolean,
-  guid: string,
+  // TODO
+  _guid: string,
   id: number,
   library: Library,
   sectionId: number,

@@ -4,7 +4,14 @@ import { useColorThiefColor, useColorThiefPalette } from 'queries';
 import React, { useEffect } from 'react';
 import { store } from 'state';
 
-const defaultColor = chroma([90, 90, 90]);
+const defaultColor = chroma('#848588');
+const defaultPalette = [
+  chroma('#e8e8e8'),
+  chroma('#b6b7b8'),
+  chroma('#848588'),
+  chroma('#545557'),
+  chroma('#242425'),
+];
 
 const NowPlayingColor: React.FC = observer(function NowPlayingColor() {
   const library = store.library.get();
@@ -29,7 +36,7 @@ const NowPlayingColor: React.FC = observer(function NowPlayingColor() {
     if (palette) {
       store.ui.nowPlaying.palette.set(palette);
     } else {
-      store.ui.nowPlaying.palette.set([defaultColor, defaultColor]);
+      store.ui.nowPlaying.palette.set(defaultPalette);
     }
   }, [color, palette]);
 

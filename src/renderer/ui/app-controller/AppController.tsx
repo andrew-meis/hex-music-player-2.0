@@ -1,35 +1,20 @@
 import { reactive } from '@legendapp/state/react';
 import { Box, Paper } from '@mui/material';
-import { motion, PanInfo, useDragControls } from 'framer-motion';
+import { motion } from 'framer-motion';
 import React from 'react';
 import { store } from 'state';
 import AppBrowser from 'ui/app-browser/AppBrowser';
 
+import Seekbar from './audio-controls/Seekbar';
 import Volume from './audio-controls/Volume';
 import AudioControl from './AudioControl';
-import NowPlayingThumbnail from './NowPlayingThumbnail';
+import NowPlayingInfo from './NowPlayingInfo';
 
 const MotionDiv = reactive(motion.div);
 const MotionBox = motion(Box);
 const ReactiveBox = reactive(MotionBox);
 
 const AppController: React.FC = () => {
-  const dragControls = useDragControls();
-
-  const handleDragEnd = (_event: PointerEvent | MouseEvent | TouchEvent, info: PanInfo) => {
-    const dragIcon = document.getElementById('drag-icon') as HTMLInputElement;
-    if (dragIcon) {
-      dragIcon.setAttribute('data-is-grabbed', 'false');
-    }
-    if (store.ui.overlay.peek() && info.offset.y > 50) {
-      store.ui.overlay.set(false);
-      return;
-    }
-    if (!store.ui.overlay.peek() && info.offset.y < -50) {
-      store.ui.overlay.set(true);
-    }
-  };
-
   return (
     <Box
       bottom={8}
@@ -47,12 +32,12 @@ const AppController: React.FC = () => {
               : 'rgba(var(--mui-palette-background-defaultChannel) / 0)',
           })}
           sx={{
-            height: 'calc(100vh - 148px)',
+            height: 'calc(100vh - 154px)',
             left: 0,
             pointerEvents: 'none',
             position: 'fixed',
             right: 0,
-            top: 74,
+            top: 72,
           }}
           transition={{
             background: {
@@ -63,22 +48,16 @@ const AppController: React.FC = () => {
         <MotionDiv
           layout
           $animate={() => ({
-            top: store.ui.overlay.get() ? 74 : 'calc(100vh - 84px)',
+            top: store.ui.overlay.get() ? 72 : 'calc(100vh - 82px)',
           })}
-          drag="y"
-          dragConstraints={{ top: 0, bottom: 0 }}
-          dragControls={dragControls}
-          dragElastic={0.5}
-          dragListener={false}
           style={{
             left: 0,
             position: 'fixed',
             right: 0,
           }}
           transition={{ type: 'spring', bounce: 0.25 }}
-          onDragEnd={handleDragEnd}
         >
-          <AppBrowser dragControls={dragControls} />
+          <AppBrowser />
         </MotionDiv>
         <Box
           bgcolor="background.default"
@@ -93,15 +72,30 @@ const AppController: React.FC = () => {
           borderRadius={2}
           component={Paper}
           display="flex"
-          height={60}
+          height={74}
           justifyContent="space-between"
           paddingX={1}
           position="relative"
           width="-webkit-fill-available"
         >
-          <AudioControl />
-          <Volume />
-          <NowPlayingThumbnail />
+          <Box alignItems="center" display="flex" flexBasis={108} justifyContent="flex-start">
+            <NowPlayingInfo />
+          </Box>
+          <Box
+            alignItems="center"
+            display="flex"
+            flexBasis="100%"
+            flexDirection="column"
+            marginTop={1}
+            marginX={1}
+            maxWidth={600}
+          >
+            <AudioControl />
+            <Seekbar />
+          </Box>
+          <Box alignItems="center" display="flex" flexBasis={108} justifyContent="flex-end">
+            <Volume />
+          </Box>
         </Box>
       </Box>
     </Box>
