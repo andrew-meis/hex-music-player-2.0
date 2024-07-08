@@ -92,7 +92,7 @@ const Seekbar: React.FC = observer(function Seekbar() {
           <span ref={elapsed} />
         </Typography>
       </Grid>
-      <Grid item xs alignItems="center" display="flex" height={30} marginX={1}>
+      <Grid item xs alignItems="center" display="flex" height={28} marginX={1}>
         <StyledSlider
           disabled={!nowPlaying}
           max={nowPlaying?.track.duration || 0}

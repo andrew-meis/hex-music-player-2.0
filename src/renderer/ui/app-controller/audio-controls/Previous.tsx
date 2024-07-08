@@ -43,7 +43,7 @@ const Previous: React.FC = observer(function Previous() {
       disabled={persistedStore.queueId.get() === 0}
       sx={{
         cursor: 'default',
-        marginRight: 0.25,
+        marginRight: 0.5,
         padding: 1,
       }}
       onClick={handlePrevious}

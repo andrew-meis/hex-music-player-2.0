@@ -19,22 +19,25 @@ import QueueMenu from 'components/queue/QueueMenu';
 import TrackMenu from 'components/track/TrackMenu';
 import { isEmpty } from 'lodash';
 import React, { useMemo } from 'react';
-import { queueSelectState } from 'routes/queue/Queue';
-import { searchSelectState } from 'routes/search/SearchResults';
-import { store } from 'state';
-import { ActiveMenu } from 'typescript';
-import { nowPlayingSelectState } from 'ui/app-browser/now-playing/NowPlayingSimilar';
+import { allSelectObservables, store } from 'state';
+import { SelectObservables } from 'typescript';
 
 const Menu: React.FC = observer(function Menu() {
   const activeMenu = store.ui.menus.activeMenu.get();
   const state = useMemo(() => {
     switch (activeMenu) {
-      case ActiveMenu.NOW_PLAYING:
-        return nowPlayingSelectState;
-      case ActiveMenu.QUEUE:
-        return queueSelectState;
-      case ActiveMenu.SEARCH:
-        return searchSelectState;
+      case SelectObservables.ROUTE_ARTIST_MOST_PLAYED_TRACKS:
+        return allSelectObservables[SelectObservables.ROUTE_ARTIST_MOST_PLAYED_TRACKS];
+      case SelectObservables.ROUTE_ARTIST_POPULAR_TRACKS:
+        return allSelectObservables[SelectObservables.ROUTE_ARTIST_POPULAR_TRACKS];
+      case SelectObservables.ROUTE_ARTIST_RECENT_TRACKS:
+        return allSelectObservables[SelectObservables.ROUTE_ARTIST_RECENT_TRACKS];
+      case SelectObservables.ROUTE_QUEUE:
+        return allSelectObservables[SelectObservables.ROUTE_QUEUE];
+      case SelectObservables.ROUTE_SEARCH:
+        return allSelectObservables[SelectObservables.ROUTE_SEARCH];
+      case SelectObservables.UI_NOW_PLAYING:
+        return allSelectObservables[SelectObservables.UI_NOW_PLAYING];
       default: {
         return undefined;
       }

@@ -21,7 +21,7 @@ const Next: React.FC = observer(function Next() {
       disabled={persistedStore.queueId.get() === 0 || !next}
       sx={{
         cursor: 'default',
-        marginLeft: 0.25,
+        marginLeft: 0.5,
         padding: 1,
       }}
       onClick={handleNext}

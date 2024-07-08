@@ -1,9 +1,11 @@
 export { albumsQuery, default as useAlbums } from './useAlbums';
 export {
+  artistAppearancesQuery,
   artistQuery,
   artistsQuery,
   artistTracksQuery,
   useArtist,
+  useArtistAppearances,
   default as useArtists,
   useArtistTracks,
 } from './useArtists';

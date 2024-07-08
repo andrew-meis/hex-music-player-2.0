@@ -1,7 +1,5 @@
 import { ElectronAPI } from '@electron-toolkit/preload';
-import { AppInfo, ServerConfig } from 'typescript';
-
-import { PersistedStore } from './index';
+import { AppInfo, PersistedStore, ServerConfig } from 'typescript';
 
 declare global {
   interface Window {

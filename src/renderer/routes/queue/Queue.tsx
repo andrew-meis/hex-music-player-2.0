@@ -1,4 +1,3 @@
-import { computed, observable } from '@legendapp/state';
 import { observer, Show, useMount } from '@legendapp/state/react';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { ClickAwayListener, Tab, Typography } from '@mui/material';
@@ -14,26 +13,11 @@ import { useDrop } from 'react-dnd';
 import { ItemProps, TableProps, TableVirtuoso } from 'react-virtuoso';
 import RouteContainer from 'routes/RouteContainer';
 import RouteHeader from 'routes/RouteHeader';
-import { store } from 'state';
-import { ActiveMenu, DragTypes, SelectObservable } from 'typescript';
-
-export const queueSelectState: SelectObservable = observable({
-  items: [] as PlayQueueItem[],
-  canMultiselect: computed(() => {
-    const items = queueSelectState.items.get();
-    if (!items) return false;
-    return new Set(items.map((item) => item._type)).size <= 1;
-  }),
-  selectedIndexes: [] as number[],
-  selectedItems: computed(() => {
-    const items = queueSelectState.items.get();
-    if (!items) return [];
-    const selectedIndexes = queueSelectState.selectedIndexes.get();
-    return items.filter((_item, index) => selectedIndexes.includes(index));
-  }),
-});
+import { allSelectObservables, store } from 'state';
+import { DragTypes, SelectObservables } from 'typescript';
 
 const BackTo: React.FC<{ backTo: PlayQueueItem[] }> = ({ backTo }) => {
+  const selectObservable = allSelectObservables[SelectObservables.ROUTE_QUEUE];
   const columns = useMemo(() => queueColumns, []);
   const table = useReactTable({
     data: backTo,
@@ -54,7 +38,7 @@ const BackTo: React.FC<{ backTo: PlayQueueItem[] }> = ({ backTo }) => {
 
   return (
     <ClickAwayListener
-      onClickAway={(event) => selectActions.handleClickAway(queueSelectState, event)}
+      onClickAway={(event) => selectActions.handleClickAway(selectObservable, event)}
     >
       <TableVirtuoso
         components={{
@@ -74,7 +58,7 @@ const BackTo: React.FC<{ backTo: PlayQueueItem[] }> = ({ backTo }) => {
             const row = rows[index];
 
             return (
-              <BackToRow index={index} state={queueSelectState} {...props}>
+              <BackToRow index={index} state={selectObservable} {...props}>
                 {row.getVisibleCells().map((cell) => (
                   <td className={cell.column.id} key={cell.id} style={{ padding: '0 8px' }}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -88,8 +72,8 @@ const BackTo: React.FC<{ backTo: PlayQueueItem[] }> = ({ backTo }) => {
         style={{ height: 'calc(100% - 16px)', marginTop: 16 }}
         totalCount={rows.length}
         onMouseOver={() => {
-          store.ui.menus.activeMenu.set(ActiveMenu.QUEUE);
-          queueSelectState.items.set(backTo);
+          store.ui.menus.activeMenu.set(SelectObservables.ROUTE_QUEUE);
+          selectObservable.items.set(backTo);
         }}
       />
     </ClickAwayListener>
@@ -97,6 +81,8 @@ const BackTo: React.FC<{ backTo: PlayQueueItem[] }> = ({ backTo }) => {
 };
 
 const UpNext: React.FC<{ upNext: PlayQueueItem[] }> = ({ upNext }) => {
+  const selectObservable = allSelectObservables[SelectObservables.ROUTE_QUEUE];
+
   const columns = useMemo(() => queueColumns, []);
   const table = useReactTable({
     data: upNext,
@@ -117,7 +103,7 @@ const UpNext: React.FC<{ upNext: PlayQueueItem[] }> = ({ upNext }) => {
 
   return (
     <ClickAwayListener
-      onClickAway={(event) => selectActions.handleClickAway(queueSelectState, event)}
+      onClickAway={(event) => selectActions.handleClickAway(selectObservable, event)}
     >
       <TableVirtuoso
         components={{
@@ -140,7 +126,7 @@ const UpNext: React.FC<{ upNext: PlayQueueItem[] }> = ({ upNext }) => {
               <UpNextRow
                 index={index}
                 lastIndex={rows.length - 1}
-                state={queueSelectState}
+                state={selectObservable}
                 {...props}
               >
                 {row.getVisibleCells().map((cell) => (
@@ -156,8 +142,8 @@ const UpNext: React.FC<{ upNext: PlayQueueItem[] }> = ({ upNext }) => {
         style={{ height: 'calc(100% - 16px)', marginTop: 16 }}
         totalCount={rows.length}
         onMouseOver={() => {
-          store.ui.menus.activeMenu.set(ActiveMenu.QUEUE);
-          queueSelectState.items.set(upNext);
+          store.ui.menus.activeMenu.set(SelectObservables.ROUTE_QUEUE);
+          selectObservable.items.set(upNext);
         }}
       />
     </ClickAwayListener>

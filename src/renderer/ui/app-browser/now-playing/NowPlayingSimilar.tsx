@@ -1,36 +1,17 @@
-import { computed, observable } from '@legendapp/state';
 import { observer, useObserve } from '@legendapp/state/react';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Tab, Typography } from '@mui/material';
-import { Track } from 'api';
 import React from 'react';
 import { FiRadio } from 'react-icons/fi';
 import { ImLastfm } from 'react-icons/im';
 import { IoMdMicrophone } from 'react-icons/io';
 import { PiWaveform } from 'react-icons/pi';
 import { store } from 'state';
-import { SelectObservable } from 'typescript';
 
 import MoreByArtist from './now-playing-similar/MoreByArtist';
 import SimilarLastfm from './now-playing-similar/SimilarLastfm';
 import SimilarRelated from './now-playing-similar/SimilarRelated';
 import SimilarSonically from './now-playing-similar/SimilarSonically';
-
-export const nowPlayingSelectState: SelectObservable = observable({
-  items: [] as Track[],
-  canMultiselect: computed(() => {
-    const items = nowPlayingSelectState.items.get();
-    if (!items) return false;
-    return new Set(items.map((item) => item._type)).size <= 1;
-  }),
-  selectedIndexes: [] as number[],
-  selectedItems: computed(() => {
-    const items = nowPlayingSelectState.items.get();
-    if (!items) return [];
-    const selectedIndexes = nowPlayingSelectState.selectedIndexes.get();
-    return items.filter((_item, index) => selectedIndexes.includes(index));
-  }),
-});
 
 const tabs = [
   {

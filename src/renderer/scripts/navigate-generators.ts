@@ -8,6 +8,7 @@ export const createArtistNavigate = (obj: Artist | Album | Track, subroute?: str
       search: createSearchParams({
         guid: obj.guid,
         title: obj.title,
+        ...(!subroute && { tabIndex: '0' }),
       }).toString(),
     };
   }
@@ -17,6 +18,7 @@ export const createArtistNavigate = (obj: Artist | Album | Track, subroute?: str
       search: createSearchParams({
         guid: obj.parentGuid,
         title: obj.parentTitle,
+        ...(!subroute && { tabIndex: '0' }),
       }).toString(),
     };
   }
@@ -25,6 +27,7 @@ export const createArtistNavigate = (obj: Artist | Album | Track, subroute?: str
     search: createSearchParams({
       guid: obj.grandparentGuid,
       title: obj.grandparentTitle,
+      ...(!subroute && { tabIndex: '0' }),
     }).toString(),
   };
 };

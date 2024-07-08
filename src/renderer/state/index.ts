@@ -4,7 +4,9 @@ import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/
 import { Account, Library, PlayQueue, PlayQueueItem, Track } from 'api';
 import chroma from 'chroma-js';
 import { To } from 'react-router-dom';
-import { ActiveMenu, ServerConfig } from 'typescript';
+import { SelectObservables, ServerConfig } from 'typescript';
+
+export { allSelectObservables, createSelectObservable } from './select-observables';
 
 configureObservablePersistence({
   pluginLocal: ObservablePersistLocalStorage,
@@ -25,10 +27,8 @@ export const persistedStore = observable({
 
 persistObservable(persistedStore, {
   pluginRemote: {
-    // @ts-ignore (define in d.ts)
     get: () => window.api.getPersistedStore(),
     set: ({ value }) => {
-      // @ts-ignore (define in d.ts)
       window.api.setPersistedStore(value);
     },
   },
@@ -105,7 +105,7 @@ export const store = observable({
     },
     isDragging: false,
     menus: {
-      activeMenu: -1 as ActiveMenu,
+      activeMenu: -1 as SelectObservables,
       anchorPosition: null as null | { mouseX: number; mouseY: number },
     },
     modals: {

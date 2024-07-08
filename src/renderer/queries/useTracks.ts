@@ -174,28 +174,34 @@ export const lastfmMatchTracksQuery = (track: Track, enabled: boolean) =>
 export const useLastfmMatchTracks = (track: Track, enabled = true) =>
   useQuery(lastfmMatchTracksQuery(track, enabled));
 
-const recentTracksQuery = (track: Track, days: number, enabled: boolean) =>
+const recentTracksQuery = (ids: number[], days: number, stringFilter: string, enabled: boolean) =>
   queryOptions({
-    queryKey: [QueryKeys.RECENT_TRACKS, track.id, days],
+    queryKey: [QueryKeys.RECENT_TRACKS, ids.join(), days],
     queryFn: async () => {
       const { sectionId } = store.serverConfig.peek();
       const library = store.library.peek();
       const time = DateTime.now();
-      const url = library.server.getAuthenticatedUrl(
-        '/status/sessions/history/all',
-        new URLSearchParams({
-          sort: SORT_BY_DATE_PLAYED.desc,
-          librarySectionID: sectionId.toString(),
-          metadataItemID: track.grandparentId.toString(),
-          'viewedAt<': time.toUnixInteger().toString(),
-          'viewedAt>': time.minus({ days }).toUnixInteger().toString(),
-        })
-      );
-      const response = (await ky(url).json()) as Record<string, any>;
-      if (response.MediaContainer.size === 0) {
-        return [];
-      }
-      const keys = response.MediaContainer.Metadata.map((record: Track) => record.ratingKey);
+      const promises = ids.map((id) => {
+        const url = library.server.getAuthenticatedUrl(
+          '/status/sessions/history/all',
+          new URLSearchParams({
+            sort: SORT_BY_DATE_PLAYED.desc,
+            librarySectionID: sectionId.toString(),
+            metadataItemID: id.toString(),
+            'viewedAt<': time.toUnixInteger().toString(),
+            'viewedAt>': time.minus({ days }).toUnixInteger().toString(),
+          })
+        );
+        return ky(url).json() as Promise<Record<string, any>>;
+      });
+      const response = await Promise.all(promises);
+      const entries: Track[] = [];
+      response.forEach((obj) => {
+        if (obj.MediaContainer.size > 0) {
+          entries.push(...obj.MediaContainer.Metadata);
+        }
+      });
+      const keys = entries.map((record) => record.ratingKey);
       const counts = countBy(keys, Math.floor);
       const { tracks } = await library.tracks(
         sectionId,
@@ -208,15 +214,23 @@ const recentTracksQuery = (track: Track, days: number, enabled: boolean) =>
           const match = tracks.find((track) => track.ratingKey === key);
           if (match) match.globalViewCount = counts[key];
         });
-        return tracks.sort((a, b) => b.globalViewCount - a.globalViewCount);
+        const appearanceTracks = tracks.filter(
+          (track) =>
+            track.originalTitle?.toLowerCase().includes(stringFilter.toLowerCase()) &&
+            track.grandparentId !== ids[0]
+        );
+        const artistTracks = tracks.filter((track) => track.grandparentId === ids[0]);
+        return [...appearanceTracks, ...artistTracks].sort(
+          (a, b) => b.globalViewCount - a.globalViewCount
+        );
       }
       return [];
     },
     enabled,
   });
 
-export const useRecentTracks = (track: Track, days: number, enabled = true) =>
-  useQuery(recentTracksQuery(track, days, enabled));
+export const useRecentTracks = (ids: number[], days: number, stringFilter = '', enabled = true) =>
+  useQuery(recentTracksQuery(ids, days, stringFilter, enabled));
 
 const relatedTracksQuery = (track: Track, enabled: boolean) =>
   queryOptions({

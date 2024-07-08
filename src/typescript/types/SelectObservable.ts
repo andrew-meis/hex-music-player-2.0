@@ -1,11 +1,28 @@
 import { ObservableComputed, ObservableObject } from '@legendapp/state';
-import { Album, Artist, Collection, Genre, Playlist, PlayQueueItem, Track } from 'api';
+import {
+  Album,
+  Artist,
+  Collection,
+  Genre,
+  Playlist,
+  PlaylistItem,
+  PlayQueueItem,
+  Track,
+} from 'api';
+
+export type Selectable =
+  | Artist
+  | Album
+  | Track
+  | Playlist
+  | Genre
+  | Collection
+  | PlayQueueItem
+  | PlaylistItem;
 
 export type SelectObservable = ObservableObject<{
-  items: (Artist | Album | Track | Playlist | Genre | PlayQueueItem | Collection)[];
+  items: Selectable[];
   canMultiselect: ObservableComputed<boolean>;
   selectedIndexes: number[];
-  selectedItems: ObservableComputed<
-    (Artist | Album | Track | Playlist | Genre | PlayQueueItem | Collection)[]
-  >;
+  selectedItems: ObservableComputed<Selectable[]>;
 }>;

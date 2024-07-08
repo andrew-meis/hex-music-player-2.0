@@ -78,22 +78,36 @@ const AppController: React.FC = () => {
           position="relative"
           width="-webkit-fill-available"
         >
-          <Box alignItems="center" display="flex" flexBasis={108} justifyContent="flex-start">
+          <Box
+            alignItems="center"
+            display="flex"
+            flexBasis="0%"
+            flexGrow={1}
+            justifyContent="flex-start"
+          >
             <NowPlayingInfo />
           </Box>
           <Box
             alignItems="center"
             display="flex"
-            flexBasis="100%"
             flexDirection="column"
-            marginTop={1}
+            flexGrow={2}
+            flexShrink={1}
+            marginTop={1.5}
             marginX={1}
             maxWidth={600}
+            minWidth={400}
           >
             <AudioControl />
             <Seekbar />
           </Box>
-          <Box alignItems="center" display="flex" flexBasis={108} justifyContent="flex-end">
+          <Box
+            alignItems="center"
+            display="flex"
+            flexBasis="0%"
+            flexGrow={1}
+            justifyContent="flex-end"
+          >
             <Volume />
           </Box>
         </Box>

@@ -1,4 +1,3 @@
-import { computed, observable } from '@legendapp/state';
 import { useUnmount } from '@legendapp/state/react';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { ClickAwayListener, Tab, Typography } from '@mui/material';
@@ -19,26 +18,10 @@ import {
 import React, { useMemo } from 'react';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import { ItemProps, TableProps, TableVirtuoso } from 'react-virtuoso';
-import { store } from 'state';
-import { ActiveMenu, DragTypes, SelectObservable } from 'typescript';
+import { allSelectObservables, store } from 'state';
+import { DragTypes, SelectObservables } from 'typescript';
 
 export type Result = Artist | Album | Track | Playlist | Genre | Collection;
-
-export const searchSelectState: SelectObservable = observable({
-  items: [] as Result[],
-  canMultiselect: computed(() => {
-    const items = searchSelectState.items.get();
-    if (!items) return false;
-    return new Set(items.map((item) => item._type)).size <= 1;
-  }),
-  selectedIndexes: [] as number[],
-  selectedItems: computed(() => {
-    const items = searchSelectState.items.get();
-    if (!items) return [];
-    const selectedIndexes = searchSelectState.selectedIndexes.get();
-    return items.filter((_item, index) => selectedIndexes.includes(index));
-  }),
-});
 
 const tabs = [
   {
@@ -87,7 +70,9 @@ const typeMap: TypeMap = {
 const Table: React.FC<{
   results: Result[] | undefined;
 }> = ({ results }) => {
-  useUnmount(() => selectActions.handleClickAway(searchSelectState));
+  const selectObservable = allSelectObservables[SelectObservables.ROUTE_SEARCH];
+
+  useUnmount(() => selectActions.handleClickAway(selectObservable));
   const columns = useMemo(() => searchColumns, []);
   const table = useReactTable({
     data: results || [],
@@ -108,7 +93,7 @@ const Table: React.FC<{
 
   return (
     <ClickAwayListener
-      onClickAway={(event) => selectActions.handleClickAway(searchSelectState, event)}
+      onClickAway={(event) => selectActions.handleClickAway(selectObservable, event)}
     >
       <TableVirtuoso
         components={{
@@ -130,7 +115,7 @@ const Table: React.FC<{
             return (
               <SearchRow
                 index={index}
-                state={searchSelectState}
+                state={selectObservable}
                 type={typeMap[row.original._type]}
                 {...props}
               >
@@ -147,8 +132,8 @@ const Table: React.FC<{
         style={{ height: 'calc(100% - 16px)', marginTop: 16 }}
         totalCount={rows.length}
         onMouseOver={() => {
-          store.ui.menus.activeMenu.set(ActiveMenu.SEARCH);
-          searchSelectState.items.set(results);
+          store.ui.menus.activeMenu.set(SelectObservables.ROUTE_SEARCH);
+          selectObservable.items.set(results);
         }}
       />
     </ClickAwayListener>

@@ -4,17 +4,18 @@ import { Box, Typography } from '@mui/material';
 import Textfit from '@namhong2001/react-textfit';
 import { useWindowSize } from '@react-hookz/web';
 import { useQuery } from '@tanstack/react-query';
-import { Artist as ArtistType } from 'api';
+import { Album, Artist as ArtistType, SORT_TRACKS_BY_PLAYS } from 'api';
 import { Color } from 'chroma-js';
 import Palette from 'components/palette/Palette';
 import Scroller from 'components/scroller/Scroller';
 import { motion } from 'framer-motion';
-import { useArtist } from 'queries';
+import { useArtist, useArtistAppearances, useArtistTracks, useRecentTracks } from 'queries';
 import React, { useEffect, useMemo } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { createSearchParams, useLoaderData } from 'react-router-dom';
 import { store } from 'state';
 
+import ArtistTabs from './ArtistTabs';
 import { artistLoader } from './loader';
 
 const getMeta = (url: string) =>
@@ -113,7 +114,51 @@ const paletteObservable = observable<Color[]>();
 const Artist: React.FC = () => {
   const { guid, id, title } = useLoaderData() as Awaited<ReturnType<typeof artistLoader>>;
 
-  const { data } = useArtist(id);
+  const { data: artist } = useArtist(id);
+  const { data: appearances } = useArtistAppearances(id, title);
+
+  const recentTrackQueryIDs = useMemo(() => {
+    if (!appearances) return [];
+    return [id, ...appearances.map((album) => album.id)];
+  }, [appearances]);
+
+  const { data: recentTracks } = useRecentTracks(
+    recentTrackQueryIDs,
+    90,
+    title,
+    recentTrackQueryIDs.length > 0
+  );
+
+  const { data: mostPlayedTracks } = useArtistTracks(
+    guid,
+    id,
+    SORT_TRACKS_BY_PLAYS.desc,
+    title,
+    true,
+    true
+  );
+
+  const releases = useMemo(() => {
+    if (!artist || !appearances) return {};
+    const releaseIDs: number[] = [];
+    let returnData = {} as Record<string, Album[]>;
+    artist.artists[0].hubs.forEach((hub) => {
+      if (hub.type === 'album' && hub.size > 0) {
+        releaseIDs.push(...hub.items.map((item) => item.id));
+        returnData[hub.title] = hub.items as Album[];
+      }
+    });
+    const filteredAlbums = artist.artists[0].albums.filter(
+      (album) => !releaseIDs.includes(album.id)
+    );
+    if (filteredAlbums.length > 0) {
+      returnData = Object.assign({ Albums: filteredAlbums }, returnData);
+    }
+    if (appearances.length > 0) {
+      returnData['Appears On'] = appearances;
+    }
+    return returnData;
+  }, [artist, appearances]);
 
   useEffect(() => {
     store.ui.breadcrumbs.set([
@@ -129,16 +174,18 @@ const Artist: React.FC = () => {
     ]);
   }, [id]);
 
+  if (!recentTracks || !mostPlayedTracks) return null;
+
   return (
     <Scroller style={{ height: '100%' }}>
-      <Show ifReady={data}>
-        {(value) => {
-          const artist = value!.artists[0];
+      <Show ifReady={releases}>
+        {() => {
+          const [artistData] = artist!.artists;
           return (
             <Palette
               colorObservable={colorObservable}
               paletteObservable={paletteObservable}
-              src={artist.art}
+              src={artistData.art}
             >
               {({ isReady }) =>
                 isReady && (
@@ -149,8 +196,13 @@ const Artist: React.FC = () => {
                     key={id}
                     style={{ height: '100%' }}
                   >
-                    <Banner artist={artist} color={colorObservable} />
-                    <Box height={1000} />
+                    <Banner artist={artistData} color={colorObservable} />
+                    <ArtistTabs
+                      mostPlayedTracks={mostPlayedTracks.tracks || []}
+                      popularTracks={artistData.popularTracks}
+                      recentTracks={recentTracks}
+                      releases={releases}
+                    />
                   </motion.div>
                 )
               }

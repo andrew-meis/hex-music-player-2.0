@@ -9,7 +9,7 @@ const TrackRow: React.FC<
     children: React.ReactNode;
     index: number;
     state: SelectObservable;
-  } & ItemProps<Track>
+  } & Partial<ItemProps<Track>>
 > = ({ children, index, state, ...props }) => {
   return (
     <TableRow index={index} state={state} type={DragTypes.TRACK} {...props}>

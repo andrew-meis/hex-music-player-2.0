@@ -8,9 +8,10 @@
     "src/typescript/**/*",
   ],
   "compilerOptions": {
+    "baseUrl": ".",
     "composite": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
+    "outDir": "out",
     "paths": {
       "api": ["src/api/index.ts"],
       "app/*": ["src/renderer/app/*"],
@@ -26,6 +27,6 @@
       "state": ["src/renderer/state/index.ts"],
       "typescript": ["src/typescript/index.ts"],
       "ui/*": ["src/renderer/ui/*"],
-    }
+    },
   }
 }

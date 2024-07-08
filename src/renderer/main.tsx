@@ -37,9 +37,19 @@ import Search, { searchLoader } from 'routes/search/Search';
 import Settings, { settingsLoader } from 'routes/settings/Settings';
 import Track, { trackLoader } from 'routes/track/Track';
 import Tracks, { tracksLoader } from 'routes/tracks/Tracks';
+import { createSelectObservable } from 'state';
+import { SelectObservables } from 'typescript';
 import Titlebar from 'ui/titlebar/Titlebar';
 
 enableReactComponents();
+
+// Instantiate each new select observable here
+createSelectObservable(SelectObservables.ROUTE_ARTIST_MOST_PLAYED_TRACKS);
+createSelectObservable(SelectObservables.ROUTE_ARTIST_POPULAR_TRACKS);
+createSelectObservable(SelectObservables.ROUTE_ARTIST_RECENT_TRACKS);
+createSelectObservable(SelectObservables.ROUTE_QUEUE);
+createSelectObservable(SelectObservables.ROUTE_SEARCH);
+createSelectObservable(SelectObservables.UI_NOW_PLAYING);
 
 export const queryClient = new QueryClient();
 
@@ -160,7 +170,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           </Box>
         </DndProvider>
       </MuiThemeProvider>
-      {/* <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} /> */}
+      <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
     </QueryClientProvider>
   </React.StrictMode>
 );

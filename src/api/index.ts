@@ -57,6 +57,7 @@ const sort = (asc: string, desc = `${asc}:desc`) => ({
 
 // sort methods
 export const SORT_BY_DATE_PLAYED = sort('viewedAt');
+export const SORT_ALBUMS_BY_RELEASE_DATE = sort('originallyAvailableAt');
 
 // old, unused
 export const SORT_ARTISTS_BY_TITLE = sort('titleSort');
@@ -70,7 +71,6 @@ export const SORT_ALBUMS_BY_ALBUM_ARTIST = sort(
   'artist.titleSort:desc,album.year'
 );
 export const SORT_ALBUMS_BY_YEAR = sort('year');
-export const SORT_ALBUMS_BY_RELEASE_DATE = sort('originallyAvailableAt');
 export const SORT_ALBUMS_BY_RATING = sort('userRating');
 export const SORT_ALBUMS_BY_DATE_ADDED = sort('addedAt');
 export const SORT_ALBUMS_BY_DATE_PLAYED = sort('lastViewedAt');

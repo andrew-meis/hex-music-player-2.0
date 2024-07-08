@@ -1,5 +1,6 @@
 {
   "name": "hex-music-vite",
+  "productName": "Hex Music",
   "version": "1.0.0",
   "description": "Desktop music client for Plex Media Server",
   "main": "./out/main/index.js",

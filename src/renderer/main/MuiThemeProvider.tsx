@@ -10,6 +10,18 @@ declare module '@mui/material/styles' {
   interface TypeAction {
     hoverSelected: string;
   }
+  interface TypographyVariants {
+    title1: React.CSSProperties;
+  }
+  interface TypographyVariantsOptions {
+    title1?: React.CSSProperties;
+  }
+}
+
+declare module '@mui/material/Typography' {
+  interface TypographyPropsVariantOverrides {
+    title1: true;
+  }
 }
 
 const createDarkTheme = (): ColorSystemOptions => ({
@@ -369,6 +381,19 @@ const createTheme = () =>
             style: {
               fontSize: '1.125rem',
               fontWeight: '600',
+            },
+          },
+          {
+            props: { variant: 'title1' },
+            style: {
+              display: '-webkit-box',
+              fontFamily: 'Rubik, sans-serif',
+              fontSize: '1rem',
+              fontWeight: 500,
+              lineHeight: 1.5,
+              overflow: 'hidden',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 1,
             },
           },
           {
