@@ -1,20 +1,46 @@
 import { Typography } from '@mui/material';
+import PlaylistCard from 'components/playlist/PlaylistCard';
+import Scroller from 'components/scroller/Scroller';
+import { List } from 'components/virtuoso/CustomGridComponents';
+import { useWidth } from 'hooks/useWidth';
+import { usePlaylists } from 'queries';
 import React, { useEffect } from 'react';
-import { createSearchParams, LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
-import RouteContainer from 'routes/RouteContainer';
-import { store } from 'state';
+import { createSearchParams, useLoaderData } from 'react-router-dom';
+import { GridItemProps, VirtuosoGrid } from 'react-virtuoso';
+import { allSelectObservables, store } from 'state';
+import { SelectObservables } from 'typescript';
 
-export const playlistsLoader = async ({ request }: LoaderFunctionArgs) => {
-  const url = new URL(request.url);
-  const section = url.searchParams.get('section');
-  if (!section) {
-    throw new Error('Missing route loader data');
-  }
-  return { section };
+import { playlistsLoader } from './loader';
+
+const breakpointMap = {
+  xs: 3,
+  sm: 4,
+  md: 5,
+  lg: 6,
+  xl: 7,
+};
+
+const Item: React.FC<GridItemProps> = ({ children, ...props }) => {
+  const breakpoint = useWidth();
+  return (
+    <div
+      {...props}
+      style={{
+        padding: 4,
+        width: `${Math.floor(100 / breakpointMap[breakpoint])}%`,
+        boxSizing: 'border-box',
+      }}
+    >
+      {children}
+    </div>
+  );
 };
 
 const Playlists: React.FC = () => {
   const { section } = useLoaderData() as Awaited<ReturnType<typeof playlistsLoader>>;
+  const selectObservable = allSelectObservables[SelectObservables.ROUTE_PLAYLISTS];
+
+  const { data: playlistsData } = usePlaylists();
 
   useEffect(() => {
     store.ui.breadcrumbs.set([
@@ -29,12 +55,39 @@ const Playlists: React.FC = () => {
     ]);
   }, []);
 
+  if (!playlistsData) return null;
+
   return (
-    <RouteContainer>
-      <Typography paddingBottom={2} variant="h1">
-        {section}
-      </Typography>
-    </RouteContainer>
+    <Scroller style={{ height: '100%' }}>
+      {({ viewport }) => {
+        return (
+          <>
+            <Typography marginX={4} paddingBottom={2} variant="h1">
+              {section}
+            </Typography>
+            <VirtuosoGrid
+              components={{ List, Item }}
+              customScrollParent={viewport}
+              data={playlistsData.playlists}
+              itemContent={(index, data) => (
+                <PlaylistCard index={index} playlist={data} state={selectObservable} />
+              )}
+              style={{
+                marginLeft: 32,
+                marginRight: 32,
+                minHeight: 'var(--content-height)',
+                scrollbarWidth: 'none',
+              }}
+              totalCount={playlistsData.playlists.length}
+              onMouseOver={() => {
+                store.ui.menus.activeMenu.set(SelectObservables.ROUTE_PLAYLISTS);
+                selectObservable.items.set(playlistsData.playlists);
+              }}
+            />
+          </>
+        );
+      }}
+    </Scroller>
   );
 };
 

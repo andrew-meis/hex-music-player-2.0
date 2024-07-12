@@ -26,8 +26,9 @@ const TrackTable: React.FC<{
     <ClickAwayListener onClickAway={(event) => selectActions.handleClickAway(state, event)}>
       <table
         style={{
-          width: '-webkit-fill-available',
+          borderSpacing: 0,
           tableLayout: 'fixed',
+          width: '-webkit-fill-available',
         }}
         onMouseOver={() => {
           store.ui.menus.activeMenu.set(activeMenu);

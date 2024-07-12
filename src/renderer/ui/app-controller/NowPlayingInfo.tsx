@@ -1,5 +1,5 @@
 import { observer, reactive, Show, useSelector } from '@legendapp/state/react';
-import { Avatar, Box, Fade, SvgIcon, Typography, useMediaQuery } from '@mui/material';
+import { Avatar, Box, SvgIcon, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import React from 'react';
 import { BiSolidAlbum } from 'react-icons/bi';
@@ -13,8 +13,6 @@ const ReactiveBox = reactive(Box);
 const ReactiveMotionBox = reactive(MotionBox);
 
 const NowPlayingInfo: React.FC = observer(function NowPlayingInfo() {
-  const isMinWidth = useMediaQuery('(min-width:900px)');
-
   const library = store.library.get();
   const nowPlaying = store.queue.nowPlaying.get();
 
@@ -49,38 +47,36 @@ const NowPlayingInfo: React.FC = observer(function NowPlayingInfo() {
             <BiSolidAlbum />
           </SvgIcon>
         </Avatar>
-        <Fade in={isMinWidth}>
-          <ReactiveBox
-            $sx={() => ({ pointerEvents: store.ui.overlay.get() ? 'none' : 'inherit' })}
-            alignItems="center"
-            display="flex"
-          >
-            {nowPlaying && (
-              <Box>
-                <Typography fontFamily="Rubik, sans-serif" lineHeight={1.25} variant="title1">
-                  <Link
-                    className="link"
-                    to={createTrackNavigate(nowPlaying.track)}
-                    onClick={(event) => event.stopPropagation()}
-                  >
-                    {nowPlaying.track.title}
-                  </Link>
-                </Typography>
-                <Typography lineHeight={1.25} variant="subtitle1">
-                  <Link
-                    className="link"
-                    to={createArtistNavigate(nowPlaying.track)}
-                    onClick={(event) => event.stopPropagation()}
-                  >
-                    {nowPlaying.track.originalTitle
-                      ? nowPlaying.track.originalTitle
-                      : nowPlaying.track.grandparentTitle}
-                  </Link>
-                </Typography>
-              </Box>
-            )}
-          </ReactiveBox>
-        </Fade>
+        <ReactiveBox
+          $sx={() => ({ pointerEvents: store.ui.overlay.get() ? 'none' : 'inherit' })}
+          alignItems="center"
+          display="flex"
+        >
+          {nowPlaying && (
+            <Box>
+              <Typography variant="title1">
+                <Link
+                  className="link"
+                  to={createTrackNavigate(nowPlaying.track)}
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  {nowPlaying.track.title}
+                </Link>
+              </Typography>
+              <Typography variant="title2">
+                <Link
+                  className="link"
+                  to={createArtistNavigate(nowPlaying.track)}
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  {nowPlaying.track.originalTitle
+                    ? nowPlaying.track.originalTitle
+                    : nowPlaying.track.grandparentTitle}
+                </Link>
+              </Typography>
+            </Box>
+          )}
+        </ReactiveBox>
       </ReactiveMotionBox>
       <Show if={store.ui.overlay}>
         <Avatar

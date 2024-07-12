@@ -1,27 +1,11 @@
 import { electronAPI } from '@electron-toolkit/preload';
 import { contextBridge, ipcRenderer } from 'electron';
-import { ServerConfig } from 'typescript';
-
-export interface PersistedStore {
-  audio: {
-    volume: number;
-  };
-  displayRemainingTime: boolean;
-  lastfmApiKey: string;
-  lyricsSize: number;
-  queueId: number;
-  recentSearches: string[];
-}
 
 // Custom APIs for renderer
 const api = {
   getAppInfo: () => ipcRenderer.invoke('get-app-info'),
-  getServerConfig: () => ipcRenderer.invoke('get-server-config'),
-  setServerConfig: (serverConfig: ServerConfig) =>
-    ipcRenderer.invoke('set-server-config', serverConfig),
-  getPersistedStore: () => ipcRenderer.invoke('get-persisted-store'),
-  setPersistedStore: (persistedStore: PersistedStore) =>
-    ipcRenderer.invoke('set-persisted-store', persistedStore),
+  getValue: (key: string) => ipcRenderer.invoke('get-value', key),
+  setValue: (key: string, value: object) => ipcRenderer.invoke('set-value', key, value),
   setMode: (mode: 'dark' | 'light') => ipcRenderer.invoke('set-mode', mode),
 };
 

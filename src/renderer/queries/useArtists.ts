@@ -1,4 +1,4 @@
-import { queryOptions, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, queryOptions, useQuery } from '@tanstack/react-query';
 import { Library, SORT_ALBUMS_BY_RELEASE_DATE } from 'api';
 import { deburr } from 'lodash';
 import paramsToObject from 'scripts/params-to-object';
@@ -25,6 +25,7 @@ export const useArtist = (id: number) => {
 
 export const artistAppearancesQuery = (
   id: number,
+  guid: string,
   library: Library,
   sectionId: number,
   title: string
@@ -61,14 +62,21 @@ export const artistAppearancesQuery = (
           sort: SORT_ALBUMS_BY_RELEASE_DATE.desc,
         })
       );
+      const releaseFilters = await window.api.getValue('release-filters');
+      if (!releaseFilters) return albums;
+      const [isFiltered] = releaseFilters.filter((filter) => filter.guid === guid);
+      if (isFiltered) {
+        return albums.filter((album) => !isFiltered.exclusions.includes(album.guid));
+      }
       return albums;
     },
+    placeholderData: keepPreviousData,
   });
 
-export const useArtistAppearances = (id: number, title: string) => {
+export const useArtistAppearances = (id: number, guid: string, title: string) => {
   const { sectionId } = store.serverConfig.peek();
   const library = store.library.peek();
-  return useQuery(artistAppearancesQuery(id, library, sectionId, title));
+  return useQuery(artistAppearancesQuery(id, guid, library, sectionId, title));
 };
 
 export const artistTracksQuery = (
@@ -84,7 +92,6 @@ export const artistTracksQuery = (
   queryOptions({
     queryKey: [QueryKeys.ARTIST_TRACKS, id, sort],
     queryFn: async () => {
-      console.log(guid);
       const searchParams = new URLSearchParams();
       searchParams.append('push', '1');
       searchParams.append('artist.id', id.toString());
@@ -95,9 +102,21 @@ export const artistTracksQuery = (
       searchParams.append('pop', '1');
       if (removeDupes) searchParams.append('group', 'guid');
       searchParams.append('sort', sort);
-      const tracks = library.tracks(sectionId, searchParams);
-      return tracks;
+      const { tracks } = await library.tracks(sectionId, searchParams);
+      const filteredTracks = tracks.filter(
+        (track) =>
+          track.originalTitle?.toLowerCase().includes(title.toLowerCase()) ||
+          track.grandparentId === id
+      );
+      const releaseFilters = await window.api.getValue('release-filters');
+      if (!releaseFilters) return filteredTracks;
+      const [isFiltered] = releaseFilters.filter((filter) => filter.guid === guid);
+      if (isFiltered) {
+        return filteredTracks.filter((track) => !isFiltered.exclusions.includes(track.parentGuid));
+      }
+      return filteredTracks;
     },
+    placeholderData: keepPreviousData,
     enabled,
   });
 

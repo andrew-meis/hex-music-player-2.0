@@ -12,7 +12,7 @@ const PlaylistTitle: React.FC<{
 }> = ({ showSubtext = true, showType = false, playlist }) => {
   return (
     <Box>
-      <Typography fontFamily="Rubik" lineHeight={1.25} variant="body1">
+      <Typography variant="title1">
         <Link
           className="link"
           to={createPlaylistNavigate(playlist)}
@@ -22,7 +22,7 @@ const PlaylistTitle: React.FC<{
         </Link>
       </Typography>
       <Show if={showSubtext}>
-        <Typography lineHeight={1.25} variant="subtitle1">
+        <Typography variant="title2">
           {showType ? `${playlist._type}\xa0 · \xa0` : ''}
           {playlist.leafCount}
           &nbsp;

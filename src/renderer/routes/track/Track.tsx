@@ -61,7 +61,11 @@ const Track: React.FC = () => {
         title: grandparentTitle,
         to: {
           pathname: `/artists/${grandparentId}`,
-          search: createSearchParams({ guid: grandparentGuid, title: grandparentTitle }).toString(),
+          search: createSearchParams({
+            guid: grandparentGuid,
+            title: grandparentTitle,
+            tabIndex: '0',
+          }).toString(),
         },
       },
       {

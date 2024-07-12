@@ -5,7 +5,7 @@ import { useDrop } from 'react-dnd';
 import { BsViewList } from 'react-icons/bs';
 import { CgSearch } from 'react-icons/cg';
 import { TiChartLine } from 'react-icons/ti';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { store } from 'state';
 import { DragTypes } from 'typescript';
 
@@ -16,6 +16,7 @@ type Buttons = 'search' | 'charts' | 'queue';
 const QueueLink: React.FC<{
   handleButtonClick: (buttonClicked: Buttons) => void;
 }> = ({ handleButtonClick }) => {
+  const location = useLocation();
   const [{ canDrop, isOver }, drop] = useDrop(
     () => ({
       accept: [DragTypes.TRACK],
@@ -40,8 +41,8 @@ const QueueLink: React.FC<{
       onClick={() => handleButtonClick('queue')}
       onDragEnter={() => setTimeout(() => handleButtonClick('queue'), 500)}
     >
-      <BsViewList viewBox="0 3 16 16" />
-      <BsViewList style={{ position: 'absolute' }} viewBox="0 -12 16 16" />
+      <BsViewList style={{ pointerEvents: 'none' }} viewBox="0 3 16 16" />
+      <BsViewList style={{ pointerEvents: 'none', position: 'absolute' }} viewBox="0 -12 16 16" />
     </ReactiveIconButton>
   );
 };
@@ -55,6 +56,7 @@ const AppLinks: React.FC<{
     settings: string;
   }>;
 }> = ({ locations }) => {
+  const location = useLocation();
   const navigate = useNavigate();
 
   const handleButtonClick = (buttonClicked: Buttons) => {

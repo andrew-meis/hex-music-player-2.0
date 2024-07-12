@@ -1,5 +1,5 @@
 import { observable, ObservableObject } from '@legendapp/state';
-import { observer, Show } from '@legendapp/state/react';
+import { observer } from '@legendapp/state/react';
 import { Box, Typography } from '@mui/material';
 import Textfit from '@namhong2001/react-textfit';
 import { useWindowSize } from '@react-hookz/web';
@@ -9,10 +9,11 @@ import { Color } from 'chroma-js';
 import Palette from 'components/palette/Palette';
 import Scroller from 'components/scroller/Scroller';
 import { motion } from 'framer-motion';
+import { isEmpty } from 'lodash';
 import { useArtist, useArtistAppearances, useArtistTracks, useRecentTracks } from 'queries';
 import React, { useEffect, useMemo } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { createSearchParams, useLoaderData } from 'react-router-dom';
+import { createSearchParams, useLoaderData, useLocation } from 'react-router-dom';
 import { store } from 'state';
 
 import ArtistTabs from './ArtistTabs';
@@ -80,6 +81,8 @@ const Banner: React.FC<{ artist: ArtistType; color: ObservableObject<Color> }> =
               backgroundPositionY: 76,
               backgroundRepeat: 'no-repeat',
               backgroundSize: width + bannerWidthAdjustment + bannerGrowthAdjustment,
+              borderBottomLeftRadius: 16,
+              borderBottomRightRadius: 16,
               boxShadow: `inset 0 0 0 50vw rgba(${color.rgb()}, ${colorAlpha})`,
               height: '100%',
               width: '100%',
@@ -112,10 +115,11 @@ const colorObservable = observable<Color>();
 const paletteObservable = observable<Color[]>();
 
 const Artist: React.FC = () => {
+  const location = useLocation();
   const { guid, id, title } = useLoaderData() as Awaited<ReturnType<typeof artistLoader>>;
 
-  const { data: artist } = useArtist(id);
-  const { data: appearances } = useArtistAppearances(id, title);
+  const { data: artistData } = useArtist(id);
+  const { data: appearances } = useArtistAppearances(id, guid, title);
 
   const recentTrackQueryIDs = useMemo(() => {
     if (!appearances) return [];
@@ -139,26 +143,29 @@ const Artist: React.FC = () => {
   );
 
   const releases = useMemo(() => {
-    if (!artist || !appearances) return {};
+    if (!artistData || !appearances) return {};
     const releaseIDs: number[] = [];
     let returnData = {} as Record<string, Album[]>;
-    artist.artists[0].hubs.forEach((hub) => {
+    artistData.artists[0].hubs.forEach((hub) => {
       if (hub.type === 'album' && hub.size > 0) {
         releaseIDs.push(...hub.items.map((item) => item.id));
         returnData[hub.title] = hub.items as Album[];
       }
     });
-    const filteredAlbums = artist.artists[0].albums.filter(
+    const filteredAlbums = artistData.artists[0].albums.filter(
       (album) => !releaseIDs.includes(album.id)
     );
     if (filteredAlbums.length > 0) {
       returnData = Object.assign({ Albums: filteredAlbums }, returnData);
     }
     if (appearances.length > 0) {
-      returnData['Appears On'] = appearances;
+      returnData['Appears On'] = appearances.map((album) => ({
+        ...album,
+        subformat: [...album.subformat, { id: 0, filter: 'appearance', tag: 'appearance' }],
+      }));
     }
     return returnData;
-  }, [artist, appearances]);
+  }, [artistData, appearances]);
 
   useEffect(() => {
     store.ui.breadcrumbs.set([
@@ -169,47 +176,81 @@ const Artist: React.FC = () => {
       },
       {
         title,
-        to: { pathname: `/artists/${id}`, search: createSearchParams({ guid, title }).toString() },
+        to: {
+          pathname: `/artists/${id}`,
+          search: createSearchParams({ guid, title, tabIndex: '0' }).toString(),
+        },
       },
     ]);
   }, [id]);
 
-  if (!recentTracks || !mostPlayedTracks) return null;
+  if (isEmpty(releases) || !recentTracks || !mostPlayedTracks) return null;
 
   return (
-    <Scroller style={{ height: '100%' }}>
-      <Show ifReady={releases}>
-        {() => {
-          const [artistData] = artist!.artists;
-          return (
-            <Palette
-              colorObservable={colorObservable}
-              paletteObservable={paletteObservable}
-              src={artistData.art}
-            >
-              {({ isReady }) =>
-                isReady && (
-                  <motion.div
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    initial={{ opacity: 0 }}
-                    key={id}
-                    style={{ height: '100%' }}
+    <Scroller
+      style={{
+        height: '100%',
+      }}
+    >
+      {({ viewport }) => {
+        const [artist] = artistData!.artists;
+        return (
+          <Palette
+            colorObservable={colorObservable}
+            paletteObservable={paletteObservable}
+            src={artist.art}
+          >
+            {({ isReady }) =>
+              isReady && (
+                <motion.div
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0 }}
+                  key={location.pathname}
+                  style={{ height: '100%' }}
+                >
+                  <div
+                    style={{
+                      position: 'fixed',
+                      width: 'calc(100% - 16px)',
+                      height: 'var(--content-height)',
+                      zIndex: 1,
+                      pointerEvents: 'none',
+                    }}
                   >
-                    <Banner artist={artistData} color={colorObservable} />
-                    <ArtistTabs
-                      mostPlayedTracks={mostPlayedTracks.tracks || []}
-                      popularTracks={artistData.popularTracks}
-                      recentTracks={recentTracks}
-                      releases={releases}
+                    <div
+                      className="corner"
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                      }}
                     />
-                  </motion.div>
-                )
-              }
-            </Palette>
-          );
-        }}
-      </Show>
+                    <div
+                      className="corner"
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        right: 0,
+                        transform: 'rotate(90deg)',
+                      }}
+                    />
+                  </div>
+                  <Banner artist={artist} color={colorObservable} />
+                  <ArtistTabs
+                    artist={artist}
+                    mostPlayedTracks={mostPlayedTracks || []}
+                    popularTracks={artist.popularTracks}
+                    recentTracks={recentTracks}
+                    releases={releases}
+                    viewport={viewport}
+                  />
+                </motion.div>
+              )
+            }
+          </Palette>
+        );
+      }}
     </Scroller>
   );
 };

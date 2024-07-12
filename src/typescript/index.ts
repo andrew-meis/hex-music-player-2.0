@@ -8,4 +8,5 @@ export type { AppInit } from './interfaces/AppInit';
 export type { PersistedStore } from './interfaces/PersistedStore';
 export type { ServerConfig } from './interfaces/ServerConfig';
 // Types
+export type { ReleaseFilter, ReleaseFilters } from './types/ReleaseFilter';
 export type { Selectable, SelectObservable } from './types/SelectObservable';

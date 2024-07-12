@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom';
 const AppSurface: React.FC = () => (
   <Box
     color="text.primary"
-    height="calc(100vh - 170px)"
+    height="var(--content-height)"
     marginX="auto"
     marginY={1}
     maxWidth={1920}

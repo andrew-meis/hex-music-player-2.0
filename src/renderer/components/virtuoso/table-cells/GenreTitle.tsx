@@ -12,7 +12,7 @@ const GenreTitle: React.FC<{
 }> = ({ showSubtext = true, showType = false, genre }) => {
   return (
     <Box>
-      <Typography fontFamily="Rubik" lineHeight={1.25} variant="body1">
+      <Typography variant="title1">
         <Link
           className="link"
           to={createGenreNavigate(genre)}
@@ -22,9 +22,7 @@ const GenreTitle: React.FC<{
         </Link>
       </Typography>
       <Show if={showSubtext}>
-        <Typography lineHeight={1.25} variant="subtitle1">
-          {showType ? `${genre._type}` : ''}
-        </Typography>
+        <Typography variant="title2">{showType ? `${genre._type}` : ''}</Typography>
       </Show>
     </Box>
   );

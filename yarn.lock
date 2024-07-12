@@ -3223,6 +3223,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"country-emoji@npm:^1.5.6":
+  version: 1.5.6
+  resolution: "country-emoji@npm:1.5.6"
+  checksum: 10/797b6e556c9b10be859e5683d8cba307ebd3718af18eef225d967f07206920002d7767b81945c16cb520cfe9c23199b0671448045e8da9ecf6d3410e6b95c610
+  languageName: node
+  linkType: hard
+
 "crc-32@npm:^1.2.0":
   version: 1.2.2
   resolution: "crc-32@npm:1.2.2"
@@ -5234,6 +5241,7 @@ __metadata:
     "@zwolf/prism": "npm:2.8.0"
     chroma-js: "npm:^2.4.2"
     colorthief: "npm:^2.4.0"
+    country-emoji: "npm:^1.5.6"
     dexie: "npm:^4.0.4"
     dexie-react-hooks: "npm:^1.1.7"
     electron: "npm:^29.3.3"
@@ -5264,10 +5272,11 @@ __metadata:
     react-dnd-html5-backend: "npm:^16.0.1"
     react-dom: "npm:^18.2.0"
     react-dropzone: "npm:^14.2.3"
+    react-easy-emoji: "npm:^1.8.1"
     react-icons: "npm:^5.2.1"
     react-intersection-observer: "npm:^9.10.3"
     react-router-dom: "npm:^6.22.2"
-    react-virtuoso: "npm:^4.7.4"
+    react-virtuoso: "npm:^4.7.11"
     typescript: "npm:^5.3.3"
     uuid: "npm:^9.0.1"
     vite: "npm:^5.0.12"
@@ -7398,6 +7407,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-easy-emoji@npm:^1.8.1":
+  version: 1.8.1
+  resolution: "react-easy-emoji@npm:1.8.1"
+  dependencies:
+    string-replace-to-array: "npm:^2.1.0"
+  peerDependencies:
+    "@types/react": ">=0.14.0"
+    react: ">=0.14.27"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10/bc28dc979e525710a9d5a5bd215633e2c3b9b631a8c102df4aa0b2c4fb859b5591ced445422bb2e1088e9ce82c31ca120f5f6825b0c0d89656036010351004f8
+  languageName: node
+  linkType: hard
+
 "react-icons@npm:^5.2.1":
   version: 5.2.1
   resolution: "react-icons@npm:5.2.1"
@@ -7480,13 +7504,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-virtuoso@npm:^4.7.4":
-  version: 4.7.4
-  resolution: "react-virtuoso@npm:4.7.4"
+"react-virtuoso@npm:^4.7.11":
+  version: 4.7.11
+  resolution: "react-virtuoso@npm:4.7.11"
   peerDependencies:
     react: ">=16 || >=17 || >= 18"
     react-dom: ">=16 || >=17 || >= 18"
-  checksum: 10/f3ee15fc283d72ea321c84f5456a47e5854e88c0cae43ae60eb3f61065705ab0d1aaf61e62d16a26aae79d54a9fa4749dc4419fcd2ea499da56759c7e55d66dc
+  checksum: 10/5f6188063a280f3f60d2586d69ade83ed45ac2afc929964c11574257c4f6a8732a4812657f976e1b5a7298ea3faf37edffd50e10b933f8891e955b2dd168643c
   languageName: node
   linkType: hard
 
@@ -8210,6 +8234,13 @@ __metadata:
     readable-stream: "npm:^3.6.0"
     xtend: "npm:^4.0.2"
   checksum: 10/4f85738cbc6de70ecf0a04bc38b6092b4d91dd5317d3d93c88a84c48e63b82a8724ab5fd591df9f587b5139fe439d1748e4e3db3cb09c2b1e23649cb9d89859e
+  languageName: node
+  linkType: hard
+
+"string-replace-to-array@npm:^2.1.0":
+  version: 2.1.1
+  resolution: "string-replace-to-array@npm:2.1.1"
+  checksum: 10/d6daeb43422e7a9a3d420e0e2ecbca645ad4094426be6fbfa3e70a3aef8237927284ba7d8a48cf6f45468143829b976dcdf7cfbcff418d5233916ee608c6755b
   languageName: node
   linkType: hard
 

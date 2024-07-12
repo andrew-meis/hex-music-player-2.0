@@ -12,7 +12,7 @@ const CollectionTitle: React.FC<{
 }> = ({ showSubtext = true, showType = false, collection }) => {
   return (
     <Box>
-      <Typography fontFamily="Rubik" lineHeight={1.25} variant="body1">
+      <Typography variant="title1">
         <Link
           className="link"
           to={createCollectionNavigate(collection)}
@@ -22,7 +22,7 @@ const CollectionTitle: React.FC<{
         </Link>
       </Typography>
       <Show if={showSubtext}>
-        <Typography lineHeight={1.25} variant="subtitle1">
+        <Typography variant="title2">
           {showType ? `${collection._type}\xa0 · \xa0` : ''}
           {collection.childCount}
           &nbsp;

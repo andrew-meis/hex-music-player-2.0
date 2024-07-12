@@ -16,7 +16,7 @@ const TrackTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; track: T
 }) => {
   return (
     <Box>
-      <Typography fontFamily="Rubik, sans-serif" lineHeight={1.25} variant="title1">
+      <Typography variant="title1">
         <Link
           className="link"
           to={createTrackNavigate(track)}
@@ -26,7 +26,7 @@ const TrackTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; track: T
         </Link>
       </Typography>
       <Show if={showSubtext}>
-        <Typography lineHeight={1.25} variant="subtitle1">
+        <Typography variant="title2">
           {showType ? `${track._type}\xa0 · \xa0` : ''}
           <Link
             className="link"

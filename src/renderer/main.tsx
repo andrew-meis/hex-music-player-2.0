@@ -31,7 +31,8 @@ import Genres, { genresLoader } from 'routes/genres/Genres';
 import Library, { libraryLoader } from 'routes/library/Library';
 import Login, { loginLoader } from 'routes/login/Login';
 import Playlist, { playlistLoader } from 'routes/playlist/Playlist';
-import Playlists, { playlistsLoader } from 'routes/playlists/Playlists';
+import { playlistsLoader } from 'routes/playlists/loader';
+import Playlists from 'routes/playlists/Playlists';
 import Queue from 'routes/queue/Queue';
 import Search, { searchLoader } from 'routes/search/Search';
 import Settings, { settingsLoader } from 'routes/settings/Settings';
@@ -44,12 +45,10 @@ import Titlebar from 'ui/titlebar/Titlebar';
 enableReactComponents();
 
 // Instantiate each new select observable here
-createSelectObservable(SelectObservables.ROUTE_ARTIST_MOST_PLAYED_TRACKS);
-createSelectObservable(SelectObservables.ROUTE_ARTIST_POPULAR_TRACKS);
-createSelectObservable(SelectObservables.ROUTE_ARTIST_RECENT_TRACKS);
-createSelectObservable(SelectObservables.ROUTE_QUEUE);
-createSelectObservable(SelectObservables.ROUTE_SEARCH);
-createSelectObservable(SelectObservables.UI_NOW_PLAYING);
+const keys = Object.keys(SelectObservables).filter((value) => isNaN(Number(value)));
+keys.forEach((key) => {
+  createSelectObservable(SelectObservables[key]);
+});
 
 export const queryClient = new QueryClient();
 

@@ -109,7 +109,7 @@ const NowPlayingNavigation: React.FC<{
               },
             }}
             title={
-              <Typography color="text.primary" padding="4px 8px" variant="subtitle2">
+              <Typography color="text.primary" variant="subtitle2">
                 {section.title}
               </Typography>
             }

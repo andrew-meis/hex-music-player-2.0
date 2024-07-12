@@ -20,29 +20,13 @@ import TrackMenu from 'components/track/TrackMenu';
 import { isEmpty } from 'lodash';
 import React, { useMemo } from 'react';
 import { allSelectObservables, store } from 'state';
-import { SelectObservables } from 'typescript';
 
 const Menu: React.FC = observer(function Menu() {
   const activeMenu = store.ui.menus.activeMenu.get();
   const state = useMemo(() => {
-    switch (activeMenu) {
-      case SelectObservables.ROUTE_ARTIST_MOST_PLAYED_TRACKS:
-        return allSelectObservables[SelectObservables.ROUTE_ARTIST_MOST_PLAYED_TRACKS];
-      case SelectObservables.ROUTE_ARTIST_POPULAR_TRACKS:
-        return allSelectObservables[SelectObservables.ROUTE_ARTIST_POPULAR_TRACKS];
-      case SelectObservables.ROUTE_ARTIST_RECENT_TRACKS:
-        return allSelectObservables[SelectObservables.ROUTE_ARTIST_RECENT_TRACKS];
-      case SelectObservables.ROUTE_QUEUE:
-        return allSelectObservables[SelectObservables.ROUTE_QUEUE];
-      case SelectObservables.ROUTE_SEARCH:
-        return allSelectObservables[SelectObservables.ROUTE_SEARCH];
-      case SelectObservables.UI_NOW_PLAYING:
-        return allSelectObservables[SelectObservables.UI_NOW_PLAYING];
-      default: {
-        return undefined;
-      }
-    }
+    return allSelectObservables[activeMenu];
   }, [activeMenu]);
+
   if (!state) return null;
 
   const items = state.selectedItems.get();

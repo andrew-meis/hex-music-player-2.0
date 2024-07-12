@@ -34,7 +34,11 @@ const Album: React.FC = () => {
         title: parentTitle,
         to: {
           pathname: `/artists/${parentId}`,
-          search: createSearchParams({ guid: parentGuid, title: parentTitle }).toString(),
+          search: createSearchParams({
+            guid: parentGuid,
+            title: parentTitle,
+            tabIndex: '0',
+          }).toString(),
         },
       },
       {

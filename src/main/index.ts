@@ -116,23 +116,8 @@ app.whenReady().then(() => {
     return appInfo;
   });
 
-  ipcMain.handle('get-server-config', () => {
-    return store.get('server-config');
-  });
-
-  ipcMain.handle('set-server-config', (_event, serverConfig) => {
-    store.set('server-config', serverConfig);
-    return store.get('server-config');
-  });
-
-  ipcMain.handle('get-persisted-store', () => {
-    return store.get('persisted-store');
-  });
-
-  ipcMain.handle('set-persisted-store', (_event, persistedStore) => {
-    store.set('persisted-store', persistedStore);
-    return store.get('persisted-store');
-  });
+  ipcMain.handle('get-value', (_event, key) => store.get(key));
+  ipcMain.handle('set-value', (_event, key, value) => store.set(key, value));
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

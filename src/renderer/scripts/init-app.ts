@@ -5,7 +5,7 @@ import { store } from 'state';
 const initApp = async () => {
   try {
     const appInfo = await window.api.getAppInfo();
-    const serverConfig = await window.api.getServerConfig();
+    const serverConfig = await window.api.getValue('server-config');
     const client = new Client({
       identifier: serverConfig?.clientId,
       product: appInfo.appName,

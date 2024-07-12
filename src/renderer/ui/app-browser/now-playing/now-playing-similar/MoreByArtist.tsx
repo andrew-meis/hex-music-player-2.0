@@ -25,7 +25,7 @@ const MoreByArtist: React.FC = observer(function SimilarMoreByArtist() {
   useUnmount(() => selectActions.handleClickAway(selectObservable));
 
   const slicedTracks = useMemo(
-    () => artistTracks?.tracks.filter((track) => track.guid !== nowPlaying.track.guid).slice(0, 50),
+    () => artistTracks?.filter((track) => track.guid !== nowPlaying.track.guid).slice(0, 50),
     [artistTracks]
   );
 

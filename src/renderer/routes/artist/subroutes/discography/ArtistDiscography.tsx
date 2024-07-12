@@ -29,7 +29,10 @@ const ArtistDiscography: React.FC = () => {
       },
       {
         title,
-        to: { pathname: `/artists/${id}`, search: createSearchParams({ guid, title }).toString() },
+        to: {
+          pathname: `/artists/${id}`,
+          search: createSearchParams({ guid, title, tabIndex: '0' }).toString(),
+        },
       },
       {
         title: 'Discography',

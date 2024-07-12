@@ -12,15 +12,18 @@ declare module '@mui/material/styles' {
   }
   interface TypographyVariants {
     title1: React.CSSProperties;
+    title2: React.CSSProperties;
   }
   interface TypographyVariantsOptions {
     title1?: React.CSSProperties;
+    title2?: React.CSSProperties;
   }
 }
 
 declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
     title1: true;
+    title2: true;
   }
 }
 
@@ -390,10 +393,25 @@ const createTheme = () =>
               fontFamily: 'Rubik, sans-serif',
               fontSize: '1rem',
               fontWeight: 500,
-              lineHeight: 1.5,
+              lineHeight: 1.25,
               overflow: 'hidden',
               WebkitBoxOrient: 'vertical',
               WebkitLineClamp: 1,
+              wordBreak: 'break-all',
+            },
+          },
+          {
+            props: { variant: 'title2' },
+            style: {
+              display: '-webkit-box',
+              fontFamily: 'Arimo, Arial, sans-serif',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              lineHeight: 1.25,
+              overflow: 'hidden',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 1,
+              wordBreak: 'break-all',
             },
           },
           {

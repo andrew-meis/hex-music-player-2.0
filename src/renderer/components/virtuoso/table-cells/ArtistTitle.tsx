@@ -12,7 +12,7 @@ const ArtistTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; artist:
 }) => {
   return (
     <Box>
-      <Typography fontFamily="Rubik" lineHeight={1.25} variant="body1">
+      <Typography variant="title1">
         <Link
           className="link"
           to={createArtistNavigate(artist)}
@@ -22,7 +22,7 @@ const ArtistTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; artist:
         </Link>
       </Typography>
       <Show if={showSubtext}>
-        <Typography lineHeight={1.25} variant="subtitle1">
+        <Typography variant="title2">
           {showType ? `${artist._type}\xa0 · \xa0` : ''}
           <Link
             className="link"

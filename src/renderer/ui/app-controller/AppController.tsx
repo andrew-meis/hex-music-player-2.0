@@ -82,7 +82,7 @@ const AppController: React.FC = () => {
             alignItems="center"
             display="flex"
             flexBasis="0%"
-            flexGrow={1}
+            flexGrow={1.3}
             justifyContent="flex-start"
           >
             <NowPlayingInfo />
@@ -105,7 +105,7 @@ const AppController: React.FC = () => {
             alignItems="center"
             display="flex"
             flexBasis="0%"
-            flexGrow={1}
+            flexGrow={1.3}
             justifyContent="flex-end"
           >
             <Volume />

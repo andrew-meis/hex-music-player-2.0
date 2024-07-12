@@ -27,9 +27,9 @@ export const persistedStore = observable({
 
 persistObservable(persistedStore, {
   pluginRemote: {
-    get: () => window.api.getPersistedStore(),
+    get: () => window.api.getValue('persisted-store'),
     set: ({ value }) => {
-      window.api.setPersistedStore(value);
+      window.api.setValue('persisted-store', value);
     },
   },
 });

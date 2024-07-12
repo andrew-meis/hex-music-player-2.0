@@ -12,7 +12,7 @@ const AlbumTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; album: A
 }) => {
   return (
     <Box>
-      <Typography fontFamily="Rubik" lineHeight={1.25} variant="body1">
+      <Typography variant="title1">
         <Link
           className="link"
           to={createAlbumNavigate(album)}
@@ -22,7 +22,7 @@ const AlbumTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; album: A
         </Link>
       </Typography>
       <Show if={showSubtext}>
-        <Typography lineHeight={1.25} variant="subtitle1">
+        <Typography variant="title2">
           {showType ? `${album._type}\xa0 · \xa0` : ''}
           <Link
             className="link"

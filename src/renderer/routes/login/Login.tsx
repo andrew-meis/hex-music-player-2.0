@@ -14,7 +14,7 @@ import PlexLogin from './PlexLogin';
 import PlexServer from './PlexServer';
 
 const appInfo = await window.api.getAppInfo();
-const serverConfig = await window.api.getServerConfig();
+const serverConfig = await window.api.getValue('server-config');
 
 const client = new Client({
   identifier: serverConfig?.clientId,
@@ -132,7 +132,7 @@ const Login: React.FC = () => {
       sectionId: selectedLibrary!,
       serverName: selectedServer!.name,
     };
-    window.api.setServerConfig(newServerConfig);
+    window.api.setValue('server-config', newServerConfig);
     setActiveStep(4);
   }, [selectedLibrary]);
 

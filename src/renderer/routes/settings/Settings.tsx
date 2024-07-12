@@ -76,8 +76,8 @@ const Settings: React.FC = () => {
   });
 
   const handleLogout = async () => {
-    const savedConfig = await window.api.getServerConfig();
-    await window.api.setServerConfig({
+    const savedConfig = await window.api.getValue('server-config');
+    await window.api.setValue('server-config', {
       ...savedConfig,
       authToken: '',
     });

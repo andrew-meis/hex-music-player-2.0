@@ -18,7 +18,15 @@ const Palette: React.FC<{
   colorObservable: ObservableObject<Color>;
   paletteObservable: ObservableObject<Color[]>;
   src: string;
-  children({ isReady }: { isReady: boolean }): React.ReactNode;
+  children({
+    isReady,
+    color,
+    palette,
+  }: {
+    isReady: boolean;
+    color: Color;
+    palette: Color[];
+  }): React.ReactNode;
 }> = observer(function Palette({ colorObservable, paletteObservable, src, children }) {
   const library = store.library.get();
 
@@ -53,7 +61,15 @@ const Palette: React.FC<{
     return null;
   }
 
-  return <>{children({ isReady: true })}</>;
+  return (
+    <>
+      {children({
+        isReady: true,
+        color: color || defaultColor,
+        palette: palette || defaultPalette,
+      })}
+    </>
+  );
 });
 
 export default Palette;

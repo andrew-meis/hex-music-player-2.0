@@ -1,4 +1,4 @@
-import { queryOptions, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, queryOptions, useQuery } from '@tanstack/react-query';
 import { Library, MediaType, parseTrackContainer, SORT_BY_DATE_PLAYED, Track } from 'api';
 import { db } from 'features/db';
 import ky from 'ky';
@@ -226,6 +226,7 @@ const recentTracksQuery = (ids: number[], days: number, stringFilter: string, en
       }
       return [];
     },
+    placeholderData: keepPreviousData,
     enabled,
   });
 
