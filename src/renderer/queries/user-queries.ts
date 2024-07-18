@@ -9,9 +9,7 @@ export const userQuery = (account: Account) => ({
   refetchOnWindowFocus: false,
 });
 
-const useUser = () => {
+export const useUser = () => {
   const account = store.account.get();
   return useQuery(userQuery(account));
 };
-
-export default useUser;

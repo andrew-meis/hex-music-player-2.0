@@ -9,10 +9,8 @@ export const historyQuery = (id: number, library: Library, sectionId: number) =>
   refetchOnWindowFocus: false,
 });
 
-const useHistory = (id: number) => {
+export const useHistory = (id: number) => {
   const { sectionId } = store.serverConfig.peek();
   const library = store.library.peek();
   return useQuery(historyQuery(id, library, sectionId));
 };
-
-export default useHistory;

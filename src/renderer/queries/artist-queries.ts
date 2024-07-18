@@ -31,10 +31,8 @@ export const artistsQuery = (
   queryFn: async () => library.artists(sectionId, searchParams),
 });
 
-const useArtists = (searchParams?: URLSearchParams) => {
+export const useArtists = (searchParams?: URLSearchParams) => {
   const { sectionId } = store.serverConfig.peek();
   const library = store.library.peek();
   return useQuery(artistsQuery(sectionId, library, searchParams));
 };
-
-export default useArtists;

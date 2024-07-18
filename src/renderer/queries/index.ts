@@ -1,49 +1,13 @@
-export {
-  albumsArtistAppearsOn,
-  albumsQuery,
-  default as useAlbums,
-  useAlbumsArtistAppearsOn,
-} from './useAlbums';
-export { artistQuery, artistsQuery, useArtist, default as useArtists } from './useArtists';
-export { collectionsQuery, default as useCollections } from './useCollections';
-export { useColorThiefColor, useColorThiefPalette } from './useColorThief';
-export { genresQuery, default as useGenres } from './useGenres';
-export { historyQuery, default as useHistory } from './useHistory';
-export { lyricsQuery, default as useLyrics } from './useLyrics';
-export {
-  playlistItemsQuery,
-  playlistQuery,
-  playlistsQuery,
-  usePlaylist,
-  usePlaylistItems,
-  default as usePlaylists,
-} from './usePlaylists';
-export { queueQuery, default as useQueue } from './useQueue';
-export {
-  searchAlbums,
-  searchArtists,
-  searchCollections,
-  searchGenres,
-  searchPlaylists,
-  searchQuery,
-  searchTracks,
-  default as useSearch,
-  useSearchAlbums,
-  useSearchArtists,
-  useSearchCollections,
-  useSearchGenres,
-  useSearchPlaylists,
-  useSearchTracks,
-} from './useSearch';
-export {
-  tracksByArtistQuery,
-  tracksQuery,
-  useLastfmMatchTracks,
-  useRecentTracks,
-  useRelatedTracks,
-  useSimilarTracks,
-  useTopTracks,
-  default as useTracks,
-  useTracksByArtist,
-} from './useTracks';
-export { userQuery, default as useUser } from './useUser';
+export * from './album-queries';
+export * from './artist-queries';
+export * from './chart-queries';
+export * from './collection-queries';
+export * from './color-queries';
+export * from './genre-queries';
+export * from './history-queries';
+export * from './lyrics-queries';
+export * from './playlist-queries';
+export * from './queue-queries';
+export * from './search-queries';
+export * from './track-queries';
+export * from './user-queries';

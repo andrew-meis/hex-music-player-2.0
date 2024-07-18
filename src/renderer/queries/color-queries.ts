@@ -45,7 +45,7 @@ const getPalette = (url: string): Promise<Color[]> => {
   });
 };
 
-const useColorThiefColor = ({ id, url }: UseColorsParams) =>
+export const useColorThiefColor = ({ id, url }: UseColorsParams) =>
   useQuery({
     queryKey: [QueryKeys.COLOR, id],
     queryFn: () => getColor(url),
@@ -53,12 +53,10 @@ const useColorThiefColor = ({ id, url }: UseColorsParams) =>
     staleTime: Infinity,
   });
 
-const useColorThiefPalette = ({ id, url }: UseColorsParams) =>
+export const useColorThiefPalette = ({ id, url }: UseColorsParams) =>
   useQuery({
     queryKey: [QueryKeys.PALETTE, id],
     queryFn: () => getPalette(url),
     placeholderData: keepPreviousData,
     staleTime: Infinity,
   });
-
-export { useColorThiefColor, useColorThiefPalette };

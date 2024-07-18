@@ -133,6 +133,4 @@ export const lyricsQuery = (track: Track) => ({
   staleTime: Infinity,
 });
 
-const useLyrics = (track: Track) => useQuery(lyricsQuery(track));
-
-export default useLyrics;
+export const useLyrics = (track: Track) => useQuery(lyricsQuery(track));

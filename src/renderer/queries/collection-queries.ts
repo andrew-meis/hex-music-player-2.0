@@ -14,10 +14,8 @@ export const collectionsQuery = (
     queryFn: async () => library.collections(sectionId, searchParams),
   });
 
-const useCollections = (searchParams?: URLSearchParams) => {
+export const useCollections = (searchParams?: URLSearchParams) => {
   const { sectionId } = store.serverConfig.peek();
   const library = store.library.peek();
   return useQuery(collectionsQuery(sectionId, library, searchParams));
 };
-
-export default useCollections;

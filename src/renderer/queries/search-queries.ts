@@ -18,7 +18,7 @@ export const searchQuery = (library: Library, query: string, limit: number) =>
     },
   });
 
-const useSearch = (query: string, limit: number) => {
+export const useSearch = (query: string, limit: number) => {
   const library = store.library.get();
   return useQuery(searchQuery(library, query, limit));
 };
@@ -134,5 +134,3 @@ export const useSearchTracks = (query: string, limit: number, enabled = true) =>
   const library = store.library.get();
   return useQuery(searchTracks(sectionId, library, query, limit, enabled));
 };
-
-export default useSearch;

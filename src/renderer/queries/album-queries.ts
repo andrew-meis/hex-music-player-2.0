@@ -70,10 +70,8 @@ export const albumsQuery = (
   queryFn: async () => library.albums(sectionId, searchParams),
 });
 
-const useAlbums = (searchParams?: URLSearchParams) => {
+export const useAlbums = (searchParams?: URLSearchParams) => {
   const { sectionId } = store.serverConfig.peek();
   const library = store.library.peek();
   return useQuery(albumsQuery(sectionId, library, searchParams));
 };
-
-export default useAlbums;

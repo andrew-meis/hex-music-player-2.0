@@ -35,9 +35,7 @@ export const playlistsQuery = (library: Library, searchParams?: URLSearchParams)
     queryFn: async () => library.playlists(searchParams),
   });
 
-const usePlaylists = (searchParams?: URLSearchParams) => {
+export const usePlaylists = (searchParams?: URLSearchParams) => {
   const library = store.library.get();
   return useQuery(playlistsQuery(library, searchParams));
 };
-
-export default usePlaylists;

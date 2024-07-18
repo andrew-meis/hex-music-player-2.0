@@ -1,5 +1,5 @@
 import { keepPreviousData, queryOptions, useQuery } from '@tanstack/react-query';
-import { Library, MediaType, parseTrackContainer, SORT_BY_DATE_PLAYED, Track } from 'api';
+import { Library, parseTrackContainer, SORT_BY_DATE_PLAYED, Track } from 'api';
 import { db } from 'features/db';
 import ky from 'ky';
 import { LastFMTrack } from 'lastfm-ts-api';
@@ -256,35 +256,6 @@ const similarTracksQuery = (track: Track, enabled: boolean) =>
 export const useSimilarTracks = (track: Track, enabled = true) =>
   useQuery(similarTracksQuery(track, enabled));
 
-const topTracksQuery = (
-  track: Track,
-  enabled: boolean,
-  start?: DateTime,
-  end?: DateTime,
-  days?: number
-) =>
-  queryOptions({
-    queryKey: [QueryKeys.SIMILAR_TRACKS, track.id],
-    queryFn: async () => {
-      const { sectionId } = store.serverConfig.peek();
-      const library = store.library.peek();
-      const time = DateTime.now();
-      if (days) {
-        return library.topItems(sectionId, MediaType.TRACK, time.minus({ days }), time, 10);
-      }
-      return library.topItems(sectionId, MediaType.TRACK, start!, end!, 10);
-    },
-    enabled,
-  });
-
-export const useTopTracks = (
-  track: Track,
-  enabled = true,
-  start = undefined,
-  end = undefined,
-  days = undefined
-) => useQuery(topTracksQuery(track, enabled, start, end, days));
-
 export const tracksByArtistQuery = (
   enabled: boolean,
   guid: string,
@@ -353,10 +324,8 @@ export const tracksQuery = (
     enabled,
   });
 
-const useTracks = (searchParams?: URLSearchParams, enabled = true) => {
+export const useTracks = (searchParams?: URLSearchParams, enabled = true) => {
   const { sectionId } = store.serverConfig.peek();
   const library = store.library.peek();
   return useQuery(tracksQuery(sectionId, library, enabled, searchParams));
 };
-
-export default useTracks;

@@ -29,6 +29,7 @@ export enum LastFMQueryKeys {
 
 export enum TrackKeys {
   ALBUM_TRACKS = 'album-tracks',
+  CHART = 'chart',
   PLAYLIST_ITEMS = 'playlist-items',
   PLAYQUEUE = 'play-queue',
   RECENT_TRACKS = 'recent-tracks',

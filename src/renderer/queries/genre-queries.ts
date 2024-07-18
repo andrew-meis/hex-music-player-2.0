@@ -14,10 +14,8 @@ export const genresQuery = (
   queryFn: async () => library.genres(sectionId, type, searchParams),
 });
 
-const useGenres = (type: MediaType, searchParams?: URLSearchParams) => {
+export const useGenres = (type: MediaType, searchParams?: URLSearchParams) => {
   const { sectionId } = store.serverConfig.peek();
   const library = store.library.peek();
   return useQuery(genresQuery(sectionId, library, type, searchParams));
 };
-
-export default useGenres;

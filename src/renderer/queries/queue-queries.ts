@@ -12,9 +12,7 @@ export const queueQuery = (library: Library, id: number, center: number | undefi
     refetchOnWindowFocus: false,
   });
 
-const useQueue = (id: number, center?: number) => {
+export const useQueue = (id: number, center?: number) => {
   const library = store.library.get();
   return useQuery(queueQuery(library, id, center));
 };
-
-export default useQueue;
