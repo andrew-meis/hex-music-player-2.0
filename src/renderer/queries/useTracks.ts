@@ -285,6 +285,62 @@ export const useTopTracks = (
   days = undefined
 ) => useQuery(topTracksQuery(track, enabled, start, end, days));
 
+export const tracksByArtistQuery = (
+  enabled: boolean,
+  guid: string,
+  id: number,
+  library: Library,
+  sectionId: number,
+  sort: string,
+  title: string,
+  removeDupes?: boolean
+) =>
+  queryOptions({
+    queryKey: [QueryKeys.TRACKS_BY_ARTIST, id, sort],
+    queryFn: async () => {
+      const searchParams = new URLSearchParams();
+      searchParams.append('push', '1');
+      searchParams.append('artist.id', id.toString());
+      searchParams.append('or', '1');
+      searchParams.append('track.title', title);
+      searchParams.append('or', '1');
+      searchParams.append('track.artist', title);
+      searchParams.append('pop', '1');
+      if (removeDupes) searchParams.append('group', 'guid');
+      searchParams.append('sort', sort);
+      const { tracks } = await library.tracks(sectionId, searchParams);
+      const filteredTracks = tracks.filter(
+        (track) =>
+          track.originalTitle?.toLowerCase().includes(title.toLowerCase()) ||
+          track.grandparentId === id
+      );
+      const releaseFilters = await window.api.getValue('release-filters');
+      if (!releaseFilters) return filteredTracks;
+      const [isFiltered] = releaseFilters.filter((filter) => filter.guid === guid);
+      if (isFiltered) {
+        return filteredTracks.filter((track) => !isFiltered.exclusions.includes(track.parentGuid));
+      }
+      return filteredTracks;
+    },
+    placeholderData: keepPreviousData,
+    enabled,
+  });
+
+export const useTracksByArtist = (
+  guid: string,
+  id: number,
+  sort: string,
+  title: string,
+  enabled = true,
+  removeDupes?: boolean
+) => {
+  const { sectionId } = store.serverConfig.peek();
+  const library = store.library.peek();
+  return useQuery(
+    tracksByArtistQuery(enabled, guid, id, library, sectionId, sort, title, removeDupes)
+  );
+};
+
 export const tracksQuery = (
   sectionId: number,
   library: Library,

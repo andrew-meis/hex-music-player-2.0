@@ -3,7 +3,7 @@ import { observer, useSelector } from '@legendapp/state/react';
 import { Avatar, Box, Typography } from '@mui/material';
 import { Track } from 'api';
 import chroma from 'chroma-js';
-import TrackRating from 'components/rating/TrackRating';
+import Rating from 'components/rating/Rating';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { createAlbumNavigate, createArtistNavigate } from 'scripts/navigate-generators';
@@ -169,10 +169,7 @@ const NowPlayingHeader: React.FC<{ activeSection: ObservablePrimitiveBaseFns<num
                   {nowPlaying.track.media[0].parts[0].streams[0].codec.toLocaleUpperCase()}
                 </Typography>
               </Box>
-              <TrackRating
-                id={nowPlaying.track.id}
-                userRating={nowPlaying.track.userRating / 2 || 0}
-              />
+              <Rating id={nowPlaying.track.id} userRating={nowPlaying.track.userRating / 2 || 0} />
               <Box flex="0 0 100px" marginLeft={2}>
                 <Typography color="text.secondary" textAlign="left" variant="subtitle2">
                   {getTrackEncodingText(nowPlaying.track)}

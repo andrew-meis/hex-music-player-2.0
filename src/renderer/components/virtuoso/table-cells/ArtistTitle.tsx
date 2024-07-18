@@ -1,5 +1,5 @@
 import { Show } from '@legendapp/state/react';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Artist } from 'api';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -11,7 +11,7 @@ const ArtistTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; artist:
   artist,
 }) => {
   return (
-    <Box>
+    <>
       <Typography variant="title1">
         <Link
           className="link"
@@ -35,7 +35,7 @@ const ArtistTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; artist:
           </Link>
         </Typography>
       </Show>
-    </Box>
+    </>
   );
 };
 

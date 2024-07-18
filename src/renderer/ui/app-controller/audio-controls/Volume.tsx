@@ -128,7 +128,7 @@ const Volume = () => {
         </Box>
       }
     >
-      <IconButton onClick={handleVolumeClick}>
+      <IconButton sx={{ width: 58 }} onClick={handleVolumeClick}>
         <Memo>
           {() => {
             const volume = persistedStore.audio.volume.get();

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import chroma, { Color } from 'chroma-js';
 import ColorThief from 'colorthief';
 import { uniq } from 'lodash';
@@ -49,7 +49,7 @@ const useColorThiefColor = ({ id, url }: UseColorsParams) =>
   useQuery({
     queryKey: [QueryKeys.COLOR, id],
     queryFn: () => getColor(url),
-    placeholderData: (previousData) => previousData,
+    placeholderData: keepPreviousData,
     staleTime: Infinity,
   });
 
@@ -57,7 +57,7 @@ const useColorThiefPalette = ({ id, url }: UseColorsParams) =>
   useQuery({
     queryKey: [QueryKeys.PALETTE, id],
     queryFn: () => getPalette(url),
-    placeholderData: (previousData) => previousData,
+    placeholderData: keepPreviousData,
     staleTime: Infinity,
   });
 

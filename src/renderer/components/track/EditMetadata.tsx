@@ -1,6 +1,6 @@
 import { Box, Chip, InputAdornment, TextField, TextFieldProps, Typography } from '@mui/material';
 import { Track } from 'api';
-import TrackRating from 'components/rating/TrackRating';
+import Rating from 'components/rating/Rating';
 import React from 'react';
 import { BiLockAlt, BiLockOpenAlt } from 'react-icons/bi';
 
@@ -76,7 +76,7 @@ const EditMetadata: React.FC<{ track: Track }> = ({ track }) => {
                 Rating
               </Typography>
               <div style={{ alignItems: 'center', display: 'flex', height: 32 }}>
-                <TrackRating id={track.id} userRating={track.userRating / 2 || 0} />
+                <Rating id={track.id} userRating={track.userRating / 2 || 0} />
               </div>
             </div>
             <EditMetadataInput

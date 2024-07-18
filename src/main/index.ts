@@ -13,7 +13,7 @@ const store = new Store();
 function createWindow() {
   // Load previous window state
   const mainWindowState = windowStateKeeper({
-    defaultHeight: 466,
+    defaultHeight: 500,
     defaultWidth: 800,
   });
 

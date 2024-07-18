@@ -31,7 +31,7 @@ export const searchAlbums = (
   enabled: boolean
 ) =>
   queryOptions({
-    queryKey: ['search-albums', query, limit],
+    queryKey: [QueryKeys.SEARCH_ALBUMS, query, limit],
     queryFn: () => library.searchAlbums(sectionId, query, limit),
     enabled,
     refetchOnWindowFocus: false,
@@ -51,7 +51,7 @@ export const searchArtists = (
   enabled: boolean
 ) =>
   queryOptions({
-    queryKey: ['search-artists', query, limit],
+    queryKey: [QueryKeys.SEARCH_ARTISTS, query, limit],
     queryFn: () => library.searchArtists(sectionId, query, limit),
     enabled,
     refetchOnWindowFocus: false,
@@ -71,7 +71,7 @@ export const searchCollections = (
   enabled: boolean
 ) =>
   queryOptions({
-    queryKey: ['search-collections', query, limit],
+    queryKey: [QueryKeys.SEARCH_COLLECTIONS, query, limit],
     queryFn: () => library.searchCollections(sectionId, query, limit),
     enabled,
     refetchOnWindowFocus: false,
@@ -90,7 +90,7 @@ export const searchGenres = (
   enabled: boolean
 ) =>
   queryOptions({
-    queryKey: ['search-genres', query],
+    queryKey: [QueryKeys.SEARCH_GENRES, query],
     queryFn: () => library.searchGenres(sectionId, query),
     enabled,
     refetchOnWindowFocus: false,
@@ -104,7 +104,7 @@ export const useSearchGenres = (query: string, enabled = true) => {
 
 export const searchPlaylists = (library: Library, query: string, limit: number, enabled: boolean) =>
   queryOptions({
-    queryKey: ['search-playlists', query, limit],
+    queryKey: [QueryKeys.SEARCH_PLAYLISTS, query, limit],
     queryFn: () => library.searchPlaylists(query, limit),
     enabled,
     refetchOnWindowFocus: false,
@@ -123,7 +123,7 @@ export const searchTracks = (
   enabled: boolean
 ) =>
   queryOptions({
-    queryKey: ['search-tracks', query, limit],
+    queryKey: [QueryKeys.SEARCH_TRACKS, query, limit],
     queryFn: () => library.searchTracks(sectionId, query, limit),
     enabled,
     refetchOnWindowFocus: false,

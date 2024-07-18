@@ -1,8 +1,7 @@
-import { ObservableObject } from '@legendapp/state';
 import { observer } from '@legendapp/state/react';
 import chroma, { Color } from 'chroma-js';
 import { useColorThiefColor, useColorThiefPalette } from 'queries';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { store } from 'state';
 
 const defaultColor = chroma('#848588');
@@ -15,9 +14,6 @@ const defaultPalette = [
 ];
 
 const Palette: React.FC<{
-  colorObservable: ObservableObject<Color>;
-  paletteObservable: ObservableObject<Color[]>;
-  src: string;
   children({
     isReady,
     color,
@@ -27,7 +23,8 @@ const Palette: React.FC<{
     color: Color;
     palette: Color[];
   }): React.ReactNode;
-}> = observer(function Palette({ colorObservable, paletteObservable, src, children }) {
+  src: string;
+}> = observer(function Palette({ children, src }) {
   const library = store.library.get();
 
   const { data: color, ...restColor } = useColorThiefColor({
@@ -39,19 +36,6 @@ const Palette: React.FC<{
     id: src,
     url: library.server.getAuthenticatedUrl(src),
   });
-
-  useEffect(() => {
-    if (color) {
-      colorObservable.set(color);
-    } else {
-      colorObservable.set(defaultColor);
-    }
-    if (palette) {
-      paletteObservable.set(palette);
-    } else {
-      paletteObservable.set(defaultPalette);
-    }
-  }, [color, palette]);
 
   if (restColor.isLoading || restPalette.isLoading) {
     return null;

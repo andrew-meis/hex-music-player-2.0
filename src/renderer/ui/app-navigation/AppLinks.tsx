@@ -1,5 +1,7 @@
 import { reactive } from '@legendapp/state/react';
 import { Box, IconButton } from '@mui/material';
+import { Album, Artist, PlaylistItem, Track } from 'api';
+import { queueActions } from 'features/queue';
 import React from 'react';
 import { useDrop } from 'react-dnd';
 import { BsViewList } from 'react-icons/bs';
@@ -19,8 +21,8 @@ const QueueLink: React.FC<{
   const location = useLocation();
   const [{ canDrop, isOver }, drop] = useDrop(
     () => ({
-      accept: [DragTypes.TRACK],
-      drop: (item) => console.log(item),
+      accept: [DragTypes.ALBUM, DragTypes.ARTIST, DragTypes.PLAYLIST_ITEM, DragTypes.TRACK],
+      drop: (items: (Album | Artist | PlaylistItem | Track)[]) => queueActions.addToQueue(items),
       collect: (monitor) => ({ canDrop: monitor.canDrop(), isOver: monitor.isOver() }),
     }),
     []

@@ -120,7 +120,7 @@ const Table: React.FC<{
                 {...props}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <td className={cell.column.id} key={cell.id} style={{ padding: '0 8px' }}>
+                  <td className={cell.column.id} key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}

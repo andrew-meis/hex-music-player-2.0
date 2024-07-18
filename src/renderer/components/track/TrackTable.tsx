@@ -39,7 +39,7 @@ const TrackTable: React.FC<{
           {table.getRowModel().rows.map((row, index) => (
             <TrackRow index={index} key={row.id} state={state}>
               {row.getVisibleCells().map((cell) => (
-                <td className={cell.column.id} key={cell.id} style={{ padding: '0 8px' }}>
+                <td className={cell.column.id} key={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}

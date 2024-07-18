@@ -60,7 +60,7 @@ const BackTo: React.FC<{ backTo: PlayQueueItem[] }> = ({ backTo }) => {
             return (
               <BackToRow index={index} state={selectObservable} {...props}>
                 {row.getVisibleCells().map((cell) => (
-                  <td className={cell.column.id} key={cell.id} style={{ padding: '0 8px' }}>
+                  <td className={cell.column.id} key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -130,7 +130,7 @@ const UpNext: React.FC<{ upNext: PlayQueueItem[] }> = ({ upNext }) => {
                 {...props}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <td className={cell.column.id} key={cell.id} style={{ padding: '0 8px' }}>
+                  <td className={cell.column.id} key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}

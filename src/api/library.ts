@@ -568,7 +568,7 @@ export default class Library {
     return parsePlaylistContainer(response);
   }
 
-  async playlistTracks(id: number, searchParams: URLSearchParams = new URLSearchParams()) {
+  async playlistItems(id: number, searchParams: URLSearchParams = new URLSearchParams()) {
     const path = `/playlists/${id}/items`;
     const response = await this.fetch(path, { searchParams });
     return parsePlaylist(response);

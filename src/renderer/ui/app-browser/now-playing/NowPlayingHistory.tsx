@@ -195,6 +195,7 @@ const Table: React.FC<{ history: HistoryContainer }> = ({ history }) => {
           marginBottom: 16,
           overscrollBehavior: 'contain',
           width: '100%',
+          zIndex: 100,
         }}
         totalCount={rows.length}
       />

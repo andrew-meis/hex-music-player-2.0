@@ -41,7 +41,13 @@ const ArtistTabs: React.FC<{
 
   return (
     <TabContext value={searchParams.get('tabIndex')!}>
-      <Box>
+      <Box
+        sx={(theme) => ({
+          background: theme.palette.background.default,
+          position: 'relative',
+          zIndex: 2,
+        })}
+      >
         <TabList
           scrollButtons
           sx={{
@@ -76,7 +82,15 @@ const ArtistTabs: React.FC<{
           ))}
         </TabList>
       </Box>
-      <Box marginX={4} maxWidth={1}>
+      <Box
+        marginX={4}
+        maxWidth={1}
+        sx={(theme) => ({
+          background: theme.palette.background.default,
+          position: 'relative',
+          zIndex: 2,
+        })}
+      >
         <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="0">
           <HomeTab
             artist={artist}

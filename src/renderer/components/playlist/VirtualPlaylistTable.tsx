@@ -1,25 +1,25 @@
 import { ClickAwayListener } from '@mui/material';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { Track } from 'api';
-import Scroller from 'components/virtuoso/Scroller';
+import { PlaylistItem } from 'api';
 import { selectActions } from 'features/select';
 import React, { useMemo } from 'react';
 import { ItemProps, TableProps, TableVirtuoso } from 'react-virtuoso';
 import { store } from 'state';
 import { SelectObservable, SelectObservables } from 'typescript';
 
-import { trackColumns } from './columns';
-import TrackRow from './TrackRow';
+import { playlistColumns } from './columns';
+import PlaylistItemRow from './PlaylistItemRow';
 
-const VirtualTrackTable: React.FC<{
-  tracks: Track[];
+const VirtualPlaylistTable: React.FC<{
   activeMenu: SelectObservables;
+  items: PlaylistItem[];
   state: SelectObservable;
-}> = ({ tracks, activeMenu, state }) => {
-  const columns = useMemo(() => trackColumns, []);
+  viewport: HTMLDivElement | undefined;
+}> = ({ activeMenu, items, state, viewport }) => {
+  const columns = useMemo(() => playlistColumns, []);
 
   const table = useReactTable({
-    data: tracks,
+    data: items,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -39,7 +39,6 @@ const VirtualTrackTable: React.FC<{
     <ClickAwayListener onClickAway={(event) => selectActions.handleClickAway(state, event)}>
       <TableVirtuoso
         components={{
-          Scroller,
           Table: ({ style, ...props }: TableProps) => (
             <table
               {...props}
@@ -50,21 +49,22 @@ const VirtualTrackTable: React.FC<{
               }}
             />
           ),
-          TableRow: (props: ItemProps<Track>) => {
+          TableRow: (props: ItemProps<PlaylistItem>) => {
             const index = props['data-index'];
             const row = rows[index];
 
             return (
-              <TrackRow index={index} state={state} {...props}>
+              <PlaylistItemRow index={index} state={state} {...props}>
                 {row.getVisibleCells().map((cell) => (
                   <td className={cell.column.id} key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
-              </TrackRow>
+              </PlaylistItemRow>
             );
           },
         }}
+        customScrollParent={viewport}
         isScrolling={handleScrollState}
         style={{
           height: 'calc(100% - 16px)',
@@ -75,11 +75,11 @@ const VirtualTrackTable: React.FC<{
         totalCount={rows.length}
         onMouseOver={() => {
           store.ui.menus.activeMenu.set(activeMenu);
-          state.items.set(tracks);
+          state.items.set(items);
         }}
       />
     </ClickAwayListener>
   );
 };
 
-export default VirtualTrackTable;
+export default VirtualPlaylistTable;

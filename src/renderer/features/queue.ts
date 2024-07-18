@@ -1,9 +1,9 @@
-import { Album, Artist, Playlist, Track } from 'api';
+import { Album, Artist, Playlist, PlaylistItem, Track } from 'api';
 import ky from 'ky';
 import { persistedStore, store } from 'state';
 
 const addToQueue = async (
-  newItems: (Album | Artist | Track)[] | Playlist,
+  newItems: (Album | Artist | PlaylistItem | Track)[] | Playlist,
   after = 0,
   end = false,
   next = false
@@ -11,7 +11,7 @@ const addToQueue = async (
   const library = store.library.peek();
   let uri: string;
   if (Array.isArray(newItems)) {
-    const ids = newItems.map((track) => track.id).join(',');
+    const ids = newItems.map((item) => item.id).join(',');
     uri = library.buildLibraryURI(
       library.server.account.client.identifier,
       `/library/metadata/${ids}`

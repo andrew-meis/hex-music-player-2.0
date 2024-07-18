@@ -35,6 +35,7 @@ export type { Playlist, PlaylistContainer, PlaylistItem } from './types/playlist
 export {
   isPlaylist,
   isPlaylistItem,
+  isRegularPlaylistItem,
   isSmartPlaylistItem,
   parsePlaylistContainer,
 } from './types/playlist';

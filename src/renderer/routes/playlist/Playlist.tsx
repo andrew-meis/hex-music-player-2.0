@@ -1,22 +1,21 @@
-import { Typography } from '@mui/material';
+import { Show } from '@legendapp/state/react';
+import { Box, Typography } from '@mui/material';
+import VirtualPlaylistTable from 'components/playlist/VirtualPlaylistTable';
+import Scroller from 'components/scroller/Scroller';
+import { usePlaylistItems } from 'queries';
 import React, { useEffect } from 'react';
-import { createSearchParams, LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
-import RouteContainer from 'routes/RouteContainer';
-import { store } from 'state';
+import { createSearchParams, useLoaderData } from 'react-router-dom';
+import { allSelectObservables, store } from 'state';
+import { SelectObservables } from 'typescript';
 
-export const playlistLoader = async ({ params, request }: LoaderFunctionArgs) => {
-  const { id } = params;
-  const url = new URL(request.url);
-  const title = url.searchParams.get('title');
-  if (!id || !title) {
-    throw new Error('Missing route loader data');
-  }
-  return { id: parseInt(id, 10), title };
-};
+import { playlistLoader } from './loader';
 
 const Playlist: React.FC = () => {
   const { id, title } = useLoaderData() as Awaited<ReturnType<typeof playlistLoader>>;
 
+  const selectObservable = allSelectObservables[SelectObservables.ROUTE_PLAYLIST];
+
+  const { data } = usePlaylistItems(id);
   useEffect(() => {
     store.ui.breadcrumbs.set([
       { title: 'Home', to: { pathname: '/' } },
@@ -38,11 +37,23 @@ const Playlist: React.FC = () => {
   }, []);
 
   return (
-    <RouteContainer>
-      <Typography paddingBottom={2} variant="h1">
-        {id}
-      </Typography>
-    </RouteContainer>
+    <Scroller sx={{ height: '100%' }}>
+      {({ viewport }) => (
+        <Box marginX={4}>
+          <Typography variant="h1">{title}</Typography>
+          <Show ifReady={data}>
+            {(value) => (
+              <VirtualPlaylistTable
+                activeMenu={SelectObservables.ROUTE_PLAYLIST}
+                items={value?.items || []}
+                state={selectObservable}
+                viewport={viewport}
+              />
+            )}
+          </Show>
+        </Box>
+      )}
+    </Scroller>
   );
 };
 

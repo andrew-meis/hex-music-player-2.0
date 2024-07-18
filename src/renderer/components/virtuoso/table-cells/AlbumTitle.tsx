@@ -1,5 +1,5 @@
 import { Show } from '@legendapp/state/react';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Album } from 'api';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -11,7 +11,7 @@ const AlbumTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; album: A
   album,
 }) => {
   return (
-    <Box>
+    <>
       <Typography variant="title1">
         <Link
           className="link"
@@ -33,7 +33,7 @@ const AlbumTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; album: A
           </Link>
         </Typography>
       </Show>
-    </Box>
+    </>
   );
 };
 

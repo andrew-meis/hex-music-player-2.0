@@ -1,5 +1,5 @@
 import { Show } from '@legendapp/state/react';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Collection } from 'api';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -11,7 +11,7 @@ const CollectionTitle: React.FC<{
   collection: Collection;
 }> = ({ showSubtext = true, showType = false, collection }) => {
   return (
-    <Box>
+    <>
       <Typography variant="title1">
         <Link
           className="link"
@@ -29,7 +29,7 @@ const CollectionTitle: React.FC<{
           {collection.childCount > 1 || collection.childCount === 0 ? 'items' : 'item'}
         </Typography>
       </Show>
-    </Box>
+    </>
   );
 };
 

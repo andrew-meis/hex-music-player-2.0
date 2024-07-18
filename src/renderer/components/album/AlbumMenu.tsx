@@ -11,7 +11,7 @@ import { MdMusicOff } from 'react-icons/md';
 import { RiShuffleFill } from 'react-icons/ri';
 import { useSearchParams } from 'react-router-dom';
 import { persistedStore, store } from 'state';
-import { QueryKeys, ReleaseFilters } from 'typescript';
+import { CustomFilterKeys, ReleaseFilters } from 'typescript';
 
 const AlbumMenu: React.FC<{ albums: Album[] }> = ({ albums }) => {
   const queryClient = useQueryClient();
@@ -58,9 +58,7 @@ const AlbumMenu: React.FC<{ albums: Album[] }> = ({ albums }) => {
     }
     await queryClient.invalidateQueries({
       predicate: (query) =>
-        [QueryKeys.ARTIST_APPEARANCES, QueryKeys.ARTIST_TRACKS].includes(
-          query.queryKey[0] as QueryKeys
-        ),
+        Object.values(CustomFilterKeys).includes(query.queryKey[0] as CustomFilterKeys),
     });
     setTimeout(() => store.ui.menus.anchorPosition.set(null), 300);
   };

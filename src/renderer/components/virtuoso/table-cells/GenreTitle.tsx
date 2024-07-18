@@ -1,5 +1,5 @@
 import { Show } from '@legendapp/state/react';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Genre } from 'api';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -11,7 +11,7 @@ const GenreTitle: React.FC<{
   genre: Genre;
 }> = ({ showSubtext = true, showType = false, genre }) => {
   return (
-    <Box>
+    <>
       <Typography variant="title1">
         <Link
           className="link"
@@ -24,7 +24,7 @@ const GenreTitle: React.FC<{
       <Show if={showSubtext}>
         <Typography variant="title2">{showType ? `${genre._type}` : ''}</Typography>
       </Show>
-    </Box>
+    </>
   );
 };
 

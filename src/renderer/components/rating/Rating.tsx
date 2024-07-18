@@ -4,12 +4,11 @@ import useMouseLeave from 'hooks/useMouseLeave';
 import React, { useEffect, useState } from 'react';
 import { BsDot, BsStarFill } from 'react-icons/bs';
 import { store } from 'state';
-import { QueryKeys } from 'typescript';
+import { TrackKeys } from 'typescript';
 
 const invalidateTrackQueries = async (queryClient: QueryClient) =>
   await queryClient.invalidateQueries({
-    predicate: (query) =>
-      [QueryKeys.ALBUM_TRACKS, QueryKeys.PLAYQUEUE].includes(query.queryKey[0] as QueryKeys),
+    predicate: (query) => Object.values(TrackKeys).includes(query.queryKey[0] as TrackKeys),
   });
 
 const Rating: React.FC<

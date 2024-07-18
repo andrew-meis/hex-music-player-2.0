@@ -2,7 +2,7 @@ import { observer, useUnmount } from '@legendapp/state/react';
 import { SORT_TRACKS_BY_PLAYS } from 'api';
 import VirtualTrackTable from 'components/track/VirtualTrackTable';
 import { selectActions } from 'features/select';
-import { useArtistTracks } from 'queries';
+import { useTracksByArtist } from 'queries';
 import React, { useMemo } from 'react';
 import { allSelectObservables, store } from 'state';
 import { SelectObservables } from 'typescript';
@@ -13,7 +13,7 @@ const MoreByArtist: React.FC = observer(function SimilarMoreByArtist() {
   const tabIsAnimating = store.ui.nowPlaying.tabIsAnimating.get();
   const nowPlaying = store.queue.nowPlaying.get();
 
-  const { data: artistTracks } = useArtistTracks(
+  const { data: artistTracks } = useTracksByArtist(
     nowPlaying.track.grandparentGuid,
     nowPlaying.track.grandparentId,
     SORT_TRACKS_BY_PLAYS.desc,

@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import PlaylistCard from 'components/playlist/PlaylistCard';
 import Scroller from 'components/scroller/Scroller';
 import { List } from 'components/virtuoso/CustomGridComponents';
@@ -61,8 +61,8 @@ const Playlists: React.FC = () => {
     <Scroller style={{ height: '100%' }}>
       {({ viewport }) => {
         return (
-          <>
-            <Typography marginX={4} paddingBottom={2} variant="h1">
+          <Box marginX={4}>
+            <Typography paddingBottom={2} variant="h1">
               {section}
             </Typography>
             <VirtuosoGrid
@@ -73,8 +73,6 @@ const Playlists: React.FC = () => {
                 <PlaylistCard index={index} playlist={data} state={selectObservable} />
               )}
               style={{
-                marginLeft: 32,
-                marginRight: 32,
                 minHeight: 'var(--content-height)',
                 scrollbarWidth: 'none',
               }}
@@ -84,7 +82,7 @@ const Playlists: React.FC = () => {
                 selectObservable.items.set(playlistsData.playlists);
               }}
             />
-          </>
+          </Box>
         );
       }}
     </Scroller>

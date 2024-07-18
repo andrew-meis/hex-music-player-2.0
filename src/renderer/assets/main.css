@@ -129,8 +129,8 @@ tr.history-row:hover {
   }
 }
 
-td.index,
-th.index {
+td[class$="index"],
+th[class$="index"] {
   overflow: hidden;
   text-align: left;
   text-overflow: ellipsis;
@@ -138,22 +138,35 @@ th.index {
   width: 48px;
 }
 
-td.thumb,
-th.thumb,
-td.track_thumb,
-th.track_thumb {
-  padding: 0 0 0 8px !important;
+td[class$="thumb"],
+th[class$="thumb"] {
+  padding: 0 8px;
   text-align: center;
   width: 48px;
 }
 
-td.viewedAt,
-th.viewedAt {
+td[class$="viewedAt"],
+th[class$="viewedAt"] {
   overflow: hidden;
   text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: -webkit-fill-available;
+}
+
+td[class$="title"],
+th[class$="title"] {
+  padding: 0 8px 0 0;
+  width: -webkit-fill-available;
+}
+
+td[class$="userRating"],
+th[class$="userRating"] {
+  display: flex;
+  flex-direction: column;
+  padding: 0 8px 0 0;
+  text-align: right;
+  width: 76px;
 }
 
 .corner {

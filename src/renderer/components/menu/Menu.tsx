@@ -6,14 +6,17 @@ import {
   isAlbum,
   isArtist,
   isPlaylist,
+  isPlaylistItem,
   isPlayQueueItem,
   isTrack,
   Playlist,
+  PlaylistItem,
   PlayQueueItem,
   Track,
 } from 'api';
 import AlbumMenu from 'components/album/AlbumMenu';
 import ArtistMenu from 'components/artist/ArtistMenu';
+import PlaylistItemMenu from 'components/playlist/PlaylistItemMenu';
 import PlaylistMenu from 'components/playlist/PlaylistMenu';
 import QueueMenu from 'components/queue/QueueMenu';
 import TrackMenu from 'components/track/TrackMenu';
@@ -56,6 +59,9 @@ const Menu: React.FC = observer(function Menu() {
       )}
       {!isEmpty(items) && items.every((item) => isPlaylist(item)) && (
         <PlaylistMenu playlists={items as Playlist[]} />
+      )}
+      {!isEmpty(items) && items.every((item) => isPlaylistItem(item)) && (
+        <PlaylistItemMenu items={items as PlaylistItem[]} />
       )}
       {!isEmpty(items) && items.every((item) => isPlayQueueItem(item)) && (
         <QueueMenu items={items as PlayQueueItem[]} />

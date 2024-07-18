@@ -5,7 +5,6 @@ import chroma from 'chroma-js';
 import CardBox from 'components/card/CardBox';
 import CardFab from 'components/card/CardFab';
 import { playbackActions } from 'features/playback';
-import { useColorThiefColor } from 'queries';
 import React from 'react';
 import { BsMusicNoteList } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
@@ -31,12 +30,18 @@ const PlaylistCard: React.FC<{ playlist: Playlist; index: number; state: SelectO
       );
     });
 
-    const isSelected = useSelector(() => state.selectedIndexes.get().includes(index));
-
-    const { data: color } = useColorThiefColor({
-      id: thumbSrc || '',
-      url: `${thumbSrc}&extra=1` || '',
+    const thumbBlurred = useSelector(() => {
+      return library.resizeImage(
+        new URLSearchParams({
+          url: playlist.thumb || playlist.composite,
+          width: '40',
+          height: '40',
+          blur: '10',
+        })
+      );
     });
+
+    const isSelected = useSelector(() => state.selectedIndexes.get().includes(index));
 
     const handleContextMenu = (event: React.MouseEvent) => {
       event.preventDefault();
@@ -70,7 +75,11 @@ const PlaylistCard: React.FC<{ playlist: Playlist; index: number; state: SelectO
         >
           <div
             style={{
-              backgroundColor: (color || defaultColor).alpha(0.8).css(),
+              backgroundColor: defaultColor.css(),
+              backgroundImage: `url(${thumbBlurred})`,
+              backgroundPosition: 'center top',
+              backgroundSize: 'cover',
+              opacity: 0.75,
               width: 'calc(100% - 8px)',
               height: 6,
               position: 'relative',
@@ -82,7 +91,11 @@ const PlaylistCard: React.FC<{ playlist: Playlist; index: number; state: SelectO
           />
           <div
             style={{
-              backgroundColor: (color || defaultColor).alpha(0.5).css(),
+              backgroundColor: defaultColor.css(),
+              backgroundImage: `url(${thumbBlurred})`,
+              backgroundPosition: 'center top',
+              backgroundSize: 'cover',
+              opacity: 0.5,
               width: 'calc(100% - 16px)',
               height: 4,
               position: 'relative',

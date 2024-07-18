@@ -1,5 +1,5 @@
 import { observer, Show } from '@legendapp/state/react';
-import { Album, Artist, isPlayQueueItem, PlayQueueItem, Track } from 'api';
+import { Album, Artist, isPlayQueueItem, PlaylistItem, PlayQueueItem, Track } from 'api';
 import TableRow from 'components/row/TableRow';
 import { queueActions } from 'features/queue';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -21,21 +21,27 @@ const UpNextRow: React.FC<
 
   const [{ isOver }, drop] = useDrop(
     () => ({
-      accept: [DragTypes.ALBUM, DragTypes.ARTIST, DragTypes.PLAYQUEUE_ITEM, DragTypes.TRACK],
+      accept: [
+        DragTypes.ALBUM,
+        DragTypes.ARTIST,
+        DragTypes.PLAYLIST_ITEM,
+        DragTypes.PLAYQUEUE_ITEM,
+        DragTypes.TRACK,
+      ],
       collect: (monitor) => ({ isOver: monitor.isOver() }),
-      drop: (item: (PlayQueueItem | Track)[]) => {
+      drop: (items: (Album | Artist | PlaylistItem | PlayQueueItem | Track)[]) => {
         const currentQueue = store.queue.currentQueue.peek();
         const currentIndex = store.queue.currentIndex.peek();
         const target = currentQueue.items.slice(currentIndex)[store.ui.queue.isOverIndex.peek()];
         if (!target) return;
-        if (item.every((value) => isPlayQueueItem(value))) {
+        if (items.every((value) => isPlayQueueItem(value))) {
           queueActions.moveWithinQueue(
-            (item as PlayQueueItem[]).map((value) => value.id),
+            items.map((value) => value.id),
             target.id
           );
           return;
         }
-        queueActions.addToQueue(item as (Album | Artist | Track)[], target.id);
+        queueActions.addToQueue(items as (Artist | Album | Track | PlaylistItem)[], target.id);
       },
       hover: (_item, monitor) => {
         const clientOffset = monitor.getClientOffset();

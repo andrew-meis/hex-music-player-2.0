@@ -1,5 +1,5 @@
 import { Show } from '@legendapp/state/react';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Track } from 'api';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -15,7 +15,7 @@ const TrackTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; track: T
   track,
 }) => {
   return (
-    <Box>
+    <>
       <Typography variant="title1">
         <Link
           className="link"
@@ -45,7 +45,7 @@ const TrackTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; track: T
           </Link>
         </Typography>
       </Show>
-    </Box>
+    </>
   );
 };
 

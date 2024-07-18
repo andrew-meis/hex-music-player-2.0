@@ -1,20 +1,23 @@
-export { albumsQuery, default as useAlbums } from './useAlbums';
 export {
-  artistAppearancesQuery,
-  artistQuery,
-  artistsQuery,
-  artistTracksQuery,
-  useArtist,
-  useArtistAppearances,
-  default as useArtists,
-  useArtistTracks,
-} from './useArtists';
+  albumsArtistAppearsOn,
+  albumsQuery,
+  default as useAlbums,
+  useAlbumsArtistAppearsOn,
+} from './useAlbums';
+export { artistQuery, artistsQuery, useArtist, default as useArtists } from './useArtists';
 export { collectionsQuery, default as useCollections } from './useCollections';
 export { useColorThiefColor, useColorThiefPalette } from './useColorThief';
 export { genresQuery, default as useGenres } from './useGenres';
 export { historyQuery, default as useHistory } from './useHistory';
 export { lyricsQuery, default as useLyrics } from './useLyrics';
-export { playlistsQuery, default as usePlaylists } from './usePlaylists';
+export {
+  playlistItemsQuery,
+  playlistQuery,
+  playlistsQuery,
+  usePlaylist,
+  usePlaylistItems,
+  default as usePlaylists,
+} from './usePlaylists';
 export { queueQuery, default as useQueue } from './useQueue';
 export {
   searchAlbums,
@@ -33,6 +36,7 @@ export {
   useSearchTracks,
 } from './useSearch';
 export {
+  tracksByArtistQuery,
   tracksQuery,
   useLastfmMatchTracks,
   useRecentTracks,
@@ -40,5 +44,6 @@ export {
   useSimilarTracks,
   useTopTracks,
   default as useTracks,
+  useTracksByArtist,
 } from './useTracks';
 export { userQuery, default as useUser } from './useUser';

@@ -1,5 +1,5 @@
 import { Show } from '@legendapp/state/react';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Playlist } from 'api';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -11,7 +11,7 @@ const PlaylistTitle: React.FC<{
   playlist: Playlist;
 }> = ({ showSubtext = true, showType = false, playlist }) => {
   return (
-    <Box>
+    <>
       <Typography variant="title1">
         <Link
           className="link"
@@ -29,7 +29,7 @@ const PlaylistTitle: React.FC<{
           {playlist.leafCount > 1 || playlist.leafCount === 0 ? 'tracks' : 'track'}
         </Typography>
       </Show>
-    </Box>
+    </>
   );
 };
 

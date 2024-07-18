@@ -1,42 +1,67 @@
-export enum QueryKeys {
+export enum AlbumKeys {
   ALBUM = 'album',
-  ALBUM_QUICK = 'album-quick',
-  ALBUM_TRACKS = 'album-tracks',
   ALBUMS = 'albums',
-  ALBUMS_BY_GENRE = 'albums-by-genre',
-  ALL_ALBUMS = 'all-albums',
-  ALL_ARTISTS = 'all-artists',
-  ALL_TRACKS = 'all-tracks',
+  ALBUMS_ARTIST_APPEARS_ON = 'albums-artist-appears-on', // uses custom filters
+  SEARCH = 'search', // includes albums, artists, collections, genres, playlists, and tracks
+  SEARCH_ALBUMS = 'search-albums',
+}
+
+export enum ArtistKeys {
   ARTIST = 'artist',
-  ARTIST_APPEARANCES = 'artist-appearances',
-  ARTIST_TRACKS = 'artist-tracks',
   ARTISTS = 'artists',
-  ARTISTS_BY_GENRE = 'artists-by-genre',
-  COLLECTIONS = 'collections',
-  COLOR = 'color',
-  GENRES = 'genres',
-  HISTORY = 'history',
+  SEARCH = 'search', // includes albums, artists, collections, genres, playlists, and tracks
+  SEARCH_ARTISTS = 'search-artists',
+}
+
+export enum CustomFilterKeys {
+  ALBUMS_ARTIST_APPEARS_ON = 'albums-artist-appears-on', // uses custom filters
+  TRACKS_BY_ARTIST = 'tracks-by-artist', // uses custom filters
+}
+
+export enum LastFMQueryKeys {
   LASTFM_ARTIST = 'lastfm-artist',
   LASTFM_MATCH_TRACKS = 'lastfm-match-tracks',
   LASTFM_SEARCH = 'lastfm-search',
   LASTFM_SIMILAR = 'lastfm-similar',
   LASTFM_TAG = 'lastfm-tag',
   LASTFM_TRACK = 'lastfm-track',
-  LYRICS = 'lyrics',
-  PALETTE = 'palette',
-  PLAYLIST = 'playlist',
+}
+
+export enum TrackKeys {
+  ALBUM_TRACKS = 'album-tracks',
   PLAYLIST_ITEMS = 'playlist-items',
-  PLAYLISTS = 'playlists',
   PLAYQUEUE = 'play-queue',
   RECENT_TRACKS = 'recent-tracks',
   RELATED_TRACKS = 'related-tracks',
-  SEARCH = 'search',
-  SEARCH_PAGE = 'search-page',
+  SEARCH = 'search', // includes albums, artists, collections, genres, playlists, and tracks
   SEARCH_TRACKS = 'search-tracks',
   SIMILAR_TRACKS = 'similar-tracks',
-  TOP = 'top',
   TRACK = 'track',
   TRACKS = 'tracks',
-  TRACKS_BY_GENRE = 'tracks-by-genre',
+  TRACKS_BY_ARTIST = 'tracks-by-artist', // uses custom filters
+}
+
+export enum OtherQueryKeys {
+  COLLECTIONS = 'collections',
+  COLOR = 'color',
+  GENRES = 'genres',
+  HISTORY = 'history',
+  LYRICS = 'lyrics',
+  PALETTE = 'palette',
+  PLAYLIST = 'playlist',
+  PLAYLISTS = 'playlists',
+  SEARCH_COLLECTIONS = 'search-collections',
+  SEARCH_GENRES = 'search-genres',
+  SEARCH_PLAYLISTS = 'search-playlists',
   USER = 'user',
 }
+
+export const QueryKeys = {
+  ...AlbumKeys,
+  ...ArtistKeys,
+  ...CustomFilterKeys,
+  ...LastFMQueryKeys,
+  ...TrackKeys,
+  ...OtherQueryKeys,
+};
+export type QueryKeys = typeof QueryKeys;
