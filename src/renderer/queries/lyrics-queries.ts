@@ -126,9 +126,6 @@ export const lyricsQuery = (track: Track) => ({
       }
     }
   },
-  refetchOnMount: false,
-  refetchOnReconnect: false,
-  refetchOnWindowFocus: false,
   retry: false,
   staleTime: Infinity,
 });

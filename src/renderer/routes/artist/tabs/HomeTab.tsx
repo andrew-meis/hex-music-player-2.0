@@ -69,7 +69,7 @@ const HomeTab: React.FC<{
   const slicedRecentTracks = useMemo(() => recentTracks?.slice(0, 5), [recentTracks]);
 
   return (
-    <Box>
+    <Box minHeight="var(--content-height)">
       <Box
         alignItems="center"
         display="flex"

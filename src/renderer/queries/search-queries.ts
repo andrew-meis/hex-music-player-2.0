@@ -8,7 +8,6 @@ export const searchQuery = (library: Library, query: string, limit: number) =>
     queryKey: [QueryKeys.SEARCH, query, limit],
     queryFn: () => library.searchAll(query, limit),
     enabled: query.length > 1,
-    refetchOnWindowFocus: false,
     select: (data: HubContainer) => {
       if (!data.hubs) return [];
       return data.hubs
@@ -34,7 +33,6 @@ export const searchAlbums = (
     queryKey: [QueryKeys.SEARCH_ALBUMS, query, limit],
     queryFn: () => library.searchAlbums(sectionId, query, limit),
     enabled,
-    refetchOnWindowFocus: false,
   });
 
 export const useSearchAlbums = (query: string, limit: number, enabled = true) => {
@@ -54,7 +52,6 @@ export const searchArtists = (
     queryKey: [QueryKeys.SEARCH_ARTISTS, query, limit],
     queryFn: () => library.searchArtists(sectionId, query, limit),
     enabled,
-    refetchOnWindowFocus: false,
   });
 
 export const useSearchArtists = (query: string, limit: number, enabled = true) => {
@@ -74,7 +71,6 @@ export const searchCollections = (
     queryKey: [QueryKeys.SEARCH_COLLECTIONS, query, limit],
     queryFn: () => library.searchCollections(sectionId, query, limit),
     enabled,
-    refetchOnWindowFocus: false,
   });
 
 export const useSearchCollections = (query: string, limit: number, enabled = true) => {
@@ -93,7 +89,6 @@ export const searchGenres = (
     queryKey: [QueryKeys.SEARCH_GENRES, query],
     queryFn: () => library.searchGenres(sectionId, query),
     enabled,
-    refetchOnWindowFocus: false,
   });
 
 export const useSearchGenres = (query: string, enabled = true) => {
@@ -107,7 +102,6 @@ export const searchPlaylists = (library: Library, query: string, limit: number, 
     queryKey: [QueryKeys.SEARCH_PLAYLISTS, query, limit],
     queryFn: () => library.searchPlaylists(query, limit),
     enabled,
-    refetchOnWindowFocus: false,
   });
 
 export const useSearchPlaylists = (query: string, limit: number, enabled = true) => {
@@ -126,7 +120,6 @@ export const searchTracks = (
     queryKey: [QueryKeys.SEARCH_TRACKS, query, limit],
     queryFn: () => library.searchTracks(sectionId, query, limit),
     enabled,
-    refetchOnWindowFocus: false,
   });
 
 export const useSearchTracks = (query: string, limit: number, enabled = true) => {

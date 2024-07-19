@@ -1,9 +1,11 @@
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Tab, Typography } from '@mui/material';
 import { Album, Artist, Track } from 'api';
+import { Color } from 'chroma-js';
 import React, { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+import AboutTab from './tabs/AboutTab';
 import HomeTab from './tabs/HomeTab';
 import ReleaseTab from './tabs/ReleaseTab';
 
@@ -22,12 +24,13 @@ const tabIndexes = {
 
 const ArtistTabs: React.FC<{
   artist: Artist;
+  color: Color;
   mostPlayedTracks: Track[];
   popularTracks: Track[];
   recentTracks: Track[];
   releases: Record<string, Album[]>;
   viewport: HTMLDivElement | undefined;
-}> = ({ artist, mostPlayedTracks, popularTracks, recentTracks, releases, viewport }) => {
+}> = ({ artist, color, mostPlayedTracks, popularTracks, recentTracks, releases, viewport }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const tabs = useMemo(() => {
@@ -124,7 +127,7 @@ const ArtistTabs: React.FC<{
           <ReleaseTab releases={releases['Appears On']} viewport={viewport} />
         </TabPanel>
         <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="9">
-          <Box minHeight="var(--content-height)" />
+          <AboutTab artist={artist} color={color} />
         </TabPanel>
       </Box>
     </TabContext>

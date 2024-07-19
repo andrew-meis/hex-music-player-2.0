@@ -51,7 +51,11 @@ keys.forEach((key) => {
   createSelectObservable(SelectObservables[key]);
 });
 
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { refetchOnWindowFocus: false, refetchOnMount: false, refetchOnReconnect: false },
+  },
+});
 
 const router = createHashRouter([
   {

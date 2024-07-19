@@ -6,7 +6,6 @@ import { QueryKeys } from 'typescript';
 export const historyQuery = (id: number, library: Library, sectionId: number) => ({
   queryKey: [QueryKeys.HISTORY, id],
   queryFn: () => library.history(id, sectionId),
-  refetchOnWindowFocus: false,
 });
 
 export const useHistory = (id: number) => {

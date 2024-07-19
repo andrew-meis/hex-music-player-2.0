@@ -8,8 +8,6 @@ export const queueQuery = (library: Library, id: number, center: number | undefi
     queryKey: [QueryKeys.PLAYQUEUE, id],
     queryFn: () => library.playQueue(id, center, 0),
     enabled: id !== 0,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
   });
 
 export const useQueue = (id: number, center?: number) => {

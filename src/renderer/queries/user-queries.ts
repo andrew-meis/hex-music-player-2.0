@@ -6,7 +6,6 @@ import { QueryKeys } from 'typescript';
 export const userQuery = (account: Account) => ({
   queryKey: [QueryKeys.USER],
   queryFn: () => account.info(),
-  refetchOnWindowFocus: false,
 });
 
 export const useUser = () => {

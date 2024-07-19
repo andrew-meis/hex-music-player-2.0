@@ -14,7 +14,7 @@ const ReleaseTab: React.FC<{
   const selectObservable = allSelectObservables[SelectObservables.ROUTE_ARTIST_RELEASES];
 
   return (
-    <Box>
+    <Box minHeight="var(--content-height)">
       <Box height={32} paddingBottom={2} paddingTop={3} />
       <VirtuosoGrid
         components={{ List, Item }}
@@ -24,7 +24,6 @@ const ReleaseTab: React.FC<{
           <AlbumCard album={data} index={index} state={selectObservable} />
         )}
         style={{
-          minHeight: 'var(--content-height)',
           scrollbarWidth: 'none',
         }}
         totalCount={releases.length}

@@ -98,9 +98,6 @@ const Login: React.FC = () => {
       )!;
     },
     enabled: !!selectedServer,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
 
   const { data: librarySections } = useQuery({
@@ -113,9 +110,6 @@ const Login: React.FC = () => {
       return sectionContainer.sections.filter((section) => section.type === 'artist');
     },
     enabled: !!serverConnection,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
 
   useEffect(() => {

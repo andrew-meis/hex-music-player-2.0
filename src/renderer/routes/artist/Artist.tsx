@@ -297,6 +297,7 @@ const Artist: React.FC = () => {
                   <Banner artist={artist} color={color} viewport={viewport} />
                   <ArtistTabs
                     artist={artist}
+                    color={color}
                     mostPlayedTracks={mostPlayedTracks || []}
                     popularTracks={artist.popularTracks}
                     recentTracks={recentTracks}
