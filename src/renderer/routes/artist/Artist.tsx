@@ -14,7 +14,8 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { createSearchParams, useLoaderData, useLocation } from 'react-router-dom';
 import { store } from 'state';
 
-import ArtistTabs from './ArtistTabs';
+import ArtistNavbar from './ArtistNavbar';
+import ArtistOptions from './drawers/ArtistOptions';
 import { artistLoader } from './loader';
 
 const getMeta = (url: string) =>
@@ -280,37 +281,40 @@ const Artist: React.FC = () => {
   if (isEmpty(releases) || !recentTracks || !mostPlayedTracks) return null;
 
   return (
-    <Scroller sx={{ height: '100%' }}>
-      {({ viewport }) => {
-        const [artist] = artistData!.artists;
-        return (
-          <Palette src={artist.art || artist.thumb}>
-            {({ isReady, color }) =>
-              isReady && (
-                <motion.div
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  initial={{ opacity: 0 }}
-                  key={location.pathname}
-                  style={{ height: '100%' }}
-                >
-                  <Banner artist={artist} color={color} viewport={viewport} />
-                  <ArtistTabs
-                    artist={artist}
-                    color={color}
-                    mostPlayedTracks={mostPlayedTracks || []}
-                    popularTracks={artist.popularTracks}
-                    recentTracks={recentTracks}
-                    releases={releases}
-                    viewport={viewport}
-                  />
-                </motion.div>
-              )
-            }
-          </Palette>
-        );
-      }}
-    </Scroller>
+    <>
+      <Scroller sx={{ height: '100%' }}>
+        {({ viewport }) => {
+          const [artist] = artistData!.artists;
+          return (
+            <Palette src={artist.art || artist.thumb}>
+              {({ isReady, color }) =>
+                isReady && (
+                  <motion.div
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0 }}
+                    key={location.pathname}
+                    style={{ height: 'fit-content' }}
+                  >
+                    <Banner artist={artist} color={color} viewport={viewport} />
+                    <ArtistNavbar
+                      artist={artist}
+                      color={color}
+                      mostPlayedTracks={mostPlayedTracks || []}
+                      popularTracks={artist.popularTracks}
+                      recentTracks={recentTracks}
+                      releases={releases}
+                      viewport={viewport}
+                    />
+                    <ArtistOptions />
+                  </motion.div>
+                )
+              }
+            </Palette>
+          );
+        }}
+      </Scroller>
+    </>
   );
 };
 

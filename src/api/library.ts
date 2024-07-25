@@ -298,9 +298,9 @@ export default class Library {
   // COUNTRIES
   // ==========================================================================
 
-  async countries(sectionId: number) {
+  async countries(sectionId: number, searchParams: URLSearchParams = new URLSearchParams()) {
     const path = `/library/sections/${sectionId}/country`;
-    const response = await this.fetch(path);
+    const response = await this.fetch(path, { searchParams });
     return parseCountryArray(response);
   }
 
@@ -336,11 +336,13 @@ export default class Library {
   // MOODS
   // ==========================================================================
 
-  async moods(sectionId: number, type: MediaType) {
+  async moods(
+    sectionId: number,
+    type: MediaType,
+    searchParams: URLSearchParams = new URLSearchParams()
+  ) {
     const path = `/library/sections/${sectionId}/mood`;
-    const searchParams = new URLSearchParams({
-      type: type.toString(),
-    });
+    searchParams.append('type', type.toString());
     const response = await this.fetch(path, { searchParams });
     return parseMoodArray(response);
   }
@@ -985,6 +987,10 @@ export default class Library {
       }),
     });
     return response;
+  }
+
+  async modifyArtistCountry(sectionId: number, id: number, add: string[] = [], remove?: string[]) {
+    return this.modifyListField('country', sectionId, MediaType.ARTIST, id, add, remove);
   }
 
   /**

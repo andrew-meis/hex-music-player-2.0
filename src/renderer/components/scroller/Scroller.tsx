@@ -1,17 +1,29 @@
 import { Box, BoxProps, useColorScheme } from '@mui/material';
-import { useOverlayScrollbars } from 'overlayscrollbars-react';
+import {
+  useOverlayScrollbars,
+  UseOverlayScrollbarsInstance,
+  UseOverlayScrollbarsParams,
+} from 'overlayscrollbars-react';
 import React, { useEffect, useState } from 'react';
 
 interface ScrollerProps {
   children:
-    | (({ viewport }: { viewport: HTMLDivElement | undefined }) => React.ReactNode)
+    | (({
+        scroller,
+        viewport,
+      }: {
+        scroller: UseOverlayScrollbarsInstance;
+        viewport: HTMLDivElement | undefined;
+      }) => React.ReactNode)
     | React.ReactNode;
 }
 
-const Scroller: React.FC<ScrollerProps & Omit<BoxProps, 'children'>> = (props) => {
+const Scroller: React.FC<
+  ScrollerProps & UseOverlayScrollbarsParams & Omit<BoxProps, 'children'>
+> = (props) => {
   const [ref, setRef] = useState<HTMLDivElement | undefined>();
   const { mode } = useColorScheme();
-  const [initialize] = useOverlayScrollbars({
+  const [initialize, instance] = useOverlayScrollbars({
     defer: true,
     options: {
       update: {
@@ -25,6 +37,7 @@ const Scroller: React.FC<ScrollerProps & Omit<BoxProps, 'children'>> = (props) =
         clickScroll: true,
         visibility: 'visible',
       },
+      ...props.options,
     },
   });
 
@@ -41,7 +54,7 @@ const Scroller: React.FC<ScrollerProps & Omit<BoxProps, 'children'>> = (props) =
   if (typeof props.children === 'function') {
     return (
       <Box data-overlayscrollbars-initialize ref={setRef} {...props}>
-        {props.children({ viewport: ref })}
+        {props.children({ scroller: instance, viewport: ref })}
       </Box>
     );
   }
@@ -52,7 +65,5 @@ const Scroller: React.FC<ScrollerProps & Omit<BoxProps, 'children'>> = (props) =
     </Box>
   );
 };
-
-Scroller.displayName = 'Scroller';
 
 export default Scroller;

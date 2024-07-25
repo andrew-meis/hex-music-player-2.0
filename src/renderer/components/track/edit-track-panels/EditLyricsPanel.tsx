@@ -1,22 +1,38 @@
 import {
   Box,
-  Button,
   Checkbox,
+  Fab,
   FormControlLabel,
   FormHelperText,
   InputBase,
-  Typography,
+  SvgIcon,
 } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { Track } from 'api';
 import Scroller from 'components/scroller/Scroller';
 import { inPlaceSort } from 'fast-sort';
 import { db } from 'features/db';
+import { motion } from 'framer-motion';
 import { useLyrics } from 'queries';
 import React, { useMemo, useState } from 'react';
 import { FileWithPath, useDropzone } from 'react-dropzone';
+import { PiCheckCircleFill } from 'react-icons/pi';
 import { store } from 'state';
 import { QueryKeys } from 'typescript';
+
+const buttonMotion = {
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.3,
+    },
+    y: -16,
+  },
+  hidden: {
+    opacity: 0,
+    y: -4,
+  },
+};
 
 const processLyrics = (lyrics: string) => {
   let lines = lyrics.split(/\r?\n/);
@@ -32,7 +48,9 @@ const processLyrics = (lyrics: string) => {
   return inPlaceSort(lines).asc().join('\n');
 };
 
-const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
+const MotionFab = motion(Fab);
+
+const EditLyricsPanel: React.FC<{ track: Track }> = ({ track }) => {
   const queryClient = useQueryClient();
   const { data: lyrics } = useLyrics(track);
   const [instrumental, setInstrumental] = useState(lyrics?.instrumental);
@@ -54,7 +72,10 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
         return;
       }
       if (!['.lrc', '.txt'].includes(files[0].name.slice(-4))) {
-        // setToast({ type: 'error', text: 'Must upload .txt or .lrc file' });
+        store.ui.toasts.set((prev) => [
+          ...prev,
+          { message: 'Must upload .txt or .lrc file', key: new Date().getTime() },
+        ]);
         return;
       }
       const reader = new FileReader();
@@ -81,8 +102,8 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
   const sx = useMemo(
     () => ({
       fontSize: '0.8rem',
+      margin: 0,
       position: 'relative',
-      top: -4,
       ...(validSyncedLyrics && { color: 'success.main' }),
       ...(!validSyncedLyrics && validPlainLyrics && { color: 'warning.main' }),
     }),
@@ -100,11 +121,13 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
     setInstrumental(event.target.checked);
     if (event.target.checked) {
       setValue('');
+      setLyricsEdited(true);
+      return;
     }
     if (!event.target.checked) {
       setValue(lyrics?.syncedLyrics || lyrics?.plainLyrics || '');
+      setLyricsEdited(false);
     }
-    setLyricsEdited(true);
   };
 
   const handleSave = async () => {
@@ -126,25 +149,21 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height="-webkit-fill-available"
-      padding={2}
-      paddingBottom={2}
-      width={1}
-    >
-      <Typography variant="h4">Edit Lyrics</Typography>
+    <Box display="flex" flexDirection="column" height={1} width={1}>
       <FormControlLabel
         control={<Checkbox checked={instrumental} onChange={handleChange} />}
-        label="Mark as instrumental"
+        label="Instrumental track"
+        sx={{
+          margin: 0,
+        }}
       />
       <Box
         {...getRootProps({ style })}
         bgcolor="background.default"
         border="1px solid var(--mui-palette-action-disabled)"
         borderRadius={1}
-        height="calc(100% - 134px)"
+        flexGrow={1}
+        height={256}
       >
         <Scroller style={{ height: '100%' }}>
           <Box overflow="auto">
@@ -158,39 +177,51 @@ const EditLyrics: React.FC<{ track: Track }> = ({ track }) => {
                   padding: '0 5px',
                 },
               }}
-              minRows={10}
+              minRows={9}
               value={value}
-              onChange={(e) => {
-                setValue(e.target.value);
+              onChange={(event) => {
+                setValue(event.target.value);
                 setLyricsEdited(true);
+                if (
+                  event.target.value === lyrics?.syncedLyrics ||
+                  event.target.value === lyrics?.plainLyrics
+                ) {
+                  setLyricsEdited(false);
+                }
               }}
             />
           </Box>
         </Scroller>
       </Box>
       <FormHelperText sx={sx}>{text}</FormHelperText>
-      <Box display="flex" gap={0.5} marginLeft="auto">
-        <Button
-          color="error"
-          disabled={!lyricsEdited}
+      <motion.div
+        animate={lyricsEdited ? 'visible' : 'hidden'}
+        initial="hidden"
+        style={{
+          bottom: 0,
+          right: 16,
+          position: 'absolute',
+        }}
+        variants={buttonMotion}
+      >
+        <MotionFab
           size="small"
-          variant="contained"
-          onClick={() => store.ui.modals.open.set(false)}
-        >
-          Cancel
-        </Button>
-        <Button
-          color="success"
-          disabled={!lyricsEdited}
-          size="small"
-          variant="contained"
+          sx={(theme) => ({
+            backgroundColor: theme.palette.background.default,
+            '&:hover': {
+              backgroundColor: theme.palette.background.default,
+            },
+          })}
+          whileHover={{ scale: 1.1 }}
           onClick={handleSave}
         >
-          Save
-        </Button>
-      </Box>
+          <SvgIcon sx={(theme) => ({ color: theme.palette.primary.main, height: 42, width: 42 })}>
+            <PiCheckCircleFill />
+          </SvgIcon>
+        </MotionFab>
+      </motion.div>
     </Box>
   );
 };
 
-export default EditLyrics;
+export default EditLyricsPanel;

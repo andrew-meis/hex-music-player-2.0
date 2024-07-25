@@ -1,23 +1,14 @@
 import { reactive, Show, useObserve } from '@legendapp/state/react';
 import { Dialog } from '@mui/material';
-import EditLyrics from 'components/track/EditLyrics';
-import EditMetadata from 'components/track/EditMetadata';
-import { round } from 'lodash';
+import EditArtist from 'components/artist/EditArtist';
+import EditTrack from 'components/track/EditTrack';
 import React from 'react';
 import { store } from 'state';
 
 const ReactiveDialog = reactive(Dialog);
 
 const Modals: React.FC = () => {
-  useObserve(store.ui.modals.editLyricsTrack, ({ value }) => {
-    if (value) {
-      store.ui.modals.open.set(true);
-    } else {
-      store.ui.modals.open.set(false);
-    }
-  });
-
-  useObserve(store.ui.modals.editMetadataTrack, ({ value }) => {
+  useObserve(store.ui.modals.values, ({ value }) => {
     if (value) {
       store.ui.modals.open.set(true);
     } else {
@@ -32,28 +23,26 @@ const Modals: React.FC = () => {
       PaperProps={{
         elevation: 2,
         sx: {
+          borderRadius: 2,
           flexDirection: 'row',
-          height: 'calc(100% - 162px)',
+          height: 'calc(100% - 68px)',
           justifyContent: 'center',
           margin: '0 8px',
-          maxHeight: 512,
+          maxHeight: 456,
           maxWidth: 900,
-          width: `calc(${round((314 / 466) * 100, 4)}vh * (21 / 9))`,
+          width: 624,
         },
       }}
       maxWidth={false}
       onClose={() => store.ui.modals.open.set(false)}
       onTransitionExited={() => {
-        store.ui.modals.editLyricsTrack.set(undefined);
-        store.ui.modals.editMetadataTrack.set(undefined);
+        store.ui.modals.values.set(undefined);
       }}
     >
-      <Show ifReady={store.ui.modals.editLyricsTrack}>
-        {(track) => <EditLyrics track={track!} />}
+      <Show ifReady={store.ui.modals.values.artist}>
+        {(artist) => <EditArtist artist={artist} />}
       </Show>
-      <Show ifReady={store.ui.modals.editMetadataTrack}>
-        {(track) => <EditMetadata track={track!} />}
-      </Show>
+      <Show ifReady={store.ui.modals.values.track}>{(track) => <EditTrack track={track} />}</Show>
     </ReactiveDialog>
   );
 };

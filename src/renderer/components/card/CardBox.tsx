@@ -1,26 +1,26 @@
-import { Box } from '@mui/material';
+import { Box, BoxProps } from '@mui/material';
 import { motion } from 'framer-motion';
 import React from 'react';
 
 const MotionBox = motion(Box);
 
-const CardBox: React.FC<React.ComponentProps<typeof MotionBox>> = ({ ...props }) => {
+const CardBox: React.FC<React.ComponentProps<typeof MotionBox> & BoxProps> = ({ sx, ...props }) => {
   return (
     <MotionBox
       initial="initial"
-      sx={(theme) => ({
+      sx={{
         borderRadius: 2,
         contain: 'paint',
-        cursor: 'pointer',
         display: 'flex',
         flex: 1,
         flexDirection: 'column',
         overflow: 'hidden',
-        transition: '300ms',
+        transition: 'background-color 100ms ease-in-out',
         '&:hover': {
-          backgroundColor: theme.palette.action.hover,
+          backgroundColor: 'action.hover',
         },
-      })}
+        ...sx,
+      }}
       whileHover="hover"
       {...props}
     >

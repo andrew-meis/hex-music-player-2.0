@@ -1,4 +1,4 @@
-import { keepPreviousData, queryOptions, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, QueryClient, queryOptions, useQuery } from '@tanstack/react-query';
 import { Library, parseTrackContainer, SORT_BY_DATE_PLAYED, Track } from 'api';
 import { db } from 'features/db';
 import ky from 'ky';
@@ -7,7 +7,12 @@ import { countBy, uniqBy } from 'lodash';
 import { DateTime } from 'luxon';
 import paramsToObject from 'scripts/params-to-object';
 import { persistedStore, store } from 'state';
-import { QueryKeys } from 'typescript';
+import { QueryKeys, TrackKeys } from 'typescript';
+
+export const invalidateTrackQueries = async (queryClient: QueryClient) =>
+  await queryClient.invalidateQueries({
+    predicate: (query) => Object.values(TrackKeys).includes(query.queryKey[0] as TrackKeys),
+  });
 
 const fuzzyTrackSearch = async ({ artist, title }: { artist: string; title: string }) => {
   const library = store.library.peek();

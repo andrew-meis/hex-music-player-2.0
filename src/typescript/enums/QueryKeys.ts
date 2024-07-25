@@ -45,9 +45,11 @@ export enum TrackKeys {
 export enum OtherQueryKeys {
   COLLECTIONS = 'collections',
   COLOR = 'color',
+  COUNTRIES = 'countries',
   GENRES = 'genres',
   HISTORY = 'history',
   LYRICS = 'lyrics',
+  MOODS = 'moods',
   PALETTE = 'palette',
   PLAYLIST = 'playlist',
   PLAYLISTS = 'playlists',

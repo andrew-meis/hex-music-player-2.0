@@ -7,6 +7,7 @@ import AppSurface from 'ui/app-surface/AppSurface';
 
 import Modals from './Modals';
 import QueueUpdater from './QueueUpdater';
+import Toasts from './Toasts';
 
 export const appLoader = async () => {
   const loggedIn = await isAppInit();
@@ -25,6 +26,7 @@ const App: React.FC = () => {
       <AppController />
       <Modals />
       <Menu />
+      <Toasts />
     </>
   );
 };

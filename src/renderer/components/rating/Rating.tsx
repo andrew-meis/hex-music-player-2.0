@@ -1,15 +1,10 @@
 import { SvgIcon } from '@mui/material';
-import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import useMouseLeave from 'hooks/useMouseLeave';
+import { invalidateTrackQueries } from 'queries';
 import React, { useEffect, useState } from 'react';
 import { BsDot, BsStarFill } from 'react-icons/bs';
 import { store } from 'state';
-import { TrackKeys } from 'typescript';
-
-const invalidateTrackQueries = async (queryClient: QueryClient) =>
-  await queryClient.invalidateQueries({
-    predicate: (query) => Object.values(TrackKeys).includes(query.queryKey[0] as TrackKeys),
-  });
 
 const Rating: React.FC<
   {

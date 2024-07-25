@@ -1,38 +1,11 @@
 import { computed, observable } from '@legendapp/state';
-import { configureObservablePersistence, persistObservable } from '@legendapp/state/persist';
-import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/local-storage';
-import { Account, Library, PlayQueue, PlayQueueItem, Track } from 'api';
+import { Account, Album, Artist, Library, PlayQueue, PlayQueueItem, Track } from 'api';
 import chroma from 'chroma-js';
 import { To } from 'react-router-dom';
 import { SelectObservables, ServerConfig } from 'typescript';
 
+export { persistedStore } from './persisted-store';
 export { allSelectObservables, createSelectObservable } from './select-observables';
-
-configureObservablePersistence({
-  pluginLocal: ObservablePersistLocalStorage,
-});
-
-export const persistedStore = observable({
-  // Audio player
-  audio: {
-    volume: 0.5,
-  },
-  // User state
-  displayRemainingTime: true,
-  lastfmApiKey: '',
-  lyricsSize: 2,
-  queueId: 0,
-  recentSearches: [] as string[],
-});
-
-persistObservable(persistedStore, {
-  pluginRemote: {
-    get: () => window.api.getValue('persisted-store'),
-    set: ({ value }) => {
-      window.api.setValue('persisted-store', value);
-    },
-  },
-});
 
 export const store = observable({
   // Saved server configuration
@@ -97,6 +70,11 @@ export const store = observable({
       return undefined;
     }),
   },
+  routes: {
+    artist: {
+      drawers: { options: false },
+    },
+  },
   ui: {
     breadcrumbs: [{ title: 'Home', to: { pathname: '/' } }] as { title: string; to: To }[],
     queue: {
@@ -109,8 +87,11 @@ export const store = observable({
       anchorPosition: null as null | { mouseX: number; mouseY: number },
     },
     modals: {
-      editLyricsTrack: undefined as unknown as Track,
-      editMetadataTrack: undefined as unknown as Track,
+      values: undefined as unknown as {
+        album: Album;
+        artist: Artist;
+        track: Track;
+      },
       open: false,
     },
     nowPlaying: {
@@ -125,5 +106,6 @@ export const store = observable({
       input: '',
       tabIsAnimating: false,
     },
+    toasts: [] as { key: number; message: string }[],
   },
 });

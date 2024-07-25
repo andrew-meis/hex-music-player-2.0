@@ -4,10 +4,9 @@ import { Button, SvgIcon } from '@mui/material';
 import chroma from 'chroma-js';
 import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
-import { BiMessageSquareEdit } from 'react-icons/bi';
 import { PiMusicNotesPlusFill } from 'react-icons/pi';
-import { RiFileEditLine, RiFontSize } from 'react-icons/ri';
-import { TbLayoutGridAdd } from 'react-icons/tb';
+import { RiFontSize } from 'react-icons/ri';
+import { TbEdit, TbLayoutGridAdd } from 'react-icons/tb';
 import { persistedStore, store } from 'state';
 
 const MotionButton = motion(Button);
@@ -42,10 +41,10 @@ export const HeaderActions: React.FC<{
             },
           }}
           variant="contained"
-          onClick={() => store.ui.modals.editMetadataTrack.set(nowPlaying.track)}
+          onClick={() => store.ui.modals.values.track.set(nowPlaying.track)}
         >
           <SvgIcon>
-            <RiFileEditLine />
+            <TbEdit />
           </SvgIcon>
         </MotionButton>
       )}
@@ -144,10 +143,10 @@ export const LyricsActions: React.FC<{
             },
           }}
           variant="contained"
-          onClick={() => store.ui.modals.editLyricsTrack.set(nowPlaying.track)}
+          onClick={() => store.ui.modals.values.track.set(nowPlaying.track)}
         >
           <SvgIcon>
-            <BiMessageSquareEdit />
+            <TbEdit />
           </SvgIcon>
         </MotionButton>
       )}

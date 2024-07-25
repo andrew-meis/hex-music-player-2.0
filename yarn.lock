@@ -5285,6 +5285,7 @@ __metadata:
     react-easy-emoji: "npm:^1.8.1"
     react-icons: "npm:^5.2.1"
     react-konva: "npm:^18.2.10"
+    react-merge-refs: "npm:^2.1.1"
     react-router-dom: "npm:^6.22.2"
     react-virtuoso: "npm:^4.7.11"
     typescript: "npm:^5.5.3"
@@ -7498,6 +7499,13 @@ __metadata:
     react: ">=18.0.0"
     react-dom: ">=18.0.0"
   checksum: 10/ee30d1908d28025345672708b3b1bd58473d774e156b67b28f8e19c8c148cfec0895acb85be42e5aea0f27b171964e114b2ca01fa475d745ebef12083a63c439
+  languageName: node
+  linkType: hard
+
+"react-merge-refs@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "react-merge-refs@npm:2.1.1"
+  checksum: 10/40564bc4c16520ef830d4fe7a2bd298c23a42d644a8fcb2353cdc6cf16aa82eac681c554df4c849397b25af9dbe728086566e1a01f65f95d2301dc8fc8f6809f
   languageName: node
   linkType: hard
 

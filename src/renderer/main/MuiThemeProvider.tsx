@@ -4,6 +4,7 @@ import {
   Experimental_CssVarsProvider as CssVarsProvider,
   experimental_extendTheme as extendTheme,
 } from '@mui/material/styles';
+import chroma from 'chroma-js';
 import React, { useMemo } from 'react';
 
 declare module '@mui/material/styles' {
@@ -58,7 +59,6 @@ const createLightTheme = (): ColorSystemOptions => ({
     },
     text: {
       primary: 'rgba(0, 0, 0, 1)',
-      secondary: 'rgba(0, 0, 0, 0.85)',
     },
   },
 });
@@ -79,6 +79,34 @@ const createTheme = () =>
       light: createLightTheme(),
     },
     components: {
+      MuiAutocomplete: {
+        defaultProps: {
+          ListboxProps: {
+            sx: {
+              padding: '4px 0',
+            },
+          },
+          slotProps: {
+            paper: {
+              sx: (theme) => ({
+                backdropFilter: 'blur(20px)',
+                background: theme.palette.action.selected,
+                marginTop: 0.5,
+              }),
+            },
+          },
+        },
+        styleOverrides: {
+          input: {
+            height: 24,
+            minWidth: '0 !important',
+            padding: '3px 6px !important',
+          },
+          tag: {
+            borderRadius: 4,
+          },
+        },
+      },
       MuiBreadcrumbs: {
         styleOverrides: {
           ol: {
@@ -109,6 +137,28 @@ const createTheme = () =>
           container: {
             height: 'calc(100% - 9px)',
           },
+        },
+      },
+      MuiDrawer: {
+        defaultProps: {
+          PaperProps: {
+            square: false,
+          },
+        },
+        styleOverrides: {
+          paper: ({ theme }) => ({
+            backdropFilter: 'blur(20px)',
+            background:
+              theme.palette.mode === 'dark'
+                ? chroma(theme.palette.background.paper).alpha(0.7).css()
+                : chroma(theme.palette.background.paper).alpha(0.7).css(),
+            height: 'calc(100vh - 194px)',
+            borderRadius: 8,
+            marginRight: 16,
+            marginTop: 88,
+            padding: 8,
+            width: 'clamp(212px, 25vw, 256px)',
+          }),
         },
       },
       MuiIconButton: {
@@ -222,6 +272,26 @@ const createTheme = () =>
                 display: 'flex',
               },
             },
+          },
+        },
+      },
+      MuiSnackbar: {
+        styleOverrides: {
+          root: {
+            bottom: '94px !important',
+            zIndex: 2500,
+          },
+        },
+      },
+      MuiSnackbarContent: {
+        styleOverrides: {
+          message: {
+            fontWeight: 700,
+            padding: '4px 0',
+          },
+          root: {
+            justifyContent: 'center',
+            minWidth: '192px !important',
           },
         },
       },

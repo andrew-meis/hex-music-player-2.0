@@ -1,8 +1,13 @@
-import { queryOptions, useQuery } from '@tanstack/react-query';
+import { QueryClient, queryOptions, useQuery } from '@tanstack/react-query';
 import { Library } from 'api';
 import paramsToObject from 'scripts/params-to-object';
 import { store } from 'state';
-import { QueryKeys } from 'typescript';
+import { ArtistKeys, QueryKeys } from 'typescript';
+
+export const invalidateArtistQueries = async (queryClient: QueryClient) =>
+  await queryClient.invalidateQueries({
+    predicate: (query) => Object.values(ArtistKeys).includes(query.queryKey[0] as ArtistKeys),
+  });
 
 export const artistQuery = (id: number, library: Library) =>
   queryOptions({
