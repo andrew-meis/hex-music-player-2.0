@@ -20,7 +20,7 @@ const EditTrack: React.FC<{ track?: Track }> = ({ track }) => {
 
   return (
     <Box display="flex" flexDirection="column" height="-webkit-fill-available" margin={2} width={1}>
-      <Box alignItems="center" display="flex" justifyContent="space-between">
+      <Box alignItems="center" display="flex" justifyContent="space-between" paddingBottom={1}>
         <Typography variant="h4">Edit Track</Typography>
         <IconButton onClick={() => store.ui.modals.open.set(false)}>
           <SvgIcon>

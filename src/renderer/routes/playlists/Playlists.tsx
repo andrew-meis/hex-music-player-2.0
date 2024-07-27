@@ -1,11 +1,13 @@
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import PlaylistCard from 'components/playlist/PlaylistCard';
 import Scroller from 'components/scroller/Scroller';
 import { List } from 'components/virtuoso/CustomGridComponents';
+import { motion } from 'framer-motion';
+import useScrollRestoration from 'hooks/useScrollRestoration';
 import { useWidth } from 'hooks/useWidth';
 import { usePlaylists } from 'queries';
 import React, { useEffect } from 'react';
-import { createSearchParams, useLoaderData } from 'react-router-dom';
+import { createSearchParams, useLoaderData, useLocation } from 'react-router-dom';
 import { GridItemProps, VirtuosoGrid } from 'react-virtuoso';
 import { allSelectObservables, store } from 'state';
 import { SelectObservables } from 'typescript';
@@ -37,6 +39,9 @@ const Item: React.FC<GridItemProps> = ({ children, ...props }) => {
 };
 
 const Playlists: React.FC = () => {
+  const location = useLocation();
+  const [initial, handleScroll, scrollerProps, setReady] = useScrollRestoration(location.key);
+
   const { section } = useLoaderData() as Awaited<ReturnType<typeof playlistsLoader>>;
   const selectObservable = allSelectObservables[SelectObservables.ROUTE_PLAYLISTS];
 
@@ -58,10 +63,22 @@ const Playlists: React.FC = () => {
   if (!playlistsData) return null;
 
   return (
-    <Scroller style={{ height: '100%' }}>
+    <Scroller style={{ height: '100%', ...scrollerProps }} onScroll={handleScroll}>
       {({ viewport }) => {
         return (
-          <Box marginX={4}>
+          <motion.div
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+            key={location.pathname}
+            style={{ height: 'fit-content', margin: '0 32px' }}
+            transition={{ delay: 0.1 }}
+            onViewportEnter={() => {
+              if (!viewport) return;
+              viewport.scrollTop = initial;
+              setReady(true);
+            }}
+          >
             <Typography paddingBottom={2} variant="h1">
               {section}
             </Typography>
@@ -82,7 +99,7 @@ const Playlists: React.FC = () => {
                 selectObservable.items.set(playlistsData.playlists);
               }}
             />
-          </Box>
+          </motion.div>
         );
       }}
     </Scroller>

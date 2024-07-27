@@ -97,6 +97,10 @@ const createTheme = () =>
           },
         },
         styleOverrides: {
+          inputRoot: {
+            paddingBottom: 1,
+            paddingTop: 1,
+          },
           input: {
             height: 24,
             minWidth: '0 !important',

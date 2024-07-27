@@ -1,4 +1,5 @@
 import { observer, useUnmount } from '@legendapp/state/react';
+import { Box, Typography } from '@mui/material';
 import { SORT_TRACKS_BY_PLAYS } from 'api';
 import VirtualTrackTable from 'components/track/VirtualTrackTable';
 import { selectActions } from 'features/select';
@@ -30,6 +31,23 @@ const MoreByArtist: React.FC = observer(function SimilarMoreByArtist() {
   );
 
   if (!artistTracks) return null;
+
+  if (artistTracks.length === 0) {
+    return (
+      <Box
+        alignItems="center"
+        display="flex"
+        flexDirection="column"
+        height={1}
+        justifyContent="center"
+        width={1}
+      >
+        <Typography color="text.secondary" variant="h5">
+          No more tracks by artist found in Plex library
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <VirtualTrackTable

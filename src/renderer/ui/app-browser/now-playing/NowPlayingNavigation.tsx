@@ -22,6 +22,7 @@ const sections = [
   { title: 'Related Tracks' },
 ];
 
+const ReactiveIconButton = reactive(IconButton);
 const ReactiveSvgIcon = reactive(SvgIcon);
 
 const NowPlayingNavigation: React.FC<{
@@ -114,13 +115,20 @@ const NowPlayingNavigation: React.FC<{
               </Typography>
             }
           >
-            <IconButton
-              sx={(theme) => ({
+            <ReactiveIconButton
+              $sx={() => ({
                 height: 48,
                 width: 48,
-                '&:hover': {
-                  backgroundColor: theme.palette.text.primary,
-                },
+                ...(activeSection.get() === index + 1
+                  ? {
+                      cursor: 'default',
+                      pointerEvents: 'none',
+                    }
+                  : {
+                      '&:hover': {
+                        backgroundColor: 'text.primary',
+                      },
+                    }),
               })}
               onClick={() => handleScrollClick(index + 1)}
             />

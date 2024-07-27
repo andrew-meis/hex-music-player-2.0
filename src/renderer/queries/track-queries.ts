@@ -157,7 +157,8 @@ export const lastfmMatchTracksQuery = (track: Track, enabled: boolean) =>
         track: track.title,
         autocorrect: 1,
       });
-      if (similartracks.track.length === 0) return [];
+      if (similartracks.track.length === 0)
+        return { reason: 'No last.fm similar tracks', tracks: [] };
       const matchedTracks = [] as Track[];
       await Promise.all(
         similartracks.track.map(async (track) => {
@@ -171,7 +172,9 @@ export const lastfmMatchTracksQuery = (track: Track, enabled: boolean) =>
           }
         })
       );
-      return matchedTracks.sort((a, b) => b.score! - a.score!);
+      if (matchedTracks.length === 0)
+        return { reason: 'No last.fm similar tracks found in Plex library', tracks: [] };
+      return { reason: 'Success!', tracks: matchedTracks };
     },
     enabled,
   });
@@ -294,7 +297,7 @@ export const tracksByArtistQuery = (
       if (!releaseFilters) return filteredTracks;
       const [isFiltered] = releaseFilters.filter((filter) => filter.guid === guid);
       if (isFiltered) {
-        return filteredTracks.filter((track) => !isFiltered.exclusions.includes(track.parentGuid));
+        return filteredTracks.filter((track) => !isFiltered.exclusions.includes(track.guid));
       }
       return filteredTracks;
     },

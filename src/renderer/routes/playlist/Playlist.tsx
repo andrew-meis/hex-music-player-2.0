@@ -1,21 +1,26 @@
-import { Show } from '@legendapp/state/react';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import VirtualPlaylistTable from 'components/playlist/VirtualPlaylistTable';
 import Scroller from 'components/scroller/Scroller';
+import { motion } from 'framer-motion';
+import useScrollRestoration from 'hooks/useScrollRestoration';
 import { usePlaylistItems } from 'queries';
 import React, { useEffect } from 'react';
-import { createSearchParams, useLoaderData } from 'react-router-dom';
+import { createSearchParams, useLoaderData, useLocation } from 'react-router-dom';
 import { allSelectObservables, store } from 'state';
 import { SelectObservables } from 'typescript';
 
 import { playlistLoader } from './loader';
 
 const Playlist: React.FC = () => {
+  const location = useLocation();
+  const [initial, handleScroll, scrollerProps, setReady] = useScrollRestoration(location.key);
+
   const { id, title } = useLoaderData() as Awaited<ReturnType<typeof playlistLoader>>;
 
   const selectObservable = allSelectObservables[SelectObservables.ROUTE_PLAYLIST];
 
   const { data } = usePlaylistItems(id);
+
   useEffect(() => {
     store.ui.breadcrumbs.set([
       { title: 'Home', to: { pathname: '/' } },
@@ -36,22 +41,32 @@ const Playlist: React.FC = () => {
     ]);
   }, []);
 
+  if (!data) return null;
+
   return (
-    <Scroller sx={{ height: '100%' }}>
+    <Scroller sx={{ height: '100%', ...scrollerProps }} onScroll={handleScroll}>
       {({ viewport }) => (
-        <Box marginX={4}>
+        <motion.div
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }}
+          key={location.pathname}
+          style={{ height: 'fit-content', margin: '0 32px' }}
+          transition={{ delay: 0.1 }}
+          onViewportEnter={() => {
+            if (!viewport) return;
+            viewport.scrollTop = initial;
+            setReady(true);
+          }}
+        >
           <Typography variant="h1">{title}</Typography>
-          <Show ifReady={data}>
-            {(value) => (
-              <VirtualPlaylistTable
-                activeMenu={SelectObservables.ROUTE_PLAYLIST}
-                items={value?.items || []}
-                state={selectObservable}
-                viewport={viewport}
-              />
-            )}
-          </Show>
-        </Box>
+          <VirtualPlaylistTable
+            activeMenu={SelectObservables.ROUTE_PLAYLIST}
+            items={data.items || []}
+            state={selectObservable}
+            viewport={viewport}
+          />
+        </motion.div>
       )}
     </Scroller>
   );

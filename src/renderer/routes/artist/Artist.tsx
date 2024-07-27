@@ -8,6 +8,7 @@ import { Color } from 'chroma-js';
 import Palette from 'components/palette/Palette';
 import Scroller from 'components/scroller/Scroller';
 import { motion } from 'framer-motion';
+import useScrollRestoration from 'hooks/useScrollRestoration';
 import { isEmpty } from 'lodash';
 import { useAlbumsArtistAppearsOn, useArtist, useRecentTracks, useTracksByArtist } from 'queries';
 import React, { useEffect, useMemo, useRef } from 'react';
@@ -69,9 +70,11 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
       return Math.max(desiredImageWidth - (width + 48), 0);
     }, [bannerDimensions, height, width]);
 
-    const colorAlpha = intersection?.intersectionRatio
-      ? 1 - (intersection ? intersection.intersectionRatio : 1)
-      : 1;
+    const colorAlpha = useMemo(() => {
+      if (intersection?.intersectionRatio === undefined) return 0;
+      if (intersection.intersectionRatio === 0) return 1;
+      return 1 - intersection.intersectionRatio;
+    }, [intersection?.intersectionRatio]);
 
     const thumbPositionAdjustment = useMemo(() => {
       return width >= 1936 ? (width - 1936) / 2 : 0;
@@ -211,6 +214,7 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
 const Artist: React.FC = () => {
   const location = useLocation();
   const { guid, id, title } = useLoaderData() as Awaited<ReturnType<typeof artistLoader>>;
+  const [initial, handleScroll, scrollerProps, setReady] = useScrollRestoration(location.key);
 
   const { data: artistData } = useArtist(id);
   const { data: appearances } = useAlbumsArtistAppearsOn(id, guid, title);
@@ -281,40 +285,44 @@ const Artist: React.FC = () => {
   if (isEmpty(releases) || !recentTracks || !mostPlayedTracks) return null;
 
   return (
-    <>
-      <Scroller sx={{ height: '100%' }}>
-        {({ viewport }) => {
-          const [artist] = artistData!.artists;
-          return (
-            <Palette src={artist.art || artist.thumb}>
-              {({ isReady, color }) =>
-                isReady && (
-                  <motion.div
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    initial={{ opacity: 0 }}
-                    key={location.pathname}
-                    style={{ height: 'fit-content' }}
-                  >
-                    <Banner artist={artist} color={color} viewport={viewport} />
-                    <ArtistNavbar
-                      artist={artist}
-                      color={color}
-                      mostPlayedTracks={mostPlayedTracks || []}
-                      popularTracks={artist.popularTracks}
-                      recentTracks={recentTracks}
-                      releases={releases}
-                      viewport={viewport}
-                    />
-                    <ArtistOptions />
-                  </motion.div>
-                )
-              }
-            </Palette>
-          );
-        }}
-      </Scroller>
-    </>
+    <Scroller sx={{ height: '100%', ...scrollerProps }} onScroll={handleScroll}>
+      {({ viewport }) => {
+        const [artist] = artistData!.artists;
+        return (
+          <Palette src={artist.art || artist.thumb}>
+            {({ isReady, color }) =>
+              isReady && (
+                <motion.div
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0 }}
+                  key={location.pathname}
+                  style={{ height: 'fit-content' }}
+                  transition={{ delay: 0.1 }}
+                  onViewportEnter={() => {
+                    if (!viewport) return;
+                    viewport.scrollTop = initial;
+                    setReady(true);
+                  }}
+                >
+                  <Banner artist={artist} color={color} viewport={viewport} />
+                  <ArtistNavbar
+                    artist={artist}
+                    color={color}
+                    mostPlayedTracks={mostPlayedTracks || []}
+                    popularTracks={artist.popularTracks}
+                    recentTracks={recentTracks}
+                    releases={releases}
+                    viewport={viewport}
+                  />
+                  <ArtistOptions />
+                </motion.div>
+              )
+            }
+          </Palette>
+        );
+      }}
+    </Scroller>
   );
 };
 

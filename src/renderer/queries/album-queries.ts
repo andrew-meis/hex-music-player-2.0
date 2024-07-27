@@ -10,10 +10,11 @@ export const albumsArtistAppearsOn = (
   guid: string,
   library: Library,
   sectionId: number,
-  title: string
+  title: string,
+  shouldFilter: boolean
 ) =>
   queryOptions({
-    queryKey: [QueryKeys.ALBUMS_ARTIST_APPEARS_ON, id],
+    queryKey: [QueryKeys.ALBUMS_ARTIST_APPEARS_ON, id, shouldFilter],
     queryFn: async () => {
       let searchTerms: string | undefined = undefined;
       if (title !== deburr(title)) {
@@ -32,11 +33,23 @@ export const albumsArtistAppearsOn = (
         })
       );
       const albumIds: number[] = [];
-      tracks.forEach((track) => {
-        if (track.originalTitle?.toLowerCase().includes(title.toLowerCase())) {
-          albumIds.push(track.parentId);
-        }
-      });
+      const releaseFilters = await window.api.getValue('release-filters');
+      if (!releaseFilters || !shouldFilter) {
+        tracks.forEach((track) => {
+          if (track.originalTitle?.toLowerCase().includes(title.toLowerCase())) {
+            albumIds.push(track.parentId);
+          }
+        });
+      }
+      if (releaseFilters && shouldFilter) {
+        const [isFiltered] = releaseFilters.filter((filter) => filter.guid === guid);
+        tracks.forEach((track) => {
+          if (isFiltered?.exclusions.includes(track.guid)) return;
+          if (track.originalTitle?.toLowerCase().includes(title.toLowerCase())) {
+            albumIds.push(track.parentId);
+          }
+        });
+      }
       const { albums } = await library.albums(
         sectionId,
         new URLSearchParams({
@@ -44,21 +57,23 @@ export const albumsArtistAppearsOn = (
           sort: SORT_ALBUMS_BY_RELEASE_DATE.desc,
         })
       );
-      const releaseFilters = await window.api.getValue('release-filters');
-      if (!releaseFilters) return albums;
-      const [isFiltered] = releaseFilters.filter((filter) => filter.guid === guid);
-      if (isFiltered) {
-        return albums.filter((album) => !isFiltered.exclusions.includes(album.guid));
-      }
+      albums.forEach(
+        (album) => (album.tracks = tracks.filter((track) => track.parentId === album.id))
+      );
       return albums;
     },
     placeholderData: keepPreviousData,
   });
 
-export const useAlbumsArtistAppearsOn = (id: number, guid: string, title: string) => {
+export const useAlbumsArtistAppearsOn = (
+  id: number,
+  guid: string,
+  title: string,
+  shouldFilter = true
+) => {
   const { sectionId } = store.serverConfig.peek();
   const library = store.library.peek();
-  return useQuery(albumsArtistAppearsOn(id, guid, library, sectionId, title));
+  return useQuery(albumsArtistAppearsOn(id, guid, library, sectionId, title, shouldFilter));
 };
 
 export const albumsQuery = (

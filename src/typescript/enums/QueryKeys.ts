@@ -15,6 +15,7 @@ export enum ArtistKeys {
 
 export enum CustomFilterKeys {
   ALBUMS_ARTIST_APPEARS_ON = 'albums-artist-appears-on', // uses custom filters
+  IS_HIDDEN = 'is-hidden', // uses custom filters
   TRACKS_BY_ARTIST = 'tracks-by-artist', // uses custom filters
 }
 

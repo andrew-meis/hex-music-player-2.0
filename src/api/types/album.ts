@@ -4,6 +4,7 @@ import { schema } from 'normalizr';
 import { MediaContainer, toMediaContainer } from './media-container';
 import { createParser } from './parser';
 import { Tag, toTagList } from './tag';
+import { Track } from './track';
 import { toDate, toFloat, toNumber, toTimestamp } from './types';
 
 const albumSchema = new schema.Entity('albums');
@@ -52,6 +53,7 @@ export interface Album {
   thumb: string;
   thumbBlurHash: string;
   title: string;
+  tracks: Track[];
   type: string;
   updatedAt: Date | undefined;
   userRating: number;
@@ -116,6 +118,7 @@ const toAlbum = ($data: Prism<any>): Album => ({
   thumb: $data.get<string>('thumb', { quiet: true }).value,
   thumbBlurHash: $data.get<string>('thumbBlurHash', { quiet: true }).value,
   title: $data.get<string>('title').value,
+  tracks: [],
   type: $data.get<string>('type').value,
   updatedAt: $data
     .get<number>('updatedAt', { quiet: true })

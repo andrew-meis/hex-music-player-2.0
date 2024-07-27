@@ -163,7 +163,7 @@ const EditLyricsPanel: React.FC<{ track: Track }> = ({ track }) => {
         border="1px solid var(--mui-palette-action-disabled)"
         borderRadius={1}
         flexGrow={1}
-        height={256}
+        height={224}
       >
         <Scroller style={{ height: '100%' }}>
           <Box overflow="auto">
