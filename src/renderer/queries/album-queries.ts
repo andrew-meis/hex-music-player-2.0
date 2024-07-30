@@ -5,20 +5,20 @@ import paramsToObject from 'scripts/params-to-object';
 import { store } from 'state';
 import { QueryKeys } from 'typescript';
 
-export const albumsArtistAppearsOn = (
-  id: number,
-  guid: string,
-  library: Library,
-  sectionId: number,
-  title: string,
-  shouldFilter: boolean
+export const albumsArtistAppearsOnQuery = (
+  artistGuid: string,
+  artistId: number,
+  artistTitle: string,
+  useAppearsOnFilters: boolean
 ) =>
   queryOptions({
-    queryKey: [QueryKeys.ALBUMS_ARTIST_APPEARS_ON, id, shouldFilter],
+    queryKey: [QueryKeys.ALBUMS_ARTIST_APPEARS_ON, artistId, useAppearsOnFilters],
     queryFn: async () => {
+      const { sectionId } = store.serverConfig.peek();
+      const library = store.library.peek();
       let searchTerms: string | undefined = undefined;
-      if (title !== deburr(title)) {
-        const searchTitle = title.replace(/[^\w ]/, ' ');
+      if (artistTitle !== deburr(artistTitle)) {
+        const searchTitle = artistTitle.replace(/[^\w ]/, ' ');
         searchTerms = searchTitle
           .split(' ')
           .filter((value) => value.length > 2)
@@ -28,24 +28,24 @@ export const albumsArtistAppearsOn = (
       const { tracks } = await library.tracks(
         sectionId,
         new URLSearchParams({
-          'artist.id!': id.toString(),
-          'track.title': searchTerms || title,
+          'artist.id!': artistId.toString(),
+          'track.title': searchTerms || artistTitle,
         })
       );
       const albumIds: number[] = [];
-      const releaseFilters = await window.api.getValue('release-filters');
-      if (!releaseFilters || !shouldFilter) {
+      const appearsOnFilters = await window.api.getValue('appears-on-filters');
+      if (!appearsOnFilters || !useAppearsOnFilters) {
         tracks.forEach((track) => {
-          if (track.originalTitle?.toLowerCase().includes(title.toLowerCase())) {
+          if (track.originalTitle?.toLowerCase().includes(artistTitle.toLowerCase())) {
             albumIds.push(track.parentId);
           }
         });
       }
-      if (releaseFilters && shouldFilter) {
-        const [isFiltered] = releaseFilters.filter((filter) => filter.guid === guid);
+      if (appearsOnFilters && useAppearsOnFilters) {
+        const [isFiltered] = appearsOnFilters.filter((filter) => filter.artistGuid === artistGuid);
         tracks.forEach((track) => {
           if (isFiltered?.exclusions.includes(track.guid)) return;
-          if (track.originalTitle?.toLowerCase().includes(title.toLowerCase())) {
+          if (track.originalTitle?.toLowerCase().includes(artistTitle.toLowerCase())) {
             albumIds.push(track.parentId);
           }
         });
@@ -65,15 +65,22 @@ export const albumsArtistAppearsOn = (
     placeholderData: keepPreviousData,
   });
 
+/**
+ * Get albums where a given artist makes a guest appearance on a track.
+ * @param {string} artistGuid
+ * @param {number} artistId
+ * @param {string} artistTitle
+ * @param {boolean} useAppearsOnFilters
+ */
 export const useAlbumsArtistAppearsOn = (
-  id: number,
-  guid: string,
-  title: string,
-  shouldFilter = true
+  artistGuid: string,
+  artistId: number,
+  artistTitle: string,
+  useAppearsOnFilters: boolean = true
 ) => {
-  const { sectionId } = store.serverConfig.peek();
-  const library = store.library.peek();
-  return useQuery(albumsArtistAppearsOn(id, guid, library, sectionId, title, shouldFilter));
+  return useQuery(
+    albumsArtistAppearsOnQuery(artistGuid, artistId, artistTitle, useAppearsOnFilters)
+  );
 };
 
 export const albumsQuery = (

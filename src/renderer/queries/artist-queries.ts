@@ -1,5 +1,5 @@
 import { QueryClient, queryOptions, useQuery } from '@tanstack/react-query';
-import { Library } from 'api';
+import { AlbumContainer, ArtistContainer, Library, parseContainerType } from 'api';
 import paramsToObject from 'scripts/params-to-object';
 import { store } from 'state';
 import { ArtistKeys, QueryKeys } from 'typescript';
@@ -13,12 +13,27 @@ export const artistQuery = (id: number, library: Library) =>
   queryOptions({
     queryKey: [QueryKeys.ARTIST, id],
     queryFn: async () => {
-      return library.artist(id, {
+      const {
+        artists: [artist],
+      } = await library.artist(id, {
         includeChildren: true,
         includePopularLeaves: true,
         includeRelated: true,
-        includeRelatedCount: 20,
+        includeRelatedCount: 5,
       });
+      const hubsToFetch = artist.hubs
+        .filter((hub) => hub.more)
+        .filter((hub) => hub.hubIdentifier !== 'external.artist.similar.sonically');
+      for (const hubToFetch of hubsToFetch) {
+        const response = await library.fetch(hubToFetch.key);
+        const container = parseContainerType(hubToFetch.type === 'artist' ? 8 : 9, response);
+        const items =
+          container._type === 'artistContainer'
+            ? (container as ArtistContainer).artists
+            : (container as AlbumContainer).albums;
+        artist.hubs.find((hub) => hub.hubIdentifier === hubToFetch.hubIdentifier)!.items = items;
+      }
+      return artist;
     },
   });
 

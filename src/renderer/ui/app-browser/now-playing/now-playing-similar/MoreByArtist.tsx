@@ -17,8 +17,8 @@ const MoreByArtist: React.FC = observer(function SimilarMoreByArtist() {
   const { data: artistTracks } = useTracksByArtist(
     nowPlaying.track.grandparentGuid,
     nowPlaying.track.grandparentId,
-    SORT_TRACKS_BY_PLAYS.desc,
     nowPlaying.track.grandparentTitle,
+    SORT_TRACKS_BY_PLAYS.desc,
     !tabIsAnimating,
     true
   );
@@ -32,7 +32,7 @@ const MoreByArtist: React.FC = observer(function SimilarMoreByArtist() {
 
   if (!artistTracks) return null;
 
-  if (artistTracks.length === 0) {
+  if (artistTracks.length === 1) {
     return (
       <Box
         alignItems="center"
@@ -43,7 +43,7 @@ const MoreByArtist: React.FC = observer(function SimilarMoreByArtist() {
         width={1}
       >
         <Typography color="text.secondary" variant="h5">
-          No more tracks by artist found in Plex library
+          No other tracks found in Plex library
         </Typography>
       </Box>
     );

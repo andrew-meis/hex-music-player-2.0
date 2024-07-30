@@ -1,21 +1,33 @@
-import { useSelector } from '@legendapp/state/react';
+import { ObservableArray } from '@legendapp/state';
+import { useMount, useObservable, useSelector } from '@legendapp/state/react';
 import { Avatar, Box, IconButton, SvgIcon, Typography } from '@mui/material';
-import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { Album, Artist, Track } from 'api';
+import EditFab from 'components/edit/EditFab';
 import Scroller from 'components/scroller/Scroller';
+import { isEqual } from 'lodash';
 import { useAlbumsArtistAppearsOn } from 'queries';
 import React from 'react';
 import { BiSolidAlbum } from 'react-icons/bi';
 import { PiEye, PiEyeSlash } from 'react-icons/pi';
 import { useSearchParams } from 'react-router-dom';
 import { store } from 'state';
-import { CustomFilterKeys, QueryKeys, ReleaseFilters } from 'typescript';
+import { AppearsOnFilters, CustomFilterKeys } from 'typescript';
 
 const TrackRow: React.FC<{
-  isHidden: boolean;
-  toggleVisibility: (track: Track) => Promise<void>;
+  artistGuid: string;
+  appearsOnFilters: ObservableArray<AppearsOnFilters>;
+  toggleVisibility: (track: Track) => void;
   track: Track;
-}> = ({ isHidden, toggleVisibility, track }) => {
+}> = ({ appearsOnFilters, artistGuid, toggleVisibility, track }) => {
+  const isHidden = useSelector(() => {
+    const filters = appearsOnFilters.get();
+    if (!filters) return false;
+    const [isFiltered] = filters.filter((filter) => filter.artistGuid === artistGuid);
+    if (!isFiltered) return false;
+    return !!isFiltered.exclusions.find((trackGuid) => trackGuid === track.guid);
+  });
+
   return (
     <Box
       alignItems="center"
@@ -48,16 +60,12 @@ const TrackRow: React.FC<{
   );
 };
 
-const Row: React.FC<{
+const AlbumRow: React.FC<{
   album: Album;
+  appearsOnFilters: ObservableArray<AppearsOnFilters>;
   artistGuid: string;
-  trackVisibility: {
-    id: number;
-    hidden: boolean;
-  }[];
-}> = ({ album, artistGuid, trackVisibility }) => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const queryClient = useQueryClient();
+  toggleVisibility: (track: Track) => void;
+}> = ({ album, appearsOnFilters, artistGuid, toggleVisibility }) => {
   const library = store.library.peek();
 
   const thumbSrc = useSelector(() => {
@@ -70,57 +78,13 @@ const Row: React.FC<{
     );
   });
 
-  const toggleVisibility = async (track: Track) => {
-    const isHidden = trackVisibility.find((value) => value.id === track.id)!.hidden;
-    if (!isHidden) {
-      const filters = await window.api.getValue('release-filters');
-      if (!filters) {
-        const newFilters: ReleaseFilters = [{ guid: artistGuid, exclusions: [track.guid] }];
-        await window.api.setValue('release-filters', newFilters);
-      }
-      if (filters) {
-        const index = filters.findIndex((value) => value.guid === artistGuid);
-        if (index > -1) {
-          const updatedExclusions = [...filters[index].exclusions, track.guid];
-          filters[index] = { guid: artistGuid, exclusions: updatedExclusions };
-        }
-        if (index === -1) {
-          filters.push({ guid: artistGuid, exclusions: [track.guid] });
-        }
-        await window.api.setValue('release-filters', filters);
-      }
-    }
-    if (isHidden) {
-      const filters = await window.api.getValue('release-filters');
-      const index = filters.findIndex((value) => value.guid === artistGuid);
-      const updatedExclusions = filters[index].exclusions.filter(
-        (trackGuid) => trackGuid !== track.guid
-      );
-      filters[index] = { guid: artistGuid, exclusions: updatedExclusions };
-      await window.api.setValue('release-filters', filters);
-    }
-    const newTrackVisiblity = structuredClone(trackVisibility);
-    newTrackVisiblity.find((value) => value.id === track.id)!.hidden = !isHidden;
-    if (
-      newTrackVisiblity.every((value) => value.hidden === true) &&
-      searchParams.get('tabIndex') === '8'
-    ) {
-      searchParams.set('tabIndex', '0');
-      setSearchParams(searchParams);
-    }
-    await queryClient.refetchQueries({
-      predicate: (query) =>
-        Object.values(CustomFilterKeys).includes(query.queryKey[0] as CustomFilterKeys),
-    });
-  };
-
   return (
     <Box marginBottom={2}>
       <Box alignItems="center" display="flex" height={64}>
         <Avatar
           alt={album.title}
           src={thumbSrc}
-          sx={{ height: 48, marginX: 1, width: 48 }}
+          sx={{ aspectRatio: 1, height: 48, margin: 1, width: 48 }}
           variant="rounded"
         >
           <BiSolidAlbum />
@@ -132,7 +96,8 @@ const Row: React.FC<{
       </Box>
       {album.tracks.map((track) => (
         <TrackRow
-          isHidden={trackVisibility.find((value) => value.id === track.id)!.hidden}
+          appearsOnFilters={appearsOnFilters}
+          artistGuid={artistGuid}
           key={track.id}
           toggleVisibility={toggleVisibility}
           track={track}
@@ -142,59 +107,116 @@ const Row: React.FC<{
   );
 };
 
-const EditAppearsOnPanel: React.FC<{ artist: Artist }> = ({ artist }) => {
-  const { data: appearances } = useAlbumsArtistAppearsOn(
-    artist.id,
-    artist.guid,
-    artist.title,
-    false
-  );
+const filters = await window.api.getValue('appears-on-filters');
 
-  const { data: trackVisibility } = useQuery({
-    queryKey: [QueryKeys.IS_HIDDEN, artist.id],
-    queryFn: async () => {
-      const tracks = appearances!.flatMap((album) => album.tracks);
-      const releaseFilters = await window.api.getValue('release-filters');
-      if (!releaseFilters) return tracks.map((track) => ({ id: track.id, hidden: false }));
-      const [isFiltered] = releaseFilters.filter((filter) => filter.guid === artist.guid);
-      if (!isFiltered) return tracks.map((track) => ({ id: track.id, hidden: false }));
-      return tracks.map((track) => {
-        if (isFiltered.exclusions.find((exclusion) => exclusion === track.guid)) {
-          return { id: track.id, hidden: true };
-        } else {
-          return { id: track.id, hidden: false };
-        }
-      });
-    },
-    enabled: !!appearances,
-    placeholderData: keepPreviousData,
+const EditAppearsOnPanel: React.FC<{ artist: Artist }> = ({ artist }) => {
+  const appearsOnFilters = useObservable(filters);
+  const isModified = useObservable(false);
+  const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { data: appearsOn } = useAlbumsArtistAppearsOn(artist.guid, artist.id, artist.title, false);
+
+  useMount(async () => {
+    const updatedFilters = await window.api.getValue('appears-on-filters');
+    appearsOnFilters.set(updatedFilters);
   });
 
-  if (!appearances || !trackVisibility) return null;
+  const handleSave = async () => {
+    isModified.set(false);
+    await window.api.setValue('appears-on-filters', appearsOnFilters.peek());
+    const tracks = appearsOn!.flatMap((album) => album.tracks);
+    const allHidden = tracks.every((track) => {
+      return appearsOnFilters
+        .peek()
+        .find((filter) => filter.artistGuid === artist.guid)
+        ?.exclusions.includes(track.guid);
+    });
+    if (allHidden && searchParams.get('tabIndex') === '8') {
+      searchParams.set('tabIndex', '0');
+      setSearchParams(searchParams);
+    }
+    await queryClient.refetchQueries({
+      predicate: (query) =>
+        Object.values(CustomFilterKeys).includes(query.queryKey[0] as CustomFilterKeys),
+    });
+  };
+
+  const toggleVisibility = async (track: Track) => {
+    let updatedAppearsOnFilters = structuredClone(appearsOnFilters.peek());
+    if (!updatedAppearsOnFilters) {
+      updatedAppearsOnFilters = [
+        { artistGuid: artist.guid, exclusions: [track.guid], inclusions: [] },
+      ];
+      return;
+    } else {
+      const artistIndex = updatedAppearsOnFilters.findIndex(
+        (filter) => filter.artistGuid === artist.guid
+      );
+      if (artistIndex > -1) {
+        const isHidden = updatedAppearsOnFilters[artistIndex].exclusions.find(
+          (exclusion) => exclusion === track.guid
+        );
+        if (!isHidden) {
+          const updatedExclusions = [
+            ...updatedAppearsOnFilters[artistIndex].exclusions,
+            track.guid,
+          ];
+          updatedAppearsOnFilters[artistIndex].exclusions = updatedExclusions;
+        }
+        if (isHidden) {
+          const updatedExclusions = updatedAppearsOnFilters[artistIndex].exclusions.filter(
+            (trackGuid) => trackGuid !== track.guid
+          );
+          updatedAppearsOnFilters[artistIndex].exclusions = updatedExclusions;
+        }
+      }
+      if (artistIndex === -1) {
+        updatedAppearsOnFilters.push({
+          artistGuid: artist.guid,
+          exclusions: [track.guid],
+          inclusions: [],
+        });
+      }
+    }
+    appearsOnFilters.set(updatedAppearsOnFilters);
+    const savedAppearsOnFilters = await window.api.getValue('appears-on-filters');
+    if (isEqual(savedAppearsOnFilters, updatedAppearsOnFilters)) {
+      isModified.set(false);
+    }
+    if (!isEqual(savedAppearsOnFilters, updatedAppearsOnFilters)) {
+      isModified.set(true);
+    }
+  };
+
+  if (!appearsOn) return null;
 
   return (
-    <Box
-      display="flex"
-      flex="1 0 0"
-      flexDirection="column"
-      height={1}
-      left="0.5rem"
-      overflow="hidden"
-      paddingTop={2}
-      position="relative"
-      width="calc(100% - 1rem)"
-    >
-      <Scroller display="flex" flexDirection="column" height="calc(100% - 16px)">
-        {appearances?.map((album) => (
-          <Row
-            album={album}
-            artistGuid={artist.guid}
-            key={album.id}
-            trackVisibility={trackVisibility}
-          />
-        ))}
-      </Scroller>
-    </Box>
+    <>
+      <Box
+        display="flex"
+        flex="1 0 0"
+        flexDirection="column"
+        height={1}
+        left="0.5rem"
+        overflow="hidden"
+        paddingTop={2}
+        position="relative"
+        width="calc(100% - 1rem)"
+      >
+        <Scroller display="flex" flexDirection="column" height="calc(100% - 16px)">
+          {appearsOn?.map((album) => (
+            <AlbumRow
+              album={album}
+              appearsOnFilters={appearsOnFilters}
+              artistGuid={artist.guid}
+              key={album.id}
+              toggleVisibility={toggleVisibility}
+            />
+          ))}
+        </Scroller>
+      </Box>
+      <EditFab isVisible={isModified} onClick={handleSave} />
+    </>
   );
 };
 

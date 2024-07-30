@@ -1,5 +1,5 @@
 import { ElectronAPI } from '@electron-toolkit/preload';
-import { AppInfo, PersistedStore, ReleaseFilters, ServerConfig } from 'typescript';
+import { AppearsOnFilters, AppInfo, PersistedStore, ServerConfig } from 'typescript';
 
 declare global {
   interface Window {
@@ -9,12 +9,12 @@ declare global {
       getValue: {
         (key: 'persisted-store'): Promise<PersistedStore>;
         (key: 'server-config'): Promise<ServerConfig>;
-        (key: 'release-filters'): Promise<ReleaseFilters>;
+        (key: 'appears-on-filters'): Promise<AppearsOnFilters>;
       };
       setValue: {
         (key: 'persisted-store', value: PersistedStore): Promise<void>;
         (key: 'server-config', value: ServerConfig): Promise<void>;
-        (key: 'release-filters', value: ReleaseFilters): Promise<void>;
+        (key: 'appears-on-filters', value: AppearsOnFilters): Promise<void>;
       };
       setMode: (mode: 'dark' | 'light') => Promise<void>;
     };

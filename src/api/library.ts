@@ -508,7 +508,7 @@ export default class Library {
       includeChildren = false,
       includePopularLeaves = false,
       includeRelated = false,
-      includeRelatedCount = 20,
+      includeRelatedCount = 50,
     } = options;
     const artist = await this.metadata(
       artistId,
@@ -517,7 +517,7 @@ export default class Library {
         includeChildren: includeChildren ? '1' : '0',
         includePopularLeaves: includePopularLeaves ? '1' : '0',
         includeRelated: includeRelated ? '1' : '0',
-        includeRelatedCount: includeRelated ? includeRelatedCount.toString() : '0',
+        ...(includeRelated && { includeRelatedCount: includeRelatedCount.toString() }),
       })
     );
     return artist;

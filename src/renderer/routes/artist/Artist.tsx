@@ -10,7 +10,12 @@ import Scroller from 'components/scroller/Scroller';
 import { motion } from 'framer-motion';
 import useScrollRestoration from 'hooks/useScrollRestoration';
 import { isEmpty } from 'lodash';
-import { useAlbumsArtistAppearsOn, useArtist, useRecentTracks, useTracksByArtist } from 'queries';
+import {
+  useAlbumsArtistAppearsOn,
+  useArtist,
+  useRecentTracksByArtist,
+  useTracksByArtist,
+} from 'queries';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { createSearchParams, useLoaderData, useLocation } from 'react-router-dom';
 import { store } from 'state';
@@ -216,54 +221,51 @@ const Artist: React.FC = () => {
   const { guid, id, title } = useLoaderData() as Awaited<ReturnType<typeof artistLoader>>;
   const [initial, handleScroll, scrollerProps, setReady] = useScrollRestoration(location.key);
 
-  const { data: artistData } = useArtist(id);
-  const { data: appearances } = useAlbumsArtistAppearsOn(id, guid, title);
+  const { data: artist } = useArtist(id);
+  const { data: appearsOn } = useAlbumsArtistAppearsOn(guid, id, title);
 
   const recentTrackQueryIDs = useMemo(() => {
-    if (!appearances) return [];
-    return [id, ...appearances.map((album) => album.id)];
-  }, [appearances]);
+    if (!appearsOn) return [];
+    return [id, ...appearsOn.map((album) => album.id)];
+  }, [appearsOn]);
 
-  const { data: recentTracks } = useRecentTracks(
-    recentTrackQueryIDs,
-    90,
+  const { data: recentTracks } = useRecentTracksByArtist(
+    guid,
+    id,
     title,
-    recentTrackQueryIDs.length > 0
+    90,
+    recentTrackQueryIDs.length > 0,
+    recentTrackQueryIDs
   );
 
   const { data: mostPlayedTracks } = useTracksByArtist(
     guid,
     id,
-    SORT_TRACKS_BY_PLAYS.desc,
     title,
+    SORT_TRACKS_BY_PLAYS.desc,
     true,
     true
   );
 
   const releases = useMemo(() => {
-    if (!artistData || !appearances) return {};
+    if (!artist || !appearsOn) return {};
     const releaseIDs: number[] = [];
     let returnData = {} as Record<string, Album[]>;
-    artistData.artists[0].hubs.forEach((hub) => {
+    artist.hubs.forEach((hub) => {
       if (hub.type === 'album' && hub.size > 0) {
         releaseIDs.push(...hub.items.map((item) => item.id));
         returnData[hub.title] = hub.items as Album[];
       }
     });
-    const filteredAlbums = artistData.artists[0].albums.filter(
-      (album) => !releaseIDs.includes(album.id)
-    );
+    const filteredAlbums = artist.albums.filter((album) => !releaseIDs.includes(album.id));
     if (filteredAlbums.length > 0) {
       returnData = Object.assign({ Albums: filteredAlbums }, returnData);
     }
-    if (appearances.length > 0) {
-      returnData['Appears On'] = appearances.map((album) => ({
-        ...album,
-        subformat: [...album.subformat, { id: 0, filter: 'appearance', tag: 'appearance' }],
-      }));
+    if (appearsOn.length > 0) {
+      returnData['Appears On'] = appearsOn;
     }
     return returnData;
-  }, [artistData, appearances]);
+  }, [artist, appearsOn]);
 
   useEffect(() => {
     store.ui.breadcrumbs.set([
@@ -282,12 +284,11 @@ const Artist: React.FC = () => {
     ]);
   }, [id]);
 
-  if (isEmpty(releases) || !recentTracks || !mostPlayedTracks) return null;
+  if (isEmpty(releases) || !artist || !recentTracks || !mostPlayedTracks) return null;
 
   return (
     <Scroller sx={{ height: '100%', ...scrollerProps }} onScroll={handleScroll}>
       {({ viewport }) => {
-        const [artist] = artistData!.artists;
         return (
           <Palette src={artist.art || artist.thumb}>
             {({ isReady, color }) =>
@@ -299,10 +300,13 @@ const Artist: React.FC = () => {
                   key={location.pathname}
                   style={{ height: 'fit-content' }}
                   transition={{ delay: 0.1 }}
+                  viewport={{ once: true }}
                   onViewportEnter={() => {
                     if (!viewport) return;
                     viewport.scrollTop = initial;
-                    setReady(true);
+                    if (viewport.scrollTop === initial) {
+                      setReady(true);
+                    }
                   }}
                 >
                   <Banner artist={artist} color={color} viewport={viewport} />

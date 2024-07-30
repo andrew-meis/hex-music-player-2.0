@@ -53,10 +53,13 @@ const Playlist: React.FC = () => {
           key={location.pathname}
           style={{ height: 'fit-content', margin: '0 32px' }}
           transition={{ delay: 0.1 }}
+          viewport={{ once: true }}
           onViewportEnter={() => {
             if (!viewport) return;
             viewport.scrollTop = initial;
-            setReady(true);
+            if (viewport.scrollTop === initial) {
+              setReady(true);
+            }
           }}
         >
           <Typography variant="h1">{title}</Typography>

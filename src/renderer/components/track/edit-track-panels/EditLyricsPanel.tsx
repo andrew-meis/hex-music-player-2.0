@@ -1,38 +1,16 @@
-import {
-  Box,
-  Checkbox,
-  Fab,
-  FormControlLabel,
-  FormHelperText,
-  InputBase,
-  SvgIcon,
-} from '@mui/material';
+import { useObservable } from '@legendapp/state/react';
+import { Box, Checkbox, FormControlLabel, FormHelperText, InputBase } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { Track } from 'api';
+import EditFab from 'components/edit/EditFab';
 import Scroller from 'components/scroller/Scroller';
 import { inPlaceSort } from 'fast-sort';
 import { db } from 'features/db';
-import { motion } from 'framer-motion';
 import { useLyrics } from 'queries';
 import React, { useMemo, useState } from 'react';
 import { FileWithPath, useDropzone } from 'react-dropzone';
-import { PiCheckCircleFill } from 'react-icons/pi';
 import { store } from 'state';
 import { QueryKeys } from 'typescript';
-
-const buttonMotion = {
-  visible: {
-    opacity: 1,
-    transition: {
-      duration: 0.3,
-    },
-    y: -16,
-  },
-  hidden: {
-    opacity: 0,
-    y: -4,
-  },
-};
 
 const processLyrics = (lyrics: string) => {
   let lines = lyrics.split(/\r?\n/);
@@ -48,13 +26,11 @@ const processLyrics = (lyrics: string) => {
   return inPlaceSort(lines).asc().join('\n');
 };
 
-const MotionFab = motion(Fab);
-
 const EditLyricsPanel: React.FC<{ track: Track }> = ({ track }) => {
   const queryClient = useQueryClient();
+  const isModified = useObservable(false);
   const { data: lyrics } = useLyrics(track);
   const [instrumental, setInstrumental] = useState(lyrics?.instrumental);
-  const [lyricsEdited, setLyricsEdited] = useState(false);
   const [value, setValue] = useState(lyrics?.syncedLyrics || lyrics?.plainLyrics || '');
 
   const validSyncedLyrics = useMemo(
@@ -82,7 +58,7 @@ const EditLyricsPanel: React.FC<{ track: Track }> = ({ track }) => {
       reader.addEventListener('load', (event) => {
         const newLyrics = processLyrics(event.target!.result as string);
         setValue(newLyrics);
-        setLyricsEdited(true);
+        isModified.set(true);
       });
       reader.readAsText(files[0]);
     },
@@ -121,12 +97,12 @@ const EditLyricsPanel: React.FC<{ track: Track }> = ({ track }) => {
     setInstrumental(event.target.checked);
     if (event.target.checked) {
       setValue('');
-      setLyricsEdited(true);
+      isModified.set(true);
       return;
     }
     if (!event.target.checked) {
       setValue(lyrics?.syncedLyrics || lyrics?.plainLyrics || '');
-      setLyricsEdited(false);
+      isModified.set(false);
     }
   };
 
@@ -181,12 +157,12 @@ const EditLyricsPanel: React.FC<{ track: Track }> = ({ track }) => {
               value={value}
               onChange={(event) => {
                 setValue(event.target.value);
-                setLyricsEdited(true);
+                isModified.set(true);
                 if (
                   event.target.value === lyrics?.syncedLyrics ||
                   event.target.value === lyrics?.plainLyrics
                 ) {
-                  setLyricsEdited(false);
+                  isModified.set(false);
                 }
               }}
             />
@@ -194,32 +170,7 @@ const EditLyricsPanel: React.FC<{ track: Track }> = ({ track }) => {
         </Scroller>
       </Box>
       <FormHelperText sx={sx}>{text}</FormHelperText>
-      <motion.div
-        animate={lyricsEdited ? 'visible' : 'hidden'}
-        initial="hidden"
-        style={{
-          bottom: 0,
-          right: 16,
-          position: 'absolute',
-        }}
-        variants={buttonMotion}
-      >
-        <MotionFab
-          size="small"
-          sx={(theme) => ({
-            backgroundColor: theme.palette.background.default,
-            '&:hover': {
-              backgroundColor: theme.palette.background.default,
-            },
-          })}
-          whileHover={{ scale: 1.1 }}
-          onClick={handleSave}
-        >
-          <SvgIcon sx={(theme) => ({ color: theme.palette.primary.main, height: 42, width: 42 })}>
-            <PiCheckCircleFill />
-          </SvgIcon>
-        </MotionFab>
-      </motion.div>
+      <EditFab isVisible={isModified} onClick={handleSave} />
     </Box>
   );
 };

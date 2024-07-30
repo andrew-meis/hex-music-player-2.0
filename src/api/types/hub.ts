@@ -68,6 +68,7 @@ export interface Hub {
   items: (Artist | Album | Track | Playlist | Genre | Collection)[];
 
   hubIdentifier: string;
+  key: string;
   more: boolean;
   size: number;
   title: string;
@@ -107,6 +108,7 @@ const toHub = ($data: Prism<any>): Hub => {
     items,
 
     hubIdentifier: $data.get('hubIdentifier').value,
+    key: $data.get('key').value,
     more: $data.get('more').value,
     size: $data.get('size').value,
     title: $data.get('title').value,

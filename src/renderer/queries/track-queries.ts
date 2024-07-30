@@ -1,5 +1,6 @@
 import { keepPreviousData, QueryClient, queryOptions, useQuery } from '@tanstack/react-query';
 import { Library, parseTrackContainer, SORT_BY_DATE_PLAYED, Track } from 'api';
+import { sort } from 'fast-sort';
 import { db } from 'features/db';
 import ky from 'ky';
 import { LastFMTrack } from 'lastfm-ts-api';
@@ -157,8 +158,9 @@ export const lastfmMatchTracksQuery = (track: Track, enabled: boolean) =>
         track: track.title,
         autocorrect: 1,
       });
-      if (similartracks.track.length === 0)
+      if (similartracks.track.length === 0) {
         return { reason: 'No last.fm similar tracks', tracks: [] };
+      }
       const matchedTracks = [] as Track[];
       await Promise.all(
         similartracks.track.map(async (track) => {
@@ -172,19 +174,32 @@ export const lastfmMatchTracksQuery = (track: Track, enabled: boolean) =>
           }
         })
       );
-      if (matchedTracks.length === 0)
+      if (matchedTracks.length === 0) {
         return { reason: 'No last.fm similar tracks found in Plex library', tracks: [] };
+      }
       return { reason: 'Success!', tracks: matchedTracks };
     },
     enabled,
   });
 
-export const useLastfmMatchTracks = (track: Track, enabled = true) =>
+/**
+ * Get last.fm similar tracks for a Plex track and return matching tracks found in Plex library.
+ * @param {Track} track
+ * @param {boolean} enabled
+ */
+export const useLastfmMatchTracks = (track: Track, enabled: boolean = true) =>
   useQuery(lastfmMatchTracksQuery(track, enabled));
 
-const recentTracksQuery = (ids: number[], days: number, stringFilter: string, enabled: boolean) =>
+const recentTracksByArtistQuery = (
+  artistGuid: string,
+  artistId: number,
+  artistTitle: string,
+  days: number,
+  enabled: boolean,
+  ids: number[]
+) =>
   queryOptions({
-    queryKey: [QueryKeys.RECENT_TRACKS, ids.join(), days],
+    queryKey: [QueryKeys.RECENT_TRACKS, artistId, days, ids.join()],
     queryFn: async () => {
       const { sectionId } = store.serverConfig.peek();
       const library = store.library.peek();
@@ -222,15 +237,18 @@ const recentTracksQuery = (ids: number[], days: number, stringFilter: string, en
           const match = tracks.find((track) => track.ratingKey === key);
           if (match) match.globalViewCount = counts[key];
         });
-        const appearanceTracks = tracks.filter(
-          (track) =>
-            track.originalTitle?.toLowerCase().includes(stringFilter.toLowerCase()) &&
-            track.grandparentId !== ids[0]
+        const releaseFilter = (await window.api.getValue('appears-on-filters'))?.find(
+          (filter) => filter.artistGuid === artistGuid
         );
-        const artistTracks = tracks.filter((track) => track.grandparentId === ids[0]);
-        return [...appearanceTracks, ...artistTracks].sort(
-          (a, b) => b.globalViewCount - a.globalViewCount
-        );
+        const appearanceTracks = tracks
+          .filter(
+            (track) =>
+              track.originalTitle?.toLowerCase().includes(artistTitle.toLowerCase()) &&
+              track.grandparentId !== artistId
+          )
+          .filter((track) => !releaseFilter?.exclusions.includes(track.guid));
+        const artistTracks = tracks.filter((track) => track.grandparentId === artistId);
+        return sort([...appearanceTracks, ...artistTracks]).desc('globalViewCount');
       }
       return [];
     },
@@ -238,8 +256,23 @@ const recentTracksQuery = (ids: number[], days: number, stringFilter: string, en
     enabled,
   });
 
-export const useRecentTracks = (ids: number[], days: number, stringFilter = '', enabled = true) =>
-  useQuery(recentTracksQuery(ids, days, stringFilter, enabled));
+/**
+ * Get tracks played most frequently within a given number of days.
+ * @param {string} artistGuid
+ * @param {number} artistId
+ * @param {string} artistTitle
+ * @param {number} days
+ * @param {boolean} enabled
+ * @param {number[]} ids Plex ids for history query; should include the artist.id and album.id of any albums the artist appears on.
+ */
+export const useRecentTracksByArtist = (
+  artistGuid: string,
+  artistId: number,
+  artistTitle: string,
+  days: number,
+  enabled: boolean = true,
+  ids: number[]
+) => useQuery(recentTracksByArtistQuery(artistGuid, artistId, artistTitle, days, enabled, ids));
 
 const relatedTracksQuery = (track: Track, enabled: boolean) =>
   queryOptions({
@@ -265,37 +298,37 @@ export const useSimilarTracks = (track: Track, enabled = true) =>
   useQuery(similarTracksQuery(track, enabled));
 
 export const tracksByArtistQuery = (
-  enabled: boolean,
-  guid: string,
-  id: number,
-  library: Library,
-  sectionId: number,
+  artistGuid: string,
+  artistId: number,
+  artistTitle: string,
   sort: string,
-  title: string,
-  removeDupes?: boolean
+  enabled: boolean,
+  removeDupes: boolean
 ) =>
   queryOptions({
-    queryKey: [QueryKeys.TRACKS_BY_ARTIST, id, sort],
+    queryKey: [QueryKeys.TRACKS_BY_ARTIST, artistId, sort],
     queryFn: async () => {
+      const { sectionId } = store.serverConfig.peek();
+      const library = store.library.peek();
       const searchParams = new URLSearchParams();
       searchParams.append('push', '1');
-      searchParams.append('artist.id', id.toString());
+      searchParams.append('artist.id', artistId.toString());
       searchParams.append('or', '1');
-      searchParams.append('track.title', title);
+      searchParams.append('track.title', artistTitle);
       searchParams.append('or', '1');
-      searchParams.append('track.artist', title);
+      searchParams.append('track.artist', artistTitle);
       searchParams.append('pop', '1');
       if (removeDupes) searchParams.append('group', 'guid');
       searchParams.append('sort', sort);
       const { tracks } = await library.tracks(sectionId, searchParams);
       const filteredTracks = tracks.filter(
         (track) =>
-          track.originalTitle?.toLowerCase().includes(title.toLowerCase()) ||
-          track.grandparentId === id
+          track.originalTitle?.toLowerCase().includes(artistTitle.toLowerCase()) ||
+          track.grandparentId === artistId
       );
-      const releaseFilters = await window.api.getValue('release-filters');
-      if (!releaseFilters) return filteredTracks;
-      const [isFiltered] = releaseFilters.filter((filter) => filter.guid === guid);
+      const appearsOnFilters = await window.api.getValue('appears-on-filters');
+      if (!appearsOnFilters) return filteredTracks;
+      const [isFiltered] = appearsOnFilters.filter((filter) => filter.artistGuid === artistGuid);
       if (isFiltered) {
         return filteredTracks.filter((track) => !isFiltered.exclusions.includes(track.guid));
       }
@@ -305,20 +338,23 @@ export const tracksByArtistQuery = (
     enabled,
   });
 
+/**
+ * Get tracks by artist with Appears On tracks.
+ * @param {string} artistGuid
+ * @param {number} artistId
+ * @param {string} artistTitle
+ * @param {boolean} enabled
+ * @param {string} sort
+ * @param {boolean} [removeDupes]
+ */
 export const useTracksByArtist = (
-  guid: string,
-  id: number,
+  artistGuid: string,
+  artistId: number,
+  artistTitle: string,
   sort: string,
-  title: string,
-  enabled = true,
-  removeDupes?: boolean
-) => {
-  const { sectionId } = store.serverConfig.peek();
-  const library = store.library.peek();
-  return useQuery(
-    tracksByArtistQuery(enabled, guid, id, library, sectionId, sort, title, removeDupes)
-  );
-};
+  enabled: boolean = true,
+  removeDupes: boolean = false
+) => useQuery(tracksByArtistQuery(artistGuid, artistId, artistTitle, sort, enabled, removeDupes));
 
 export const tracksQuery = (
   sectionId: number,
