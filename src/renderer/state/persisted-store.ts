@@ -10,6 +10,7 @@ const defaultValues = {
     key: 'originallyAvailableAt' as keyof Album,
     order: 'desc' as 'asc' | 'desc',
   },
+  appearsOnFilters: {} as Record<string, { exclusions: string[]; inclusions: string[] }>,
   displayRemainingTime: true,
   lastfmApiKey: '',
   lyricsSize: 2,

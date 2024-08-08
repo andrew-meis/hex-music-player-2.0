@@ -9,8 +9,8 @@ const Scroller = React.forwardRef<HTMLDivElement, ScrollerProps>(
     const [initialize] = useOverlayScrollbars({
       defer: true,
       options: {
-        update: {
-          debounce: null,
+        overflow: {
+          x: 'hidden',
         },
         scrollbars: {
           autoHide: 'leave',
@@ -19,6 +19,9 @@ const Scroller = React.forwardRef<HTMLDivElement, ScrollerProps>(
           theme: mode === 'dark' ? 'os-theme-light' : 'os-theme-dark',
           clickScroll: true,
           visibility: 'visible',
+        },
+        update: {
+          debounce: null,
         },
       },
     });

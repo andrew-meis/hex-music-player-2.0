@@ -70,9 +70,10 @@ const TableRow = ({
     <Box
       alignItems="center"
       bgcolor={isSelected ? 'action.selected' : 'transparent'}
+      className="table-row"
       component="tr"
       display="flex"
-      height={64}
+      height={54}
       ref={drop ? dropRef : drag}
       sx={{
         transition: 'background-color 100ms ease-in-out',

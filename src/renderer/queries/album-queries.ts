@@ -2,7 +2,7 @@ import { keepPreviousData, queryOptions, useQuery } from '@tanstack/react-query'
 import { Library, SORT_ALBUMS_BY_RELEASE_DATE } from 'api';
 import { deburr } from 'lodash';
 import paramsToObject from 'scripts/params-to-object';
-import { store } from 'state';
+import { persistedStore, store } from 'state';
 import { QueryKeys } from 'typescript';
 
 export const albumsArtistAppearsOnQuery = (
@@ -33,18 +33,17 @@ export const albumsArtistAppearsOnQuery = (
         })
       );
       const albumIds: number[] = [];
-      const appearsOnFilters = await window.api.getValue('appears-on-filters');
-      if (!appearsOnFilters || !useAppearsOnFilters) {
+      const artistHasFilters = persistedStore.appearsOnFilters[artistGuid].peek();
+      if (!artistHasFilters || !useAppearsOnFilters) {
         tracks.forEach((track) => {
           if (track.originalTitle?.toLowerCase().includes(artistTitle.toLowerCase())) {
             albumIds.push(track.parentId);
           }
         });
       }
-      if (appearsOnFilters && useAppearsOnFilters) {
-        const [isFiltered] = appearsOnFilters.filter((filter) => filter.artistGuid === artistGuid);
+      if (artistHasFilters && useAppearsOnFilters) {
         tracks.forEach((track) => {
-          if (isFiltered?.exclusions.includes(track.guid)) return;
+          if (artistHasFilters.exclusions.includes(track.guid)) return;
           if (track.originalTitle?.toLowerCase().includes(artistTitle.toLowerCase())) {
             albumIds.push(track.parentId);
           }
@@ -82,6 +81,18 @@ export const useAlbumsArtistAppearsOn = (
     albumsArtistAppearsOnQuery(artistGuid, artistId, artistTitle, useAppearsOnFilters)
   );
 };
+
+export const albumQuery = (id: number) => ({
+  queryKey: [QueryKeys.ALBUMS, id],
+  queryFn: async () => {
+    const library = store.library.peek();
+    const response = await library.album(id);
+    return response.albums[0];
+  },
+  placeholderData: keepPreviousData,
+});
+
+export const useAlbum = (id: number) => useQuery(albumQuery(id));
 
 export const albumsQuery = (
   sectionId: number,

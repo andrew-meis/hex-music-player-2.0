@@ -339,7 +339,6 @@ const createTheme = () =>
           root: ({ theme }) => ({
             borderRadius: 8,
             minHeight: 32,
-            maxWidth: 'calc(100% / 4)',
             paddingBottom: 0,
             paddingTop: 0,
             textAlign: 'left',

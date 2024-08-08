@@ -162,7 +162,19 @@ const AboutTab: React.FC<{ artist: Artist; color: Color }> = ({ artist, color })
           )}
           {!artist.viewCount && <Typography textAlign="right">unplayed</Typography>}
         </Box>
-        <Typography>{artist.summary}</Typography>
+        <Typography>
+          {artist.summary.split('\n').map((text, index, array) => (
+            <span key={text.slice(0, 30)}>
+              {text}
+              {array.length - 1 === index ? null : (
+                <>
+                  <br />
+                  <br />
+                </>
+              )}
+            </span>
+          ))}
+        </Typography>
       </Box>
     </Box>
   );

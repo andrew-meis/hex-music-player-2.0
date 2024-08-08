@@ -1,9 +1,8 @@
 import { observer, useUnmount } from '@legendapp/state/react';
-import { Box, Typography } from '@mui/material';
-import { SORT_TRACKS_BY_PLAYS } from 'api';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import VirtualTrackTable from 'components/track/VirtualTrackTable';
 import { selectActions } from 'features/select';
-import { useTracksByArtist } from 'queries';
+import { useAlbumsArtistAppearsOn, useRecentTracksByArtist } from 'queries';
 import React, { useMemo } from 'react';
 import { allSelectObservables, store } from 'state';
 import { SelectObservables } from 'typescript';
@@ -11,28 +10,52 @@ import { SelectObservables } from 'typescript';
 const MoreByArtist: React.FC = observer(function SimilarMoreByArtist() {
   const selectObservable = allSelectObservables[SelectObservables.UI_NOW_PLAYING];
 
-  const tabIsAnimating = store.ui.nowPlaying.tabIsAnimating.get();
   const nowPlaying = store.queue.nowPlaying.get();
 
-  const { data: artistTracks } = useTracksByArtist(
+  const { data: appearsOn } = useAlbumsArtistAppearsOn(
+    nowPlaying.track.grandparentGuid,
+    nowPlaying.track.grandparentId,
+    nowPlaying.track.grandparentTitle
+  );
+
+  const recentTrackQueryIDs = useMemo(() => {
+    if (!appearsOn) return [];
+    return [nowPlaying.track.grandparentId, ...appearsOn.map((album) => album.id)];
+  }, [appearsOn]);
+
+  const { data: recentTracks, isLoading } = useRecentTracksByArtist(
     nowPlaying.track.grandparentGuid,
     nowPlaying.track.grandparentId,
     nowPlaying.track.grandparentTitle,
-    SORT_TRACKS_BY_PLAYS.desc,
-    !tabIsAnimating,
-    true
+    recentTrackQueryIDs,
+    undefined,
+    100,
+    recentTrackQueryIDs.length > 0
   );
 
   useUnmount(() => selectActions.handleClickAway(selectObservable));
 
-  const slicedTracks = useMemo(
-    () => artistTracks?.filter((track) => track.guid !== nowPlaying.track.guid).slice(0, 50),
-    [artistTracks]
-  );
+  if (isLoading) {
+    return (
+      <Box
+        alignItems="center"
+        display="flex"
+        flexDirection="column"
+        height={1}
+        justifyContent="center"
+        width={1}
+      >
+        <CircularProgress size="2rem" />
+        <Typography color="text.secondary" paddingTop={1} variant="h5">
+          {`Finding your favorite recent tracks by ${nowPlaying.track.grandparentTitle}`}
+        </Typography>
+      </Box>
+    );
+  }
 
-  if (!artistTracks) return null;
+  if (!recentTracks) return null;
 
-  if (artistTracks.length === 1) {
+  if (recentTracks.length === 0) {
     return (
       <Box
         alignItems="center"
@@ -52,8 +75,10 @@ const MoreByArtist: React.FC = observer(function SimilarMoreByArtist() {
   return (
     <VirtualTrackTable
       activeMenu={SelectObservables.UI_NOW_PLAYING}
+      columnOptions={{ userRating: { showSubtext: 'popularity' } }}
+      columnVisibility={{ index: false }}
       state={selectObservable}
-      tracks={slicedTracks || []}
+      tracks={recentTracks || []}
     />
   );
 });

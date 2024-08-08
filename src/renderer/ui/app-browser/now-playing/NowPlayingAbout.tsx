@@ -3,6 +3,7 @@ import { Avatar, Box, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { LastFMArtist } from 'lastfm-ts-api';
+import { useArtists } from 'queries';
 import React from 'react';
 import { persistedStore, store } from 'state';
 import { QueryKeys } from 'typescript';
@@ -10,6 +11,9 @@ import { QueryKeys } from 'typescript';
 const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
   const library = store.library.get();
   const nowPlaying = store.queue.nowPlaying.get();
+  const { data: artists } = useArtists(
+    new URLSearchParams({ id: nowPlaying.track.grandparentId.toString() })
+  );
 
   const artistBannerSrc = useSelector(() => {
     return library.server.getAuthenticatedUrl(nowPlaying.track.grandparentArt);
@@ -93,7 +97,7 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
               WebkitLineClamp: 3,
             }}
           >
-            {data?.artist.bio.content.replaceAll(/\[[0-9]\]/g, '').split('<a href')[0]}
+            {artists?.artists[0].summary.split('\n')[0]}
           </Typography>
         </Box>
       )}

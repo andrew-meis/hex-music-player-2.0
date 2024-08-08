@@ -9,11 +9,12 @@ import {
   createTrackNavigate,
 } from 'scripts/navigate-generators';
 
-const TrackTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; track: Track }> = ({
-  showSubtext = true,
-  showType = false,
-  track,
-}) => {
+const TrackTitle: React.FC<{
+  showAlbumTitle?: boolean;
+  showSubtext?: boolean;
+  showType?: boolean;
+  track: Track;
+}> = ({ showAlbumTitle = true, showSubtext = true, showType = false, track }) => {
   return (
     <>
       <Typography variant="title1">
@@ -35,14 +36,16 @@ const TrackTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; track: T
           >
             {track.originalTitle ? track.originalTitle : track.grandparentTitle}
           </Link>
-          &nbsp; — &nbsp;
-          <Link
-            className="link"
-            to={createAlbumNavigate(track)}
-            onClick={(event) => event.stopPropagation()}
-          >
-            {track.parentTitle}
-          </Link>
+          <Show if={showAlbumTitle}>
+            &nbsp; — &nbsp;
+            <Link
+              className="link"
+              to={createAlbumNavigate(track)}
+              onClick={(event) => event.stopPropagation()}
+            >
+              {track.parentTitle}
+            </Link>
+          </Show>
         </Typography>
       </Show>
     </>

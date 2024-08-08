@@ -26,8 +26,8 @@ const Scroller: React.FC<
   const [initialize, instance] = useOverlayScrollbars({
     defer: true,
     options: {
-      update: {
-        debounce: null,
+      overflow: {
+        x: 'hidden',
       },
       scrollbars: {
         autoHide: 'leave',
@@ -36,6 +36,9 @@ const Scroller: React.FC<
         theme: mode === 'dark' ? 'os-theme-light' : 'os-theme-dark',
         clickScroll: true,
         visibility: 'visible',
+      },
+      update: {
+        debounce: null,
       },
       ...props.options,
     },

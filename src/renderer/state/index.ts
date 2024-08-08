@@ -99,12 +99,10 @@ export const store = observable({
       artHovered: false,
       color: chroma([90, 90, 90]),
       palette: [chroma([90, 90, 90]), chroma([90, 90, 90])],
-      tabIsAnimating: false,
     },
     overlay: false,
     search: {
       input: '',
-      tabIsAnimating: false,
     },
     toasts: [] as { key: number; message: string }[],
   },

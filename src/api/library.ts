@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import { SORT_BY_DATE_PLAYED } from './index';
 import ServerConnection from './server-connection';
 import { Album, AlbumContainer, parseAlbumContainer } from './types/album';
-import { Artist, ArtistContainer, parseArtistContainer } from './types/artist';
+import { Artist, ArtistContainer, ArtistEditFields, parseArtistContainer } from './types/artist';
 import { Collection, CollectionContainer, parseCollectionContainer } from './types/collection';
 import { parseCountryArray } from './types/country';
 import { parseDecadeArray } from './types/decade';
@@ -530,6 +530,29 @@ export default class Library {
   async artistAlbums(artistId: number, searchParams: URLSearchParams = new URLSearchParams()) {
     const artistAlbums = await this.metadataChildren(artistId, MediaType.ALBUM, searchParams);
     return artistAlbums;
+  }
+
+  async editArtist(
+    artistId: number,
+    fields: Partial<Record<ArtistEditFields, any>>,
+    sectionId: number
+  ) {
+    const path = `/library/sections/${sectionId}/all`;
+    const fieldValues = Object.keys(fields)
+      .map((field) => ({ [`${field}.value`]: fields[field] }))
+      .reduce((obj, value) => ({ ...obj, ...value }), {});
+    const fieldLocks = Object.keys(fields)
+      .map((field) => ({ [`${field}.locked`]: '1' }))
+      .reduce((obj, value) => ({ ...obj, ...value }), {});
+    await this.fetch(path, {
+      method: 'PUT',
+      searchParams: new URLSearchParams({
+        type: MediaType.ARTIST.toString(),
+        id: artistId.toString(),
+        ...fieldValues,
+        ...fieldLocks,
+      }),
+    });
   }
 
   // ==========================================================================

@@ -6,20 +6,25 @@ import React, { useMemo } from 'react';
 import { store } from 'state';
 import { SelectObservable, SelectObservables } from 'typescript';
 
-import { trackColumns } from './columns';
+import { getTrackColumns, TrackColumnOptions } from './columns';
 import TrackRow from './TrackRow';
 
 const TrackTable: React.FC<{
   tracks: Track[];
   activeMenu: SelectObservables;
+  columnOptions?: Partial<TrackColumnOptions>;
   state: SelectObservable;
-}> = ({ tracks, activeMenu, state }) => {
-  const columns = useMemo(() => trackColumns, []);
+}> = ({ tracks, activeMenu, columnOptions, state }) => {
+  const columns = useMemo(() => getTrackColumns(columnOptions), []);
 
   const table = useReactTable({
     data: tracks,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    state: {
+      columnVisibility: { parentIndex: false },
+      expanded: true,
+    },
   });
 
   return (

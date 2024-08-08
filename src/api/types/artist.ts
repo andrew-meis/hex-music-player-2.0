@@ -10,6 +10,8 @@ import { Tag, toTagList } from './tag';
 import { toTrack, Track } from './track';
 import { toDateFromSeconds, toFloat, toNumber } from './types';
 
+export type ArtistEditFields = 'summary' | 'title';
+
 const artistContainerSchema = new schema.Object({
   artists: new schema.Array(artistSchema),
 });

@@ -152,9 +152,9 @@ const Table: React.FC<{ history: HistoryContainer }> = ({ history }) => {
       <table style={{ width: '-webkit-fill-available', tableLayout: 'fixed' }}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <tr className="history-row" key={headerGroup.id} style={{ pointerEvents: 'none' }}>
               {headerGroup.headers.map((header) => (
-                <th className={header.column.id} key={header.id} style={{ padding: '0 12px' }}>
+                <th className={header.column.id} key={header.id}>
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
               ))}
@@ -182,7 +182,7 @@ const Table: React.FC<{ history: HistoryContainer }> = ({ history }) => {
             return (
               <tr className="history-row" {...props} style={{ ...style }}>
                 {row.getVisibleCells().map((cell) => (
-                  <td className={cell.column.id} key={cell.id} style={{ padding: '6px 12px' }}>
+                  <td className={cell.column.id} key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}

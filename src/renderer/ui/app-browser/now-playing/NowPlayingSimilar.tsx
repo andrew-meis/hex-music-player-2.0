@@ -1,4 +1,4 @@
-import { observer, useObserve } from '@legendapp/state/react';
+import { observer, useObserve, useSelector } from '@legendapp/state/react';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Tab, Typography } from '@mui/material';
 import React from 'react';
@@ -13,27 +13,9 @@ import SimilarLastfm from './now-playing-similar/SimilarLastfm';
 import SimilarRelated from './now-playing-similar/SimilarRelated';
 import SimilarSonically from './now-playing-similar/SimilarSonically';
 
-const tabs = [
-  {
-    label: 'More by Artist',
-    icon: <IoMdMicrophone />,
-  },
-  {
-    label: 'Sonically Similar',
-    icon: <PiWaveform />,
-  },
-  {
-    label: 'Related Tracks',
-    icon: <FiRadio />,
-  },
-  {
-    label: 'last.fm Similar',
-    icon: <ImLastfm viewBox="0 0 17 17" />,
-  },
-];
-
 const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
   const activeTab = store.ui.nowPlaying.activeTab.get();
+  const artist = useSelector(() => store.queue.nowPlaying.get()?.track.grandparentTitle);
 
   useObserve(store.queue.nowPlaying.id, ({ value, previous }) => {
     if (value === previous) return;
@@ -43,6 +25,25 @@ const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
   const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
     store.ui.nowPlaying.activeTab.set(newValue);
   };
+
+  const tabs = [
+    {
+      label: 'Related Tracks',
+      icon: <FiRadio />,
+    },
+    {
+      label: 'Sonically Similar',
+      icon: <PiWaveform />,
+    },
+    {
+      label: 'last.fm Similar',
+      icon: <ImLastfm viewBox="0 0 17 17" />,
+    },
+    {
+      label: `More by ${artist}`,
+      icon: <IoMdMicrophone />,
+    },
+  ];
 
   return (
     <Box
@@ -66,22 +67,20 @@ const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
                 </Typography>
               }
               value={index.toString()}
-              onAnimationEnd={() => store.ui.nowPlaying.tabIsAnimating.set(false)}
-              onAnimationStart={() => store.ui.nowPlaying.tabIsAnimating.set(true)}
             />
           ))}
         </TabList>
         <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="0">
-          <MoreByArtist />
+          <SimilarRelated />
         </TabPanel>
         <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="1">
           <SimilarSonically />
         </TabPanel>
         <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="2">
-          <SimilarRelated />
+          <SimilarLastfm />
         </TabPanel>
         <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="3">
-          <SimilarLastfm />
+          <MoreByArtist />
         </TabPanel>
       </TabContext>
     </Box>

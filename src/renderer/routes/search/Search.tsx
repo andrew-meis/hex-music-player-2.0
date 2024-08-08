@@ -60,7 +60,7 @@ const Search: React.FC = () => {
   }, [query]);
 
   return (
-    <RouteContainer flexDirection="column">
+    <RouteContainer style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Typography paddingBottom={2} variant="h1">
         Search
       </Typography>

@@ -10,7 +10,7 @@ import { SelectObservable, SelectObservables } from 'typescript';
 import { playlistColumns } from './columns';
 import PlaylistItemRow from './PlaylistItemRow';
 
-const VirtualPlaylistTable: React.FC<{
+const VirtualPlaylistItemTable: React.FC<{
   activeMenu: SelectObservables;
   items: PlaylistItem[];
   state: SelectObservable;
@@ -82,4 +82,4 @@ const VirtualPlaylistTable: React.FC<{
   );
 };
 
-export default VirtualPlaylistTable;
+export default VirtualPlaylistItemTable;

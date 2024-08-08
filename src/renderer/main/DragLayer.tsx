@@ -33,6 +33,7 @@ const getItemStyles = (
 
   return {
     transform,
+    transitionDuration: '50ms',
     background: 'var(--mui-palette-background-paper)',
     color: 'var(--mui-palette-text-primary)',
     width: 'fit-content',

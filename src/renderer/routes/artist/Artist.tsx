@@ -6,9 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Album, Artist as ArtistType, SORT_TRACKS_BY_PLAYS } from 'api';
 import { Color } from 'chroma-js';
 import Palette from 'components/palette/Palette';
-import Scroller from 'components/scroller/Scroller';
 import { motion } from 'framer-motion';
-import useScrollRestoration from 'hooks/useScrollRestoration';
 import { isEmpty } from 'lodash';
 import {
   useAlbumsArtistAppearsOn,
@@ -17,7 +15,8 @@ import {
   useTracksByArtist,
 } from 'queries';
 import React, { useEffect, useMemo, useRef } from 'react';
-import { createSearchParams, useLoaderData, useLocation } from 'react-router-dom';
+import { createSearchParams, useLoaderData } from 'react-router-dom';
+import RouteContainer from 'routes/RouteContainer';
 import { store } from 'state';
 
 import ArtistNavbar from './ArtistNavbar';
@@ -150,7 +149,7 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
         <Box height="50vh" minHeight={280} ref={elementRef} sx={{ containerType: 'inline-size' }}>
           {artist.art && bannerWidthAdjustment !== undefined && (
             <motion.div
-              animate={{ opacity: 1 }}
+              animate={{ opacity: intersection ? 1 : 0 }}
               initial={{ opacity: 0 }}
               ref={elementRef}
               style={{
@@ -172,7 +171,7 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
           {!artist.art && !!artist.thumb && (
             <>
               <motion.div
-                animate={{ opacity: 1 }}
+                animate={{ opacity: intersection ? 1 : 0 }}
                 initial={{ opacity: 0 }}
                 style={{
                   backgroundAttachment: 'fixed',
@@ -217,9 +216,7 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
   });
 
 const Artist: React.FC = () => {
-  const location = useLocation();
   const { guid, id, title } = useLoaderData() as Awaited<ReturnType<typeof artistLoader>>;
-  const [initial, handleScroll, scrollerProps, setReady] = useScrollRestoration(location.key);
 
   const { data: artist } = useArtist(id);
   const { data: appearsOn } = useAlbumsArtistAppearsOn(guid, id, title);
@@ -233,9 +230,10 @@ const Artist: React.FC = () => {
     guid,
     id,
     title,
+    recentTrackQueryIDs,
     90,
-    recentTrackQueryIDs.length > 0,
-    recentTrackQueryIDs
+    undefined,
+    recentTrackQueryIDs.length > 0
   );
 
   const { data: mostPlayedTracks } = useTracksByArtist(
@@ -287,28 +285,13 @@ const Artist: React.FC = () => {
   if (isEmpty(releases) || !artist || !recentTracks || !mostPlayedTracks) return null;
 
   return (
-    <Scroller sx={{ height: '100%', ...scrollerProps }} onScroll={handleScroll}>
-      {({ viewport }) => {
-        return (
-          <Palette src={artist.art || artist.thumb}>
-            {({ isReady, color }) =>
-              isReady && (
-                <motion.div
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  initial={{ opacity: 0 }}
-                  key={location.pathname}
-                  style={{ height: 'fit-content' }}
-                  transition={{ delay: 0.1 }}
-                  viewport={{ once: true }}
-                  onViewportEnter={() => {
-                    if (!viewport) return;
-                    viewport.scrollTop = initial;
-                    if (viewport.scrollTop === initial) {
-                      setReady(true);
-                    }
-                  }}
-                >
+    <Palette src={artist.art || artist.thumb}>
+      {({ isReady, color }) =>
+        isReady && (
+          <RouteContainer style={{ margin: 0 }}>
+            {({ viewport }) => {
+              return (
+                <>
                   <Banner artist={artist} color={color} viewport={viewport} />
                   <ArtistNavbar
                     artist={artist}
@@ -320,13 +303,13 @@ const Artist: React.FC = () => {
                     viewport={viewport}
                   />
                   <ArtistOptions />
-                </motion.div>
-              )
-            }
-          </Palette>
-        );
-      }}
-    </Scroller>
+                </>
+              );
+            }}
+          </RouteContainer>
+        )
+      }
+    </Palette>
   );
 };
 

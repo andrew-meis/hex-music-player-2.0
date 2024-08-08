@@ -40,7 +40,7 @@ const Thumb: React.FC<{
     : undefined;
 
   return (
-    <Avatar alt={title} src={thumbSrc} sx={{ height: 48, width: 48 }} variant={variants[type]}>
+    <Avatar alt={title} src={thumbSrc} sx={{ height: 38, width: 38 }} variant={variants[type]}>
       {icons[type]}
     </Avatar>
   );

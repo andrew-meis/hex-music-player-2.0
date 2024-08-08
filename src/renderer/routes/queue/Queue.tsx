@@ -211,7 +211,7 @@ const Queue: React.FC = observer(function Queue() {
   });
 
   return (
-    <RouteContainer>
+    <RouteContainer style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <RouteHeader title="Queue" />
       <Show ifReady={store.queue.currentQueue.items}>
         {() => {

@@ -10,13 +10,9 @@ import { SelectObservables } from 'typescript';
 const SimilarLastfm: React.FC = observer(function SimilarLastfm() {
   const selectObservable = allSelectObservables[SelectObservables.UI_NOW_PLAYING];
 
-  const tabIsAnimating = store.ui.nowPlaying.tabIsAnimating.get();
   const nowPlaying = store.queue.nowPlaying.get();
 
-  const { data: lastfmMatchTracks, isLoading } = useLastfmMatchTracks(
-    nowPlaying.track,
-    !tabIsAnimating
-  );
+  const { data: lastfmMatchTracks, isLoading } = useLastfmMatchTracks(nowPlaying.track);
 
   useUnmount(() => selectActions.handleClickAway(selectObservable));
 
@@ -60,6 +56,7 @@ const SimilarLastfm: React.FC = observer(function SimilarLastfm() {
   return (
     <VirtualTrackTable
       activeMenu={SelectObservables.UI_NOW_PLAYING}
+      columnVisibility={{ index: false }}
       state={selectObservable}
       tracks={lastfmMatchTracks.tracks || []}
     />

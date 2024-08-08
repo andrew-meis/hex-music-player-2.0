@@ -1,6 +1,7 @@
 import { Show } from '@legendapp/state/react';
 import { Box, SvgIcon, Typography } from '@mui/material';
 import { Track } from 'api';
+import { TrackColumnOptions } from 'components/track/columns';
 import TrackTable from 'components/track/TrackTable';
 import { motion } from 'framer-motion';
 import React, { useMemo } from 'react';
@@ -22,10 +23,11 @@ const MotionTypography = motion(Typography);
 const MotionSvgIcon = motion(SvgIcon);
 
 const TrackSection: React.FC<{
+  columnOptions?: Partial<TrackColumnOptions>;
   selectObservable: SelectObservables;
   title: string;
   tracks: Track[];
-}> = ({ selectObservable, title, tracks }) => (
+}> = ({ columnOptions, selectObservable, title, tracks }) => (
   <>
     <MotionTypography
       color="text.primary"
@@ -41,6 +43,7 @@ const TrackSection: React.FC<{
     </MotionTypography>
     <TrackTable
       activeMenu={selectObservable}
+      columnOptions={columnOptions}
       state={allSelectObservables[selectObservable]}
       tracks={tracks}
     />
@@ -60,6 +63,7 @@ const HomeTab: React.FC<{
       <Box>
         <Show ifReady={slicedRecentTracks}>
           <TrackSection
+            columnOptions={{ userRating: { showSubtext: 'popularity' } }}
             selectObservable={SelectObservables.ROUTE_ARTIST_RECENT_TRACKS}
             title="Recent Favorites"
             tracks={slicedRecentTracks}

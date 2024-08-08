@@ -186,8 +186,6 @@ const SearchResults: React.FC<{
               </Typography>
             }
             value={tab.filter}
-            onAnimationEnd={() => store.ui.search.tabIsAnimating.set(false)}
-            onAnimationStart={() => store.ui.search.tabIsAnimating.set(true)}
             onClick={() =>
               navigate({
                 pathname: '/search',

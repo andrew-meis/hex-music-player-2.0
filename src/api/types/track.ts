@@ -150,7 +150,7 @@ const toTrack = ($data: Prism<any>): Track => ({
       sectionId,
       MediaType.TRACK,
       new URLSearchParams({
-        sort: 'lastViewedAt',
+        sort: 'random',
         'track.userRating>': '4',
         'artist.id': similarArtists.artists.map((artist) => artist.id).join(','),
         group: 'guid',

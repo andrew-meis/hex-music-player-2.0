@@ -161,6 +161,9 @@ const ArtistNavbar: React.FC<{
         />
         <Scroller
           options={{
+            overflow: {
+              x: 'scroll',
+            },
             scrollbars: {
               visibility: 'hidden',
             },

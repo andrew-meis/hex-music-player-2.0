@@ -32,7 +32,7 @@ const NowPlayingSurface: React.FC = () => {
           display: 'flex',
           marginLeft: 'auto',
           marginRight: 'auto',
-          width: `calc(${round((314 / 466) * 100, 4)}vh * (21 / 9))`,
+          width: `calc(${round((346 / 500) * 100, 4)}vh * (21 / 9))`,
         }}
       >
         <div
