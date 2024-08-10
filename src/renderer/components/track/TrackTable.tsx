@@ -10,11 +10,12 @@ import { getTrackColumns, TrackColumnOptions } from './columns';
 import TrackRow from './TrackRow';
 
 const TrackTable: React.FC<{
-  tracks: Track[];
   activeMenu: SelectObservables;
   columnOptions?: Partial<TrackColumnOptions>;
+  columnVisibility?: Partial<Record<keyof Track, boolean>>;
   state: SelectObservable;
-}> = ({ tracks, activeMenu, columnOptions, state }) => {
+  tracks: Track[];
+}> = ({ activeMenu, columnOptions, columnVisibility, state, tracks }) => {
   const columns = useMemo(() => getTrackColumns(columnOptions), []);
 
   const table = useReactTable({
@@ -22,7 +23,7 @@ const TrackTable: React.FC<{
     columns,
     getCoreRowModel: getCoreRowModel(),
     state: {
-      columnVisibility: { parentIndex: false },
+      columnVisibility,
       expanded: true,
     },
   });
@@ -43,11 +44,14 @@ const TrackTable: React.FC<{
         <tbody>
           {table.getRowModel().rows.map((row, index) => (
             <TrackRow index={index} key={row.id} state={state}>
-              {row.getVisibleCells().map((cell) => (
-                <td className={cell.column.id} key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+              {row
+                .getVisibleCells()
+                .filter(({ column }) => !['parentIndex'].includes(column.id))
+                .map((cell) => (
+                  <td className={cell.column.id} key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
             </TrackRow>
           ))}
         </tbody>

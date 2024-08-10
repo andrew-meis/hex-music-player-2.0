@@ -114,7 +114,26 @@ section {
 }
 
 tr.table-row {
+  border-radius: 4px;
   padding: 0 10px 0 0;
+}
+
+tr.table-row[data-selected-above="true"] {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+tr.table-row[data-selected-below="true"] {
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+td[class$="duration"],
+th[class$="duration"] {
+  flex-shrink: 0;
+  padding: 0 0 0 8px;
+  text-align: right;
+  width: 48px;
 }
 
 td[class$="index"],
@@ -133,7 +152,7 @@ th[class$="thumb"] {
   flex-shrink: 0;
   padding: 0 0 0 8px;
   text-align: center;
-  width: 48px;
+  width: 38px;
 }
 
 td[class$="title"],

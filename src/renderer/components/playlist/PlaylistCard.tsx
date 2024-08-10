@@ -7,18 +7,16 @@ import CardFab from 'components/card/CardFab';
 import { playbackActions } from 'features/playback';
 import React from 'react';
 import { BsMusicNoteList } from 'react-icons/bs';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { createPlaylistNavigate } from 'scripts/navigate-generators';
 import { store } from 'state';
-import { SelectObservable } from 'typescript';
+import { DragTypes, SelectObservable } from 'typescript';
 
 const defaultColor = chroma('#848588');
 
 const PlaylistCard: React.FC<{ playlist: Playlist; index: number; state: SelectObservable }> =
   observer(function PlaylistCard({ playlist, index, state }) {
     const library = store.library.get();
-
-    const navigate = useNavigate();
 
     const thumbSrc = useSelector(() => {
       return library.resizeImage(
@@ -41,27 +39,8 @@ const PlaylistCard: React.FC<{ playlist: Playlist; index: number; state: SelectO
       );
     });
 
-    const isSelected = useSelector(() => state.selectedIndexes.get().includes(index));
-
-    const handleContextMenu = (event: React.MouseEvent) => {
-      event.preventDefault();
-      if (!isSelected) {
-        state.selectedIndexes.set([index]);
-      }
-      store.ui.menus.anchorPosition.set({
-        mouseX: event.clientX + 2,
-        mouseY: event.clientY - 6,
-      });
-    };
-
     return (
-      <CardBox
-        onClick={(event) => {
-          event.stopPropagation();
-          navigate(createPlaylistNavigate(playlist));
-        }}
-        onContextMenu={handleContextMenu}
-      >
+      <CardBox index={index} state={state} type={DragTypes.PLAYLIST}>
         <div
           style={{
             aspectRatio: 1,
@@ -80,10 +59,12 @@ const PlaylistCard: React.FC<{ playlist: Playlist; index: number; state: SelectO
               backgroundPosition: 'center top',
               backgroundSize: 'cover',
               opacity: 0.75,
-              width: 'calc(100% - 8px)',
+              width: 'calc(100% - 24px)',
               height: 6,
-              position: 'relative',
-              top: -7,
+              position: 'fixed',
+              top: 13,
+              left: '50%',
+              transform: 'translate(-50%, 0)',
               margin: 'auto',
               borderTopLeftRadius: 4,
               borderTopRightRadius: 4,
@@ -96,17 +77,18 @@ const PlaylistCard: React.FC<{ playlist: Playlist; index: number; state: SelectO
               backgroundPosition: 'center top',
               backgroundSize: 'cover',
               opacity: 0.5,
-              width: 'calc(100% - 16px)',
+              width: 'calc(100% - 32px)',
               height: 4,
-              position: 'relative',
-              top: -18,
-              margin: 'auto',
+              position: 'fixed',
+              top: 8,
+              left: '50%',
+              transform: 'translate(-50%, 0)',
               borderTopLeftRadius: 4,
               borderTopRightRadius: 4,
             }}
           />
           {!thumbSrc && (
-            <Avatar sx={{ height: 1, width: 1, top: -10 }} variant="rounded">
+            <Avatar sx={{ height: 1, width: 1 }} variant="rounded">
               <SvgIcon className="generic-icon">
                 <BsMusicNoteList />
               </SvgIcon>
@@ -119,8 +101,14 @@ const PlaylistCard: React.FC<{ playlist: Playlist; index: number; state: SelectO
             playbackActions.playPlaylist(playlist, false);
           }}
         />
-        <Box margin={1} marginBottom={2}>
-          <Typography variant="title1">{playlist.title}</Typography>
+        <Box margin={1} marginY={2}>
+          <Link
+            className="link"
+            to={createPlaylistNavigate(playlist)}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Typography variant="title1">{playlist.title}</Typography>
+          </Link>
           <Typography color="text.secondary" variant="title2">
             {`${playlist.leafCount} ${playlist.leafCount === 1 ? 'track' : 'tracks'}`}
           </Typography>

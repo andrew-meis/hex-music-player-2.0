@@ -1,6 +1,7 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import { Track } from 'api';
 import Discnumber from 'components/virtuoso/table-cells/Discnumber';
+import Duration from 'components/virtuoso/table-cells/Duration';
 import Thumb from 'components/virtuoso/table-cells/Thumb';
 import Tracknumber from 'components/virtuoso/table-cells/Tracknumber';
 import TrackRating from 'components/virtuoso/table-cells/TrackRating';
@@ -49,6 +50,10 @@ export const getTrackColumns = (options?: Partial<TrackColumnOptions>) => [
         <TrackRating showSubtext={options?.userRating?.showSubtext} track={info.row.original} />
       );
     },
+    header: () => '',
+  }),
+  columnHelper.accessor('duration', {
+    cell: (info) => <Duration duration={info.getValue()} />,
     header: () => '',
   }),
 ];

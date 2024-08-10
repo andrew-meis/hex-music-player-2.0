@@ -40,7 +40,7 @@ const SimilarSonically: React.FC = observer(function SimilarSonically() {
   return (
     <VirtualTrackTable
       activeMenu={SelectObservables.UI_NOW_PLAYING}
-      columnVisibility={{ index: false }}
+      columnVisibility={{ duration: false, index: false }}
       state={selectObservable}
       tracks={slicedTracks || []}
     />

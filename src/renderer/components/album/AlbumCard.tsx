@@ -4,7 +4,6 @@ import { Album } from 'api';
 import CardBox from 'components/card/CardBox';
 import CardFab from 'components/card/CardFab';
 import { playbackActions } from 'features/playback';
-import { selectActions } from 'features/select';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { BiSolidAlbum } from 'react-icons/bi';
@@ -12,7 +11,7 @@ import { Link } from 'react-router-dom';
 import formatCount from 'scripts/format-count';
 import { createAlbumNavigate, createArtistNavigate } from 'scripts/navigate-generators';
 import { store } from 'state';
-import { SelectObservable } from 'typescript';
+import { DragTypes, SelectObservable } from 'typescript';
 
 const Artist: React.FC<{ album: Album }> = ({ album }) => (
   <Link
@@ -48,40 +47,15 @@ const AlbumCard: React.FC<{
   state: SelectObservable;
   subtext: keyof Album;
 }> = observer(function AlbumCard({ album, index, state, subtext }) {
-  const library = store.library.get();
-
   const albumThumbSrc = useSelector(() => {
+    const library = store.library.get();
     return library.resizeImage(
       new URLSearchParams({ url: album.thumb, width: '500', height: '500' })
     );
   });
 
-  const isSelected = useSelector(() => state.selectedIndexes.get().includes(index));
-
-  const handleContextMenu = (event: React.MouseEvent) => {
-    event.preventDefault();
-    if (!isSelected) {
-      state.selectedIndexes.set([index]);
-    }
-    store.ui.menus.anchorPosition.set({
-      mouseX: event.clientX + 2,
-      mouseY: event.clientY - 6,
-    });
-  };
-
   return (
-    <CardBox
-      bgcolor={isSelected ? 'action.selected' : 'transparent'}
-      sx={{
-        '&:hover': {
-          backgroundColor: isSelected ? 'action.hoverSelected' : 'action.hover',
-        },
-      }}
-      onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
-        selectActions.handleSelect(event, index, state)
-      }
-      onContextMenu={handleContextMenu}
-    >
+    <CardBox index={index} state={state} type={DragTypes.ALBUM}>
       <div
         style={{
           aspectRatio: 1,
@@ -106,7 +80,7 @@ const AlbumCard: React.FC<{
           playbackActions.playLibraryItems([album], false);
         }}
       />
-      <Box margin={1} marginBottom={2}>
+      <Box margin={1} marginY={2}>
         <Typography variant="title1">
           <Link
             className="link"

@@ -44,6 +44,7 @@ const TrackSection: React.FC<{
     <TrackTable
       activeMenu={selectObservable}
       columnOptions={columnOptions}
+      columnVisibility={{ duration: false, index: false }}
       state={allSelectObservables[selectObservable]}
       tracks={tracks}
     />

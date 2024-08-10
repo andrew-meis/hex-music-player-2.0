@@ -85,7 +85,13 @@ const VirtualTrackTable: React.FC<{
                   const index = props['data-index'];
                   const row = rows[index];
                   if (row.getIsGrouped()) {
-                    return <tr {...props} style={{ height: 32, ...props.style }} />;
+                    return (
+                      <tr
+                        {...props}
+                        style={{ height: 54, ...props.style }}
+                        onClick={() => selectActions.handleClickAway(state)}
+                      />
+                    );
                   }
                   return (
                     <TrackRow
@@ -121,7 +127,7 @@ const VirtualTrackTable: React.FC<{
                   const index = props['data-index'];
                   const row = rows[index];
                   if (row.getIsGrouped()) {
-                    return <tr {...props} style={{ height: 64, ...props.style }} />;
+                    return <tr {...props} style={{ height: 54, ...props.style }} />;
                   }
                   return (
                     <TrackRow
@@ -143,6 +149,7 @@ const VirtualTrackTable: React.FC<{
               }
         }
         customScrollParent={useWindowScroll ? viewport : undefined}
+        fixedItemHeight={54}
         isScrolling={handleScrollState}
         itemContent={(index) => {
           const row = table.getRowModel().rows[index];

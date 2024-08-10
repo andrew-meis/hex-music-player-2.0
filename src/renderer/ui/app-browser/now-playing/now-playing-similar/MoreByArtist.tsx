@@ -76,9 +76,9 @@ const MoreByArtist: React.FC = observer(function SimilarMoreByArtist() {
     <VirtualTrackTable
       activeMenu={SelectObservables.UI_NOW_PLAYING}
       columnOptions={{ userRating: { showSubtext: 'popularity' } }}
-      columnVisibility={{ index: false }}
+      columnVisibility={{ duration: false, index: false }}
       state={selectObservable}
-      tracks={recentTracks || []}
+      tracks={recentTracks.filter((track) => track.id !== nowPlaying.track.id) || []}
     />
   );
 });

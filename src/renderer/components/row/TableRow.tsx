@@ -29,6 +29,8 @@ const TableRow = ({
 } & BoxProps) => {
   const isDragging = useSelector(() => store.ui.isDragging.get());
   const isSelected = useSelector(() => state.selectedIndexes.get().includes(index));
+  const isSelectedAbove = useSelector(() => state.selectedIndexes.get().includes(index - 1));
+  const isSelectedBelow = useSelector(() => state.selectedIndexes.get().includes(index + 1));
 
   const [, drag, dragPreview] = useDrag(
     () => ({
@@ -72,6 +74,8 @@ const TableRow = ({
       bgcolor={isSelected ? 'action.selected' : 'transparent'}
       className="table-row"
       component="tr"
+      data-selected-above={isSelectedAbove}
+      data-selected-below={isSelectedBelow}
       display="flex"
       height={54}
       ref={drop ? dropRef : drag}

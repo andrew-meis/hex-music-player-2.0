@@ -56,7 +56,7 @@ const SimilarLastfm: React.FC = observer(function SimilarLastfm() {
   return (
     <VirtualTrackTable
       activeMenu={SelectObservables.UI_NOW_PLAYING}
-      columnVisibility={{ index: false }}
+      columnVisibility={{ duration: false, index: false }}
       state={selectObservable}
       tracks={lastfmMatchTracks.tracks || []}
     />

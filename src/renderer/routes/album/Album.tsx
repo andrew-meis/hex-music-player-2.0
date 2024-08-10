@@ -1,11 +1,16 @@
-import { Avatar, Box, Chip, Typography } from '@mui/material';
+import { useSelector } from '@legendapp/state/react';
+import { Avatar, Box, Chip, SvgIcon, Typography } from '@mui/material';
+import PlayFab from 'components/buttons/PlayFab';
 import VirtualTrackTable from 'components/track/VirtualTrackTable';
+import { playbackActions } from 'features/playback';
 import { groupBy, sumBy } from 'lodash';
 import { Duration } from 'luxon';
 import { useAlbum, useAlbumTracks } from 'queries';
 import React, { useEffect, useMemo } from 'react';
+import { BiAlbum } from 'react-icons/bi';
 import { createSearchParams, NavLink, useLoaderData } from 'react-router-dom';
 import RouteContainer from 'routes/RouteContainer';
+import formatCount from 'scripts/format-count';
 import { createArtistNavigate } from 'scripts/navigate-generators';
 import { allSelectObservables, store } from 'state';
 import { SelectObservables } from 'typescript';
@@ -16,24 +21,29 @@ const Album: React.FC = () => {
   const loaderData = useLoaderData() as Awaited<ReturnType<typeof albumLoader>>;
   const { guid, id, parentGuid, parentId, parentTitle, title } = loaderData;
 
-  const library = store.library.get();
   const selectObservable = allSelectObservables[SelectObservables.ROUTE_ALBUM];
 
   const { data: album } = useAlbum(id);
   const { data: tracks } = useAlbumTracks(id);
 
-  const thumbSrc = useMemo(() => {
-    if (album) {
-      return library.server.getAuthenticatedUrl(album.thumb);
-    }
-    return undefined;
-  }, [album]);
+  const thumbSrc = useSelector(() => {
+    if (!album) return undefined;
+    const library = store.library.get();
+    return library.server.getAuthenticatedUrl(album.thumb);
+  });
 
   const multipleDiscs = useMemo(() => {
     if (tracks) {
       return Object.keys(groupBy(tracks, 'parentIndex')).length > 1;
     }
     return false;
+  }, [tracks]);
+
+  const totalDuration = useMemo(() => {
+    if (tracks) {
+      return sumBy(tracks, 'duration');
+    }
+    return 0;
   }, [tracks]);
 
   useEffect(() => {
@@ -98,10 +108,27 @@ const Album: React.FC = () => {
                 &nbsp;&nbsp;·&nbsp;&nbsp;
                 {album.year}
                 &nbsp;&nbsp;·&nbsp;&nbsp;
-                {`${album.leafCount} songs`}
+                {[...album.format, ...album.subformat].map((item, index, { length }) => {
+                  if (length - 1 === index) {
+                    return <span key={index}>{item.tag.toLowerCase()}</span>;
+                  }
+                  return (
+                    <span key={index}>
+                      {item.tag.toLowerCase()}
+                      &nbsp;&nbsp;·&nbsp;&nbsp;
+                    </span>
+                  );
+                })}
                 &nbsp;&nbsp;·&nbsp;&nbsp;
-                {Duration.fromMillis(sumBy(tracks, 'duration')).toFormat(`h' hr' m' min'`)}
+                {formatCount(album.leafCount, 'song', 'no songs')}
+                &nbsp;&nbsp;·&nbsp;&nbsp;
+                {Duration.fromMillis(totalDuration).toFormat(
+                  totalDuration >= 3600000 ? `h' hr' m' min'` : `m' min'`
+                )}
               </Typography>
+            </Box>
+            <Box marginTop={2}>
+              <PlayFab onClick={() => playbackActions.playLibraryItems([album], false)} />
             </Box>
             <VirtualTrackTable
               activeMenu={SelectObservables.ROUTE_ALBUM}
@@ -135,19 +162,19 @@ const Album: React.FC = () => {
               sx={{
                 borderRadius: 2,
                 boxShadow: 'var(--mui-shadows-2)',
-                margin: 2,
+                marginBottom: 2,
+                marginLeft: 2,
                 height: 'auto',
-                width: 'calc(100% - 16px)',
+                width: 'auto',
               }}
-            />
-            <Box display="flex" gap={1} marginX={2}>
+            >
+              <SvgIcon sx={{ height: 1, width: 1 }}>
+                <BiAlbum />
+              </SvgIcon>
+            </Avatar>
+            <Box display="flex" flexWrap="wrap" gap={0.5} marginLeft={2}>
               {album.genre.map((genre) => (
-                <Chip
-                  key={genre.id}
-                  label={genre.tag}
-                  sx={{ borderWidth: 2, color: 'text.secondary' }}
-                  variant="outlined"
-                />
+                <Chip key={genre.id} label={genre.tag} />
               ))}
             </Box>
           </Box>

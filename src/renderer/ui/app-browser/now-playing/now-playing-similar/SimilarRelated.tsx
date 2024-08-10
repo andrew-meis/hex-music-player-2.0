@@ -38,7 +38,7 @@ const SimilarRelated: React.FC = observer(function SimilarRelated() {
   return (
     <VirtualTrackTable
       activeMenu={SelectObservables.UI_NOW_PLAYING}
-      columnVisibility={{ index: false }}
+      columnVisibility={{ duration: false, index: false }}
       state={selectObservable}
       tracks={relatedTracks || []}
     />

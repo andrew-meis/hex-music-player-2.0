@@ -1,7 +1,8 @@
-import { Typography } from '@mui/material';
+import { ClickAwayListener, Typography } from '@mui/material';
 import PlaylistCard from 'components/playlist/PlaylistCard';
 import Scroller from 'components/scroller/Scroller';
 import { List } from 'components/virtuoso/CustomGridComponents';
+import { selectActions } from 'features/select';
 import { motion } from 'framer-motion';
 import useScrollRestoration from 'hooks/useScrollRestoration';
 import { useWidth } from 'hooks/useWidth';
@@ -85,23 +86,27 @@ const Playlists: React.FC = () => {
             <Typography paddingBottom={2} variant="h1">
               {section}
             </Typography>
-            <VirtuosoGrid
-              components={{ List, Item }}
-              customScrollParent={viewport}
-              data={playlistsData.playlists}
-              itemContent={(index, data) => (
-                <PlaylistCard index={index} playlist={data} state={selectObservable} />
-              )}
-              style={{
-                minHeight: 'var(--content-height)',
-                scrollbarWidth: 'none',
-              }}
-              totalCount={playlistsData.playlists.length}
-              onMouseOver={() => {
-                store.ui.menus.activeMenu.set(SelectObservables.ROUTE_PLAYLISTS);
-                selectObservable.items.set(playlistsData.playlists);
-              }}
-            />
+            <ClickAwayListener
+              onClickAway={(event) => selectActions.handleClickAway(selectObservable, event)}
+            >
+              <VirtuosoGrid
+                components={{ List, Item }}
+                customScrollParent={viewport}
+                data={playlistsData.playlists}
+                itemContent={(index, data) => (
+                  <PlaylistCard index={index} playlist={data} state={selectObservable} />
+                )}
+                style={{
+                  minHeight: 'var(--content-height)',
+                  scrollbarWidth: 'none',
+                }}
+                totalCount={playlistsData.playlists.length}
+                onMouseOver={() => {
+                  store.ui.menus.activeMenu.set(SelectObservables.ROUTE_PLAYLISTS);
+                  selectObservable.items.set(playlistsData.playlists);
+                }}
+              />
+            </ClickAwayListener>
           </motion.div>
         );
       }}
