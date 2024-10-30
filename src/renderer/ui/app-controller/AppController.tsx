@@ -1,16 +1,16 @@
-import { reactive } from '@legendapp/state/react';
+import { Memo, reactive } from '@legendapp/state/react';
 import { Box, Paper } from '@mui/material';
+import noiseImage from 'assets/noise.bmp?url';
 import { motion } from 'framer-motion';
 import React from 'react';
 import { store } from 'state';
-import AppBrowser from 'ui/app-browser/AppBrowser';
 
 import Seekbar from './audio-controls/Seekbar';
 import Volume from './audio-controls/Volume';
 import AudioControl from './AudioControl';
+import NowPlayingSurface from './now-playing/NowPlayingSurface';
 import NowPlayingInfo from './NowPlayingInfo';
 
-const MotionDiv = reactive(motion.div);
 const MotionBox = motion(Box);
 const ReactiveBox = reactive(MotionBox);
 
@@ -31,51 +31,98 @@ const AppController: React.FC = () => {
               ? 'rgba(var(--mui-palette-background-defaultChannel) / 0.5)'
               : 'rgba(var(--mui-palette-background-defaultChannel) / 0)',
           })}
-          sx={{
+          $sx={() => ({
             height: 'calc(100vh - 154px)',
             left: 0,
-            pointerEvents: 'none',
+            pointerEvents: store.ui.overlay.get() ? 'auto' : 'none',
             position: 'fixed',
             right: 0,
             top: 72,
-          }}
+          })}
           transition={{
             background: {
               duration: 0.3,
             },
           }}
+          onClick={() => store.ui.overlay.set(false)}
         />
-        <MotionDiv
-          layout
-          $animate={() => ({
-            top: store.ui.overlay.get() ? 72 : 'calc(100vh - 82px)',
-          })}
-          style={{
-            left: 0,
-            position: 'fixed',
-            right: 0,
-          }}
-          transition={{ type: 'spring', bounce: 0.25 }}
-        >
-          <AppBrowser />
-        </MotionDiv>
         <Box
           bgcolor="background.default"
           bottom={-8}
-          height={16}
+          height={8}
           left={-8}
           position="absolute"
           width="100vw"
+          zIndex={10}
         />
-        <Box
-          alignItems="center"
+        <ReactiveBox
+          $animate={() => ({
+            height: store.ui.overlay.get() ? 'calc(100vh - 82px)' : 74,
+          })}
+          $transition={() => (store.ui.overlay.get() ? { type: 'spring', bounce: 0.25 } : {})}
+          alignItems="flex-end"
           borderRadius={2}
           component={Paper}
           display="flex"
+          flexDirection="column"
+          justifyContent="space-between"
+          position="relative"
+          sx={{
+            backgroundImage:
+              'linear-gradient(to bottom left, var(--mui-palette-AppBar-defaultBg), var(--mui-palette-Button-inheritContainedBg))',
+            boxShadow: 'none',
+            contain: 'paint',
+          }}
+          width="-webkit-fill-available"
+        >
+          <div
+            style={{
+              backgroundImage: `url(${noiseImage})`,
+              height: '100%',
+              mixBlendMode: 'overlay',
+              opacity: 0.05,
+              pointerEvents: 'none',
+              position: 'absolute',
+              width: '100%',
+            }}
+          />
+          <Memo>
+            {() => {
+              const color = store.ui.nowPlaying.color.get();
+              return (
+                <div
+                  style={{
+                    background: `radial-gradient(ellipse at top right, ${color.css()}, transparent), radial-gradient(circle at bottom left, ${color.css()}, transparent)`,
+                    height: '100%',
+                    mixBlendMode: 'color',
+                    opacity: 0.6,
+                    pointerEvents: 'none',
+                    position: 'absolute',
+                    width: '100%',
+                  }}
+                />
+              );
+            }}
+          </Memo>
+          <ReactiveBox
+            $animate={() => ({ opacity: store.ui.overlay.get() ? 1 : 0 })}
+            $sx={() => ({ pointerEvents: store.ui.overlay.get() ? 'inherit' : 'none' })}
+            position="absolute"
+            width={1}
+          >
+            <NowPlayingSurface />
+          </ReactiveBox>
+        </ReactiveBox>
+        <Box
+          alignItems="center"
+          bottom={0}
+          color="text.primary"
+          display="flex"
           height={74}
           justifyContent="space-between"
+          maxWidth={1904}
           paddingX={1}
-          position="relative"
+          position="absolute"
           width="-webkit-fill-available"
         >
           <Box

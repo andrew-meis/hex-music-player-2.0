@@ -37,18 +37,16 @@ const NowPlayingArtwork: React.FC<{
   return (
     <Box
       style={{
-        aspectRatio: 1,
+        alignItems: 'center',
         display: 'flex',
         height: '100%',
-        marginTop: 'auto',
-        width: 'auto',
       }}
     >
       <Avatar
         slotProps={{
           img: {
             sx: {
-              aspectRatio: '1 / 1',
+              aspectRatio: 1,
               objectFit: 'fill',
             },
           },
@@ -58,23 +56,27 @@ const NowPlayingArtwork: React.FC<{
           borderRadius: 2,
           boxShadow: 'var(--mui-shadows-2)',
           margin: 2,
-          height: 'calc(100% - 32px)',
+          height: 'min(calc(100% - 32px), 40vw)',
+          maxHeight: 1000,
+          maxWidth: 1000,
           width: 'auto',
         }}
       />
       <Box
         borderRadius={2}
-        height="calc(100% - 32px)"
+        height="min(calc(100% - 32px), 40vw)"
         margin={2}
         position="absolute"
         sx={(theme) => ({
+          aspectRatio: 1,
           background: 'transparent',
+          maxHeight: 1000,
+          maxWidth: 1000,
           transition: 'background 300ms',
           '&:hover': {
             background: chroma(theme.palette.background.default).alpha(0.33).css(),
           },
         })}
-        width="-webkit-fill-available"
         onMouseEnter={() => store.ui.nowPlaying.artHovered.set(true)}
         onMouseLeave={() => store.ui.nowPlaying.artHovered.set(false)}
       >
@@ -98,13 +100,13 @@ const NowPlayingHeader: React.FC<{ activeSection: ObservablePrimitiveBaseFns<num
         <div
           style={{
             contain: 'paint',
+            flexGrow: 1,
             overflow: 'hidden',
             marginLeft: 48,
             textAlign: 'center',
-            width: '-webkit-fill-available',
           }}
         >
-          <Box alignItems="flex-end" display="flex" height={0.6}>
+          <Box alignItems="flex-end" display="flex" height={0.5}>
             <Typography
               display="-webkit-box"
               fontFamily="Rubik, sans-serif"
@@ -121,7 +123,7 @@ const NowPlayingHeader: React.FC<{ activeSection: ObservablePrimitiveBaseFns<num
               {nowPlaying.track.title}
             </Typography>
           </Box>
-          <Box alignItems="flex-start" display="flex" flexDirection="column" height={0.4}>
+          <Box alignItems="flex-start" display="flex" flexDirection="column" height={0.5}>
             <span style={{ display: 'block', height: 4, width: '100%' }} />
             <Box alignItems="center" display="flex" flexDirection="column" width={1}>
               <Typography

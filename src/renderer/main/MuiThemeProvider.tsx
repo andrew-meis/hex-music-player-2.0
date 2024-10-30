@@ -54,11 +54,12 @@ const createLightTheme = (): ColorSystemOptions => ({
       `,
     },
     background: {
-      default: '#fafafa',
+      default: '#fcfcfc',
       paper: '#ffffff',
     },
     text: {
       primary: 'rgba(0, 0, 0, 1)',
+      secondary: 'rgba(0, 0, 0, 0.7)',
     },
   },
 });

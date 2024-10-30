@@ -32,6 +32,18 @@ const Album: React.FC = () => {
     return library.server.getAuthenticatedUrl(album.thumb);
   });
 
+  const artistThumbSrc = useSelector(() => {
+    if (!album) return undefined;
+    const library = store.library.get();
+    return library.resizeImage(
+      new URLSearchParams({
+        url: album.parentThumb,
+        width: '64',
+        height: '64',
+      })
+    );
+  });
+
   const multipleDiscs = useMemo(() => {
     if (tracks) {
       return Object.keys(groupBy(tracks, 'parentIndex')).length > 1;
@@ -79,76 +91,8 @@ const Album: React.FC = () => {
   return (
     <RouteContainer style={{ display: 'flex' }}>
       {({ viewport }) => (
-        <>
-          <Box flexBasis="66%" flexGrow={1}>
-            <Typography paddingBottom={2} variant="h1">
-              {title}
-            </Typography>
-            <Box alignItems="center" display="flex" flexDirection="column" width={1}>
-              <Typography
-                color="text.secondary"
-                display="-webkit-box"
-                flexShrink={0}
-                overflow="hidden"
-                sx={{
-                  wordBreak: 'break-word',
-                  WebkitBoxOrient: 'vertical',
-                  WebkitLineClamp: 2,
-                }}
-                variant="subtitle1"
-                width={1}
-              >
-                <NavLink
-                  className="link"
-                  style={({ isActive }) => (isActive ? { pointerEvents: 'none' } : {})}
-                  to={createArtistNavigate(album)}
-                >
-                  {album.parentTitle}
-                </NavLink>
-                &nbsp;&nbsp;·&nbsp;&nbsp;
-                {album.year}
-                &nbsp;&nbsp;·&nbsp;&nbsp;
-                {[...album.format, ...album.subformat].map((item, index, { length }) => {
-                  if (length - 1 === index) {
-                    return <span key={index}>{item.tag.toLowerCase()}</span>;
-                  }
-                  return (
-                    <span key={index}>
-                      {item.tag.toLowerCase()}
-                      &nbsp;&nbsp;·&nbsp;&nbsp;
-                    </span>
-                  );
-                })}
-                &nbsp;&nbsp;·&nbsp;&nbsp;
-                {formatCount(album.leafCount, 'song', 'no songs')}
-                &nbsp;&nbsp;·&nbsp;&nbsp;
-                {Duration.fromMillis(totalDuration).toFormat(
-                  totalDuration >= 3600000 ? `h' hr' m' min'` : `m' min'`
-                )}
-              </Typography>
-            </Box>
-            <Box marginTop={2}>
-              <PlayFab onClick={() => playbackActions.playLibraryItems([album], false)} />
-            </Box>
-            <VirtualTrackTable
-              activeMenu={SelectObservables.ROUTE_ALBUM}
-              columnGrouping={multipleDiscs ? ['parentIndex'] : []}
-              columnOptions={{ title: { showAlbumTitle: false } }}
-              columnVisibility={{ thumb: false }}
-              state={selectObservable}
-              tracks={tracks || []}
-              useWindowScroll={true}
-              viewport={viewport}
-            />
-          </Box>
-          <Box
-            flexBasis="33%"
-            flexDirection="column"
-            height="fit-content"
-            maxWidth={400}
-            position="sticky"
-            top={0}
-          >
+        <Box display="flex" flexDirection="column" width={1}>
+          <Box display="flex" height="min(100vh - 266px, 256px)" width={1}>
             <Avatar
               slotProps={{
                 img: {
@@ -162,8 +106,7 @@ const Album: React.FC = () => {
               sx={{
                 borderRadius: 2,
                 boxShadow: 'var(--mui-shadows-2)',
-                marginBottom: 2,
-                marginLeft: 2,
+                marginRight: 2,
                 height: 'auto',
                 width: 'auto',
               }}
@@ -172,13 +115,83 @@ const Album: React.FC = () => {
                 <BiAlbum />
               </SvgIcon>
             </Avatar>
-            <Box display="flex" flexWrap="wrap" gap={0.5} marginLeft={2}>
-              {album.genre.map((genre) => (
-                <Chip key={genre.id} label={genre.tag} />
-              ))}
+            <Box display="flex" flexDirection="column" width={1}>
+              <Typography color="text.secondary" marginTop="auto" variant="subtitle2">
+                {[...album.format, ...album.subformat].map((item, index, { length }) => {
+                  if (length - 1 === index) {
+                    return <span key={index}>{item.tag.toLowerCase()}</span>;
+                  }
+                  return (
+                    <span key={index}>
+                      {item.tag.toLowerCase()}
+                      &nbsp;&nbsp;·&nbsp;&nbsp;
+                    </span>
+                  );
+                })}
+              </Typography>
+              <Typography paddingBottom={2} paddingTop={1} variant="h1">
+                {title}
+              </Typography>
+              <Box alignItems="center" display="flex" width={1}>
+                <Avatar src={artistThumbSrc} sx={{ height: 32, marginRight: 1, width: 32 }} />
+                <Typography
+                  color="text.secondary"
+                  display="-webkit-box"
+                  flexShrink={0}
+                  overflow="hidden"
+                  sx={{
+                    wordBreak: 'break-word',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 2,
+                  }}
+                  variant="subtitle1"
+                  width={1}
+                >
+                  <Box color="text.primary" display="inline-flex">
+                    <NavLink
+                      className="link"
+                      style={({ isActive }) => (isActive ? { pointerEvents: 'none' } : {})}
+                      to={createArtistNavigate(album)}
+                    >
+                      {album.parentTitle}
+                    </NavLink>
+                  </Box>
+                  &nbsp;&nbsp;·&nbsp;&nbsp;
+                  {album.year}
+                  &nbsp;&nbsp;·&nbsp;&nbsp;
+                  {formatCount(album.leafCount, 'song', 'no songs')}
+                  &nbsp;&nbsp;·&nbsp;&nbsp;
+                  {Duration.fromMillis(totalDuration).toFormat(
+                    totalDuration >= 3600000 ? `h' hr' m' min'` : `m' min'`
+                  )}
+                </Typography>
+              </Box>
+              <Box display="flex" flexWrap="wrap" gap={0.5} paddingTop={2}>
+                {album.genre.map((genre) => (
+                  <Chip
+                    key={genre.id}
+                    label={genre.tag}
+                    size="small"
+                    sx={{ borderRadius: '4px' }}
+                  />
+                ))}
+              </Box>
             </Box>
           </Box>
-        </>
+          <Box marginTop={2}>
+            <PlayFab onClick={() => playbackActions.playLibraryItems([album], false)} />
+          </Box>
+          <VirtualTrackTable
+            activeMenu={SelectObservables.ROUTE_ALBUM}
+            columnGrouping={multipleDiscs ? ['parentIndex'] : []}
+            columnOptions={{ title: { showAlbumTitle: false } }}
+            columnVisibility={{ thumb: false }}
+            state={selectObservable}
+            tracks={tracks || []}
+            useWindowScroll={true}
+            viewport={viewport}
+          />
+        </Box>
       )}
     </RouteContainer>
   );

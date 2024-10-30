@@ -4,12 +4,11 @@ import { motion } from 'framer-motion';
 import React from 'react';
 import { BiSolidAlbum } from 'react-icons/bi';
 import { IoChevronDown } from 'react-icons/io5';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { createArtistNavigate, createTrackNavigate } from 'scripts/navigate-generators';
 import { store } from 'state';
 
 const MotionBox = motion(Box);
-const ReactiveBox = reactive(Box);
 const ReactiveMotionBox = reactive(MotionBox);
 
 const NowPlayingInfo: React.FC = observer(function NowPlayingInfo() {
@@ -26,7 +25,11 @@ const NowPlayingInfo: React.FC = observer(function NowPlayingInfo() {
     <>
       <ReactiveMotionBox
         $animate={() => ({
-          opacity: store.ui.overlay.get() ? 0 : 1,
+          opacity: store.ui.overlay.get() && store.ui.nowPlaying.activeSection.get() === 1 ? 0 : 1,
+          pointerEvents:
+            store.ui.overlay.get() && store.ui.nowPlaying.activeSection.get() === 1
+              ? 'none'
+              : 'auto',
         })}
         display="flex"
       >
@@ -38,6 +41,7 @@ const NowPlayingInfo: React.FC = observer(function NowPlayingInfo() {
             flexShrink: 0,
             height: 58,
             marginRight: 1,
+            pointerEvents: 'auto',
             width: 58,
           }}
           variant="rounded"
@@ -47,36 +51,32 @@ const NowPlayingInfo: React.FC = observer(function NowPlayingInfo() {
             <BiSolidAlbum />
           </SvgIcon>
         </Avatar>
-        <ReactiveBox
-          $sx={() => ({ pointerEvents: store.ui.overlay.get() ? 'none' : 'inherit' })}
-          alignItems="center"
-          display="flex"
-        >
+        <Box alignItems="center" display="flex">
           {nowPlaying && (
             <Box>
               <Typography variant="title1">
-                <Link
+                <NavLink
                   className="link"
+                  style={({ isActive }) => (isActive ? { pointerEvents: 'none' } : {})}
                   to={createTrackNavigate(nowPlaying.track)}
                   onClick={(event) => event.stopPropagation()}
                 >
                   {nowPlaying.track.title}
-                </Link>
+                </NavLink>
               </Typography>
               <Typography variant="title2">
-                <Link
+                <NavLink
                   className="link"
+                  style={({ isActive }) => (isActive ? { pointerEvents: 'none' } : {})}
                   to={createArtistNavigate(nowPlaying.track)}
                   onClick={(event) => event.stopPropagation()}
                 >
-                  {nowPlaying.track.originalTitle
-                    ? nowPlaying.track.originalTitle
-                    : nowPlaying.track.grandparentTitle}
-                </Link>
+                  {nowPlaying.track.originalTitle || nowPlaying.track.grandparentTitle}
+                </NavLink>
               </Typography>
             </Box>
           )}
-        </ReactiveBox>
+        </Box>
       </ReactiveMotionBox>
       <Show if={store.ui.overlay}>
         <Avatar

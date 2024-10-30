@@ -95,6 +95,7 @@ export const store = observable({
       open: false,
     },
     nowPlaying: {
+      activeSection: 1,
       activeTab: '0',
       artHovered: false,
       color: chroma([90, 90, 90]),

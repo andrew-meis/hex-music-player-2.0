@@ -1,17 +1,18 @@
 import { observer } from '@legendapp/state/react';
-import { Box, styled, Typography, useColorScheme } from '@mui/material';
-import { PieChart, useDrawingArea } from '@mui/x-charts';
+import { Box, Typography, useColorScheme } from '@mui/material';
+import { BarChart } from '@mui/x-charts';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { HistoryContainer, HistoryEntry } from 'api';
 import chroma from 'chroma-js';
 import { historyColumns } from 'components/history/columns';
 import Scroller from 'components/virtuoso/Scroller';
-import { groupBy } from 'lodash';
+import { groupBy, range } from 'lodash';
 import { DateTime } from 'luxon';
 import { useHistory } from 'queries';
 import { useMemo } from 'react';
 import React from 'react';
 import { ItemProps, TableProps, TableVirtuoso } from 'react-virtuoso';
+import formatCount from 'scripts/format-count';
 import { store } from 'state';
 
 const makeEquidistantValues = (startValue: number, stopValue: number, cardinality: number) => {
@@ -21,24 +22,6 @@ const makeEquidistantValues = (startValue: number, stopValue: number, cardinalit
     arr.push(startValue + step * i);
   }
   return arr.map((x) => Math.round(x * 100) / 100);
-};
-
-const StyledText = styled('text')(({ theme }) => ({
-  fill: theme.palette.text.primary,
-  textAnchor: 'middle',
-  dominantBaseline: 'central',
-  fontFamily: 'Arimo, Arial, sans-serif',
-  fontSize: '1.125rem',
-  fontWeight: 600,
-}));
-
-const PieCenterLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { width, height, left, top } = useDrawingArea();
-  return (
-    <StyledText x={left + width / 2} y={top + height / 2}>
-      {children}
-    </StyledText>
-  );
 };
 
 const Chart: React.FC<{ history: HistoryContainer }> = observer(function Chart({ history }) {
@@ -53,15 +36,17 @@ const Chart: React.FC<{ history: HistoryContainer }> = observer(function Chart({
 
   const data = useMemo(() => {
     const groupsYears = groupBy(moments, (date) => date.toFormat('yyyy'));
-    const years = Object.keys(groupsYears)
-      .map((key, index) => ({
-        id: index,
-        label: key,
-        value: groupsYears[key].length,
-        entries: groupsYears[key],
-      }))
-      .sort((a, b) => parseInt(a.label, 10) - parseInt(b.label, 10));
-    return years;
+    const years = range(
+      Math.min(...Object.keys(groupsYears).map((key) => parseInt(key, 10))),
+      Math.max(...Object.keys(groupsYears).map((key) => parseInt(key, 10))) + 1
+    );
+    const entriesByYear = years.map((value, index) => ({
+      id: index,
+      label: value.toString(),
+      value: groupsYears[value] ? groupsYears[value].length : 0,
+      entries: groupsYears[value],
+    }));
+    return entriesByYear;
   }, [moments]);
 
   const colors = useMemo(() => {
@@ -96,51 +81,39 @@ const Chart: React.FC<{ history: HistoryContainer }> = observer(function Chart({
   }, [data, mode, palette]);
 
   return (
-    <PieChart
-      colors={colors}
+    <BarChart
+      borderRadius={4}
+      bottomAxis={null}
+      layout="horizontal"
+      margin={{ top: 29, right: 8, bottom: 0, left: 40 }}
       series={[
         {
-          data,
-          innerRadius: '60%',
-          paddingAngle: 2,
-          cornerRadius: 4,
-          startAngle: -210,
-          endAngle: 30,
-          highlightScope: { faded: 'global', highlighted: 'item' },
-          faded: { color: 'rgb(128, 128, 128)' },
-          valueFormatter: ({ value }) => (value > 1 ? `${value} plays` : `${value} play`),
+          data: data.map((entry) => entry.value),
+          valueFormatter: (value) => formatCount(value ? value : undefined, 'play', '0 plays'),
         },
       ]}
-      slotProps={{
-        legend: {
-          hidden: true,
+      yAxis={[
+        {
+          colorMap: {
+            type: 'ordinal',
+            values: data.map((entry) => entry.label),
+            colors,
+          },
+          data: data.map((entry) => entry.label),
+          scaleType: 'band',
+          tickPlacement: 'middle',
         },
-        noDataOverlay: {
-          transform: 'translate(24, 0)',
-          x: '50%',
-          y: '50%',
-        },
-      }}
-      sx={{
-        '& .MuiPieArc-root': {
-          stroke: 'transparent',
-          strokeWidth: '2px',
-        },
-      }}
-    >
-      <PieCenterLabel>
-        {history.entries.length > 1
-          ? `${history.entries.length} plays`
-          : `${history.entries.length} play`}
-      </PieCenterLabel>
-    </PieChart>
+      ]}
+    />
   );
 });
 
 const Table: React.FC<{ history: HistoryContainer }> = ({ history }) => {
   const columns = useMemo(() => historyColumns, []);
+  const entries = useMemo(() => history.entries.reverse(), [history]);
+
   const table = useReactTable({
-    data: history.entries,
+    data: entries,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -191,7 +164,7 @@ const Table: React.FC<{ history: HistoryContainer }> = ({ history }) => {
           },
         }}
         style={{
-          height: 'calc(100% - 32px)',
+          height: 'calc(100% - 29px)',
           marginBottom: 16,
           overscrollBehavior: 'contain',
           width: '100%',
@@ -235,16 +208,10 @@ const NowPlayingHistory: React.FC = observer(function NowPlayingHistory() {
       marginLeft={6}
       width="calc(100% - 64px)"
     >
-      <Box height="calc(100% - 32px)" position="absolute" right={16} width="calc(64% - 64px)">
+      <Box height="calc(100% - 32px)" position="absolute" right={16} width="calc(50% - 48px)">
         <Table history={history} />
       </Box>
-      <Box
-        flexShrink={0}
-        height="calc(100% - 32px)"
-        marginLeft="-3%"
-        marginY={2}
-        width={history.entries.length === 0 ? 1 : 0.6}
-      >
+      <Box flexShrink={0} width={history.entries.length === 0 ? 1 : 0.5}>
         <Chart history={history} />
       </Box>
     </Box>

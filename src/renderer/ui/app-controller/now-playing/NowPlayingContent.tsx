@@ -1,9 +1,9 @@
-import { useObservable } from '@legendapp/state/react';
 import { Box } from '@mui/material';
 import { useMotionValueEvent, useScroll } from 'framer-motion';
 import { inRange } from 'lodash';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import React, { useEffect, useRef } from 'react';
+import { store } from 'state';
 
 import NowPlayingAbout from './NowPlayingAbout';
 import NowPlayingHeader from './NowPlayingHeader';
@@ -18,7 +18,7 @@ const Section = ({ children }: { children: React.ReactNode }) => {
 };
 
 const NowPlayingContent: React.FC = () => {
-  const activeSection = useObservable<number>(1);
+  const activeSection = store.ui.nowPlaying.activeSection;
   const ref = useRef<HTMLElement | null>(null);
   const { scrollYProgress } = useScroll({ container: ref });
 
