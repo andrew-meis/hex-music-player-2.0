@@ -78,7 +78,9 @@ const NowPlayingInfo: React.FC = observer(function NowPlayingInfo() {
           )}
         </Box>
       </ReactiveMotionBox>
-      <Show if={store.ui.overlay}>
+      <Show
+        if={store.ui.overlay.get() && store.ui.nowPlaying.activeSection.get() === 1 ? true : false}
+      >
         <Avatar
           sx={(theme) => ({
             background: 'transparent',
