@@ -18,6 +18,7 @@ export const store = observable({
     currentTimeMillis: 0,
     intervalTimer: 0,
     isPlaying: false,
+    repeat: 'none',
     seekbarDraggingPosition: undefined as unknown as number,
   },
   events: {
@@ -93,6 +94,9 @@ export const store = observable({
         track: Track;
       },
       open: false,
+    },
+    navigation: {
+      drawer: false,
     },
     nowPlaying: {
       activeSection: 1,

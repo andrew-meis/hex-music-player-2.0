@@ -1,6 +1,7 @@
+import { selectActions } from 'features/select';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigationType } from 'react-router-dom';
-import { store } from 'state';
+import { allSelectObservables, store } from 'state';
 
 interface LocationState {
   title: string;
@@ -20,6 +21,11 @@ const useHistoryStack = () => {
       store.ui.overlay.set(false);
     }
     if (type === 'POP') {
+      Object.keys(allSelectObservables).forEach((key) => {
+        if (allSelectObservables[key].selectedIndexes.length > 0) {
+          selectActions.handleClickAway(allSelectObservables[key]);
+        }
+      });
       setActiveKey(key);
       return;
     }

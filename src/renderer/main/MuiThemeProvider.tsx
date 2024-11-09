@@ -38,8 +38,11 @@ const createDarkTheme = (): ColorSystemOptions => ({
       `,
     },
     background: {
-      default: '#000000',
+      default: '#191919',
       paper: '#121212',
+    },
+    primary: {
+      main: '#e5a00d',
     },
   },
 });
@@ -54,8 +57,11 @@ const createLightTheme = (): ColorSystemOptions => ({
       `,
     },
     background: {
-      default: '#fcfcfc',
+      default: '#fbfbfb',
       paper: '#ffffff',
+    },
+    primary: {
+      main: '#e5a00d',
     },
     text: {
       primary: 'rgba(0, 0, 0, 1)',
@@ -112,6 +118,14 @@ const createTheme = () =>
           },
         },
       },
+      MuiBackdrop: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            background:
+              theme.palette.mode === 'dark' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(90, 90, 90, 0.25)',
+          }),
+        },
+      },
       MuiBreadcrumbs: {
         styleOverrides: {
           ol: {
@@ -152,15 +166,28 @@ const createTheme = () =>
         },
         styleOverrides: {
           paper: ({ theme }) => ({
+            variants: [
+              {
+                props: { anchor: 'left' },
+                style: {
+                  marginLeft: 8,
+                },
+              },
+              {
+                props: { anchor: 'right' },
+                style: {
+                  marginRight: 8,
+                },
+              },
+            ],
             backdropFilter: 'blur(20px)',
             background:
               theme.palette.mode === 'dark'
                 ? chroma(theme.palette.background.paper).alpha(0.7).css()
-                : chroma(theme.palette.background.paper).alpha(0.7).css(),
-            height: 'calc(100vh - 194px)',
+                : chroma(theme.palette.background.paper).alpha(0.85).css(),
+            height: 'calc(100vh - 64px)',
             borderRadius: 8,
-            marginRight: 16,
-            marginTop: 88,
+            marginTop: 40,
             padding: 8,
             width: 'clamp(212px, 25vw, 256px)',
           }),
@@ -172,16 +199,33 @@ const createTheme = () =>
         },
         styleOverrides: {
           root: ({ theme }) => ({
+            variants: [
+              {
+                props: { color: 'default' },
+                style: {
+                  color: theme.palette.text.secondary,
+                  ':hover': {
+                    backgroundColor: 'transparent',
+                    color: theme.palette.text.primary,
+                  },
+                },
+              },
+              {
+                props: { color: 'inherit' },
+                style: {
+                  color: theme.palette.text.primary,
+                  ':hover': {
+                    backgroundColor: 'transparent',
+                    color: theme.palette.text.primary,
+                  },
+                },
+              },
+            ],
             borderRadius: 8,
-            color: theme.palette.text.secondary,
             fontSize: '1.375rem',
             height: 36,
             padding: 6,
             width: 36,
-            ':hover': {
-              backgroundColor: 'transparent',
-              color: theme.palette.text.primary,
-            },
             '&.selected': {
               color: theme.palette.primary.main,
             },

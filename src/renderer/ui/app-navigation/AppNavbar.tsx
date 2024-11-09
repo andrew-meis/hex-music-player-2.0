@@ -3,10 +3,10 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import AppBreadcrumbs from './AppBreadcrumbs';
+import AppDrawer from './AppDrawer';
 import AppLinks from './AppLinks';
-import AppMenu from './AppMenu';
 
-const AppNavigation: React.FC = () => {
+const AppNavbar: React.FC = () => {
   const location = useLocation();
 
   const locations = useRef({
@@ -67,7 +67,7 @@ const AppNavigation: React.FC = () => {
           gridTemplateColumns: '108px auto 108px',
         }}
       >
-        <AppMenu />
+        <AppDrawer />
         <AppBreadcrumbs />
         <AppLinks locations={locations} />
       </Box>
@@ -75,4 +75,4 @@ const AppNavigation: React.FC = () => {
   );
 };
 
-export default AppNavigation;
+export default AppNavbar;

@@ -6,8 +6,11 @@ import React, { useEffect } from 'react';
 import { persistedStore, store } from 'state';
 
 const QueueUpdater: React.FC = observer(function QueueUpdater() {
+  const center = undefined;
   const queueId = persistedStore.queueId.get();
-  const query = useQueue(queueId);
+  const repeat = store.audio.repeat.get() === 'none' ? 0 : 1;
+
+  const query = useQueue(queueId, repeat, center);
 
   useEffect(() => {
     const { data: queue } = query;

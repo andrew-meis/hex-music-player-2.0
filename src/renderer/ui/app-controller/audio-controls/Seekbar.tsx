@@ -9,7 +9,7 @@ const StyledSlider = styled(Slider)(({ theme }) => {
   return {
     color: theme.palette.text.secondary,
     '&:hover': {
-      color: theme.palette.primary.main,
+      color: theme.palette.text.primary,
     },
     [`& .${sliderClasses.rail}`]: {
       '&:hover': {

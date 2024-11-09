@@ -98,7 +98,7 @@ const Chart: React.FC<{ history: HistoryContainer }> = observer(function Chart({
   return (
     <PieChart
       colors={colors}
-      margin={{ top: 32, right: 32, bottom: 32, left: 24 }}
+      margin={{ top: 32, right: 32, bottom: 32, left: 0 }}
       series={[
         {
           data,
@@ -141,8 +141,6 @@ const Chart: React.FC<{ history: HistoryContainer }> = observer(function Chart({
 const Table: React.FC<{ history: HistoryContainer }> = ({ history }) => {
   const columns = useMemo(() => historyColumns, []);
   const entries = useMemo(() => history.entries.toReversed(), [history]);
-
-  console.log(entries);
 
   const table = useReactTable({
     data: entries,
@@ -240,11 +238,11 @@ const NowPlayingHistory: React.FC = observer(function NowPlayingHistory() {
       marginLeft={6}
       width="calc(100% - 64px)"
     >
-      <Box height="calc(100% - 32px)" position="absolute" right={16} width="calc(60% - 48px)">
-        <Table history={history} />
-      </Box>
       <Box flexShrink={0} width={history.entries.length === 0 ? 1 : 0.4}>
         <Chart history={history} />
+      </Box>
+      <Box flexGrow={1} height="calc(100% - 32px)" width="calc(60% - 48px)">
+        <Table history={history} />
       </Box>
     </Box>
   );

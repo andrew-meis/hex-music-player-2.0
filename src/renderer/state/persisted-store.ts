@@ -4,6 +4,7 @@ import { Album } from 'api';
 
 const defaultValues = {
   audio: {
+    savedTimeMillis: 0,
     volume: 50,
   },
   sorting: {

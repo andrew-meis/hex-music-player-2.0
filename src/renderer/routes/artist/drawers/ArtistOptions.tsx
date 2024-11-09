@@ -107,6 +107,7 @@ const ArtistOptions: React.FC = () => {
     <ReactiveDrawer $open={() => store.routes.artist.drawers.options.get()} anchor="right">
       <ClickAwayListener onClickAway={handleClose}>
         <Box height="calc(100vh - 244px)" maxHeight={600} width="clamp(212px, 25vw, 256px)">
+          <Typography variant="h6">Options</Typography>
           <Typography variant="caption">Sort releases by</Typography>
           <Box display="flex" gap="4px">
             <ReactiveSelect

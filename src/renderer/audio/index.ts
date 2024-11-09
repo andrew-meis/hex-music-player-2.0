@@ -6,9 +6,14 @@ export const audio = new PreciseAudio();
 audio.thresholds.decodeThresholdSeconds = 360;
 audio.thresholds.downloadThresholdSeconds = 360;
 
-audio.addEventListener('timeupdate', () =>
-  store.audio.currentTimeMillis.set(audio.currentTimeMillis)
-);
+audio.addEventListener('timeupdate', () => {
+  const repeat = store.audio.repeat.peek();
+  if (repeat === 'one') {
+    const remainingMillis = audio.durationMillis - audio.currentTimeMillis;
+    if (remainingMillis < 100) audio.currentTime = 0;
+  }
+  store.audio.currentTimeMillis.set(audio.currentTimeMillis);
+});
 
 audio.addEventListener('canplaythrough', () => {
   if (store.audio.autoplay.peek()) {
@@ -34,6 +39,14 @@ audio.addEventListener('ended', async () => {
 });
 
 audio.addEventListener('error', (error) => console.log(error));
+
+audio.addEventListener('loadeddata', () => {
+  const savedTimeMillis = persistedStore.audio.savedTimeMillis.peek();
+  if (savedTimeMillis > 0 && audio.durationMillis < savedTimeMillis) {
+    audio.currentTime = savedTimeMillis / 1000;
+    persistedStore.audio.savedTimeMillis.set(0);
+  }
+});
 
 audio.addEventListener('next', async () => {
   window.clearInterval(store.audio.intervalTimer.peek());

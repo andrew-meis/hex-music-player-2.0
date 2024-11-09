@@ -19,7 +19,7 @@ const PlayFab: React.FC<React.ComponentProps<typeof MotionFab>> = ({ ...props })
       whileHover={{ scale: 1.1 }}
       {...props}
     >
-      <SvgIcon sx={(theme) => ({ color: theme.palette.primary.main, height: 42, width: 42 })}>
+      <SvgIcon sx={(theme) => ({ color: theme.palette.primary.light, height: 42, width: 42 })}>
         <FaCirclePlay />
       </SvgIcon>
     </MotionFab>

@@ -5,7 +5,7 @@ import { queueActions } from 'features/queue';
 import React from 'react';
 import { BsPlayFill } from 'react-icons/bs';
 import { CgRowFirst, CgRowLast } from 'react-icons/cg';
-import { RiShuffleFill } from 'react-icons/ri';
+import { TbArrowsShuffle } from 'react-icons/tb';
 import { persistedStore, store } from 'state';
 
 const PlaylistMenu: React.FC<{ playlists: Playlist[] }> = ({ playlists }) => {
@@ -33,8 +33,8 @@ const PlaylistMenu: React.FC<{ playlists: Playlist[] }> = ({ playlists }) => {
         <ListItemText>Play now</ListItemText>
       </MenuItem>
       <MenuItem onClick={() => handlePlay(true)}>
-        <ListItemIcon sx={{ fontSize: '1.15rem' }}>
-          <RiShuffleFill />
+        <ListItemIcon sx={{ fontSize: '1.2rem' }}>
+          <TbArrowsShuffle />
         </ListItemIcon>
         <ListItemText>Shuffle</ListItemText>
       </MenuItem>

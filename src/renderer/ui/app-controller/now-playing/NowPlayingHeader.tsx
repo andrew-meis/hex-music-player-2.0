@@ -36,10 +36,11 @@ const NowPlayingArtwork: React.FC<{
 }> = ({ activeSection, albumThumbSrc }) => {
   return (
     <Box
-      style={{
+      sx={{
         alignItems: 'center',
         display: 'flex',
-        height: '100%',
+        flexShrink: 0,
+        height: 'min(1000px, 100%)',
       }}
     >
       <Avatar
@@ -57,8 +58,6 @@ const NowPlayingArtwork: React.FC<{
           boxShadow: 'var(--mui-shadows-2)',
           margin: 2,
           height: 'min(calc(100% - 32px), 40vw)',
-          maxHeight: 1000,
-          maxWidth: 1000,
           width: 'auto',
         }}
       />
@@ -70,8 +69,8 @@ const NowPlayingArtwork: React.FC<{
         sx={(theme) => ({
           aspectRatio: 1,
           background: 'transparent',
-          maxHeight: 1000,
-          maxWidth: 1000,
+          maxHeight: 1000 - 32,
+          maxWidth: 1000 - 32,
           transition: 'background 300ms',
           '&:hover': {
             background: chroma(theme.palette.background.default).alpha(0.33).css(),
@@ -96,14 +95,18 @@ const NowPlayingHeader: React.FC<{ activeSection: ObservablePrimitiveBaseFns<num
     });
 
     return (
-      <Box display="flex" height={1}>
+      <Box alignItems="center" display="flex" height={1}>
         <div
           style={{
+            alignItems: 'center',
             contain: 'paint',
+            display: 'flex',
+            flexDirection: 'column',
             flexGrow: 1,
-            overflow: 'hidden',
+            height: 'min(calc(100% - 32px), 40vw)',
             marginLeft: 48,
-            textAlign: 'center',
+            maxHeight: 1000 - 32,
+            overflow: 'hidden',
           }}
         >
           <Box alignItems="flex-end" display="flex" height={0.5}>
@@ -113,67 +116,60 @@ const NowPlayingHeader: React.FC<{ activeSection: ObservablePrimitiveBaseFns<num
               overflow="hidden"
               sx={{
                 height: 'fit-content',
+                textAlign: 'center',
                 wordBreak: 'break-word',
                 WebkitBoxOrient: 'vertical',
                 WebkitLineClamp: 3,
               }}
-              variant="h4"
+              variant="h3"
               width={1}
             >
               {nowPlaying.track.title}
             </Typography>
           </Box>
-          <Box alignItems="flex-start" display="flex" flexDirection="column" height={0.5}>
-            <span style={{ display: 'block', height: 4, width: '100%' }} />
-            <Box alignItems="center" display="flex" flexDirection="column" width={1}>
-              <Typography
-                color="text.secondary"
-                display="-webkit-box"
-                flexShrink={0}
-                overflow="hidden"
-                sx={{
-                  wordBreak: 'break-word',
-                  WebkitBoxOrient: 'vertical',
-                  WebkitLineClamp: 2,
-                }}
-                variant="body1"
-                width={1}
-              >
-                <NavLink
-                  className="link"
-                  style={({ isActive }) => (isActive ? { pointerEvents: 'none' } : {})}
-                  to={createArtistNavigate(nowPlaying.track)}
-                >
-                  {nowPlaying.track.originalTitle || nowPlaying.track.grandparentTitle}
-                </NavLink>
-                &nbsp;&nbsp;·&nbsp;&nbsp;
-                <NavLink
-                  className="link"
-                  style={({ isActive }) => (isActive ? { pointerEvents: 'none' } : {})}
-                  to={createAlbumNavigate(nowPlaying.track)}
-                >
-                  {nowPlaying.track.parentTitle}
-                </NavLink>
-                &nbsp;&nbsp;·&nbsp;&nbsp;
-                {nowPlaying.track.parentYear}
-              </Typography>
-            </Box>
-            <Box
-              alignItems="flex-start"
-              display="flex"
-              justifyContent="center"
-              marginTop={0.25}
+          <Box alignItems="center" display="flex" flexDirection="column" width={1}>
+            <Typography
+              display="-webkit-box"
               overflow="hidden"
-              width={1}
+              sx={{
+                lineHeight: 1.4,
+                textAlign: 'center',
+                wordBreak: 'break-word',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: 3,
+              }}
+              variant="h6"
             >
-              <Box flex="0 0 100px" marginRight={2}>
-                <Typography color="text.secondary" textAlign="right" variant="subtitle2">
+              <NavLink
+                className="link"
+                style={({ isActive }) => (isActive ? { pointerEvents: 'none' } : {})}
+                to={createArtistNavigate(nowPlaying.track)}
+              >
+                {nowPlaying.track.originalTitle || nowPlaying.track.grandparentTitle}
+              </NavLink>
+              &nbsp;&nbsp;·&nbsp;&nbsp;
+              <NavLink
+                className="link"
+                style={({ isActive }) => (isActive ? { pointerEvents: 'none' } : {})}
+                to={createAlbumNavigate(nowPlaying.track)}
+              >
+                {nowPlaying.track.parentTitle}
+              </NavLink>
+            </Typography>
+            <Typography color="text.secondary" marginTop={0.25} variant="subtitle2">
+              {nowPlaying.track.parentYear}
+            </Typography>
+            <Box alignItems="flex-start" display="flex" justifyContent="center" width={1}>
+              <Box display="flex" flex="0 0 120px">
+                <Typography color="text.secondary" marginLeft="auto" variant="subtitle2">
                   {nowPlaying.track.media[0].parts[0].streams[0].codec.toLocaleUpperCase()}
+                  &nbsp;&nbsp;·&nbsp;&nbsp;
                 </Typography>
               </Box>
               <Rating id={nowPlaying.track.id} userRating={nowPlaying.track.userRating / 2 || 0} />
-              <Box flex="0 0 100px" marginLeft={2}>
-                <Typography color="text.secondary" textAlign="left" variant="subtitle2">
+              <Box display="flex" flex="0 0 120px">
+                <Typography color="text.secondary" variant="subtitle2">
+                  &nbsp;&nbsp;·&nbsp;&nbsp;
                   {getTrackEncodingText(nowPlaying.track)}
                 </Typography>
               </Box>

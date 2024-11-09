@@ -1,6 +1,6 @@
 import { ObservablePrimitiveBaseFns } from '@legendapp/state';
 import { observer } from '@legendapp/state/react';
-import { Button, SvgIcon } from '@mui/material';
+import { Box, Button, SvgIcon } from '@mui/material';
 import chroma from 'chroma-js';
 import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
@@ -20,89 +20,82 @@ export const HeaderActions: React.FC<{
   const nowPlaying = store.queue.nowPlaying.get();
 
   return (
-    <AnimatePresence>
-      {isActive && isHovered && (
-        <MotionButton
-          animate={{ scale: [0, 1.25, 1], transition: { delay: 0.3 } }}
-          exit={{ scale: 0 }}
-          initial={{ scale: 0 }}
-          key="edit-metadata"
-          sx={{
-            background: color.css(),
-            color: chroma.contrast(color, '#fff') > 4.5 ? '#fff' : '#000',
-            minWidth: 0,
-            padding: 0.5,
-            position: 'absolute',
-            right: 16,
-            bottom: 16,
-            zIndex: 100,
-            '&:hover': {
-              background: color.brighten().css(),
-            },
-          }}
-          variant="contained"
-          onClick={() => store.ui.modals.values.track.set(nowPlaying.track)}
-        >
-          <SvgIcon>
-            <TbEdit />
-          </SvgIcon>
-        </MotionButton>
-      )}
-      {isActive && isHovered && (
-        <MotionButton
-          animate={{ scale: [0, 1.25, 1], transition: { delay: 0.3 } }}
-          exit={{ scale: 0 }}
-          initial={{ scale: 0 }}
-          key="add-to-playlist"
-          sx={{
-            background: color.css(),
-            color: chroma.contrast(color, '#fff') > 4.5 ? '#fff' : '#000',
-            minWidth: 0,
-            padding: 0.5,
-            position: 'absolute',
-            right: 56,
-            bottom: 16,
-            zIndex: 100,
-            '&:hover': {
-              background: color.brighten().css(),
-            },
-          }}
-          variant="contained"
-          onClick={() => {}}
-        >
-          <SvgIcon>
-            <PiMusicNotesPlusFill />
-          </SvgIcon>
-        </MotionButton>
-      )}
-      {isActive && isHovered && (
-        <MotionButton
-          animate={{ scale: [0, 1.25, 1], transition: { delay: 0.3 } }}
-          exit={{ scale: 0 }}
-          initial={{ scale: 0 }}
-          key="add-to-collection"
-          sx={{
-            background: color.css(),
-            color: chroma.contrast(color, '#fff') > 4.5 ? '#fff' : '#000',
-            minWidth: 0,
-            padding: 0.5,
-            position: 'absolute',
-            right: 96,
-            bottom: 16,
-            zIndex: 100,
-            '&:hover': {
-              background: color.brighten().css(),
-            },
-          }}
-          variant="contained"
-          onClick={() => {}}
-        >
-          <SvgIcon>
-            <TbLayoutGridAdd />
-          </SvgIcon>
-        </MotionButton>
-      )}
-    </AnimatePresence>
+    <Box bottom={-8} display="flex" gap={1} padding={2} position="absolute" right={-8}>
+      <AnimatePresence>
+        {isActive && isHovered && (
+          <MotionButton
+            animate={{ scale: [0, 1.25, 1], transition: { delay: 0.3 } }}
+            exit={{ scale: 0 }}
+            initial={{ scale: 0 }}
+            key="edit-metadata"
+            sx={{
+              background: color.css(),
+              color: chroma.contrast(color, '#fff') > 4.5 ? '#fff' : '#000',
+              minWidth: 0,
+              padding: 0.5,
+              zIndex: 100,
+              '&:hover': {
+                background: color.brighten().css(),
+              },
+            }}
+            variant="contained"
+            onClick={() => store.ui.modals.values.track.set(nowPlaying.track)}
+          >
+            <SvgIcon>
+              <TbEdit />
+            </SvgIcon>
+          </MotionButton>
+        )}
+        {isActive && isHovered && (
+          <MotionButton
+            animate={{ scale: [0, 1.25, 1], transition: { delay: 0.3 } }}
+            exit={{ scale: 0 }}
+            initial={{ scale: 0 }}
+            key="add-to-playlist"
+            sx={{
+              background: color.css(),
+              color: chroma.contrast(color, '#fff') > 4.5 ? '#fff' : '#000',
+              minWidth: 0,
+              padding: 0.5,
+              zIndex: 100,
+              '&:hover': {
+                background: color.brighten().css(),
+              },
+            }}
+            variant="contained"
+            onClick={() => {}}
+          >
+            <SvgIcon>
+              <PiMusicNotesPlusFill />
+            </SvgIcon>
+          </MotionButton>
+        )}
+        {isActive && isHovered && (
+          <MotionButton
+            animate={{ scale: [0, 1.25, 1], transition: { delay: 0.3 } }}
+            exit={{ scale: 0 }}
+            initial={{ scale: 0 }}
+            key="add-to-collection"
+            sx={{
+              background: color.css(),
+              color: chroma.contrast(color, '#fff') > 4.5 ? '#fff' : '#000',
+              minWidth: 0,
+              padding: 0.5,
+              zIndex: 100,
+              '&:hover': {
+                background: color.brighten().css(),
+              },
+            }}
+            variant="contained"
+            onClick={() => {}}
+          >
+            <SvgIcon>
+              <TbLayoutGridAdd />
+            </SvgIcon>
+          </MotionButton>
+        )}
+      </AnimatePresence>
+    </Box>
   );
 });
 
@@ -123,59 +116,55 @@ export const LyricsActions: React.FC<{
   };
 
   return (
-    <AnimatePresence>
-      {isActive && (
-        <MotionButton
-          animate={{ scale: [0, 1.25, 1], transition: { delay: 0.3 } }}
-          exit={{ scale: 0 }}
-          initial={{ scale: 0 }}
-          key="edit-lyrics"
-          sx={{
-            background: color.css(),
-            color: chroma.contrast(color, '#fff') > 4.5 ? '#fff' : '#000',
-            minWidth: 0,
-            padding: 0.5,
-            position: 'absolute',
-            right: 32,
-            bottom: 32,
-            '&:hover': {
-              background: color.brighten().css(),
-            },
-          }}
-          variant="contained"
-          onClick={() => store.ui.modals.values.track.set(nowPlaying.track)}
-        >
-          <SvgIcon>
-            <TbEdit />
-          </SvgIcon>
-        </MotionButton>
-      )}
-      {isActive && (
-        <MotionButton
-          animate={{ scale: [0, 1.25, 1], transition: { delay: 0.3 } }}
-          exit={{ scale: 0 }}
-          initial={{ scale: 0 }}
-          key="edit-font-size"
-          sx={{
-            background: color.css(),
-            color: chroma.contrast(color, '#fff') > 4.5 ? '#fff' : '#000',
-            minWidth: 0,
-            padding: 0.5,
-            position: 'absolute',
-            right: 72,
-            bottom: 32,
-            '&:hover': {
-              background: color.brighten().css(),
-            },
-          }}
-          variant="contained"
-          onClick={handleFontSize}
-        >
-          <SvgIcon>
-            <RiFontSize />
-          </SvgIcon>
-        </MotionButton>
-      )}
-    </AnimatePresence>
+    <Box bottom={8} display="flex" gap={1} padding={2} position="absolute" right={8}>
+      <AnimatePresence>
+        {isActive && (
+          <MotionButton
+            animate={{ scale: [0, 1.25, 1], transition: { delay: 0.3 } }}
+            exit={{ scale: 0 }}
+            initial={{ scale: 0 }}
+            key="edit-lyrics"
+            sx={{
+              background: color.css(),
+              color: chroma.contrast(color, '#fff') > 4.5 ? '#fff' : '#000',
+              minWidth: 0,
+              padding: 0.5,
+              '&:hover': {
+                background: color.brighten().css(),
+              },
+            }}
+            variant="contained"
+            onClick={() => store.ui.modals.values.track.set(nowPlaying.track)}
+          >
+            <SvgIcon>
+              <TbEdit />
+            </SvgIcon>
+          </MotionButton>
+        )}
+        {isActive && (
+          <MotionButton
+            animate={{ scale: [0, 1.25, 1], transition: { delay: 0.3 } }}
+            exit={{ scale: 0 }}
+            initial={{ scale: 0 }}
+            key="edit-font-size"
+            sx={{
+              background: color.css(),
+              color: chroma.contrast(color, '#fff') > 4.5 ? '#fff' : '#000',
+              minWidth: 0,
+              padding: 0.5,
+              '&:hover': {
+                background: color.brighten().css(),
+              },
+            }}
+            variant="contained"
+            onClick={handleFontSize}
+          >
+            <SvgIcon>
+              <RiFontSize />
+            </SvgIcon>
+          </MotionButton>
+        )}
+      </AnimatePresence>
+    </Box>
   );
 });

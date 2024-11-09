@@ -5284,6 +5284,7 @@ __metadata:
     react-dropzone: "npm:^14.2.3"
     react-easy-emoji: "npm:^1.8.1"
     react-icons: "npm:^5.2.1"
+    react-idle-timer: "npm:^5.7.2"
     react-konva: "npm:^18.2.10"
     react-merge-refs: "npm:^2.1.1"
     react-router-dom: "npm:^6.22.2"
@@ -7469,6 +7470,16 @@ __metadata:
   peerDependencies:
     react: "*"
   checksum: 10/8cdf49a9583488f9bb58cbab21f10a5e1993dd9d4f5a62f30fbbce249e4868e8e2c34eb1888adb22014a4319633d1035079bcf5d33b1a8596d745809632699c8
+  languageName: node
+  linkType: hard
+
+"react-idle-timer@npm:^5.7.2":
+  version: 5.7.2
+  resolution: "react-idle-timer@npm:5.7.2"
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: 10/271c9320579da888ea61b3e0c2d44bbd9741ad823e0a0bb1256475a225f1b36f27bdfa6af8f5f089f6c2a5c96062bc268f68e06b206bd7ee832d29521f2e25a9
   languageName: node
   linkType: hard
 

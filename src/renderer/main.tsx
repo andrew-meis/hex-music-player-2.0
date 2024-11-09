@@ -6,6 +6,7 @@ import { Box } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import App, { appLoader } from 'app/App';
+import { audio } from 'audio';
 import DragLayer from 'main/DragLayer';
 import ErrorElement from 'main/ErrorElement';
 import MuiThemeProvider from 'main/MuiThemeProvider';
@@ -40,11 +41,26 @@ import Search, { searchLoader } from 'routes/search/Search';
 import Settings, { settingsLoader } from 'routes/settings/Settings';
 import Track, { trackLoader } from 'routes/track/Track';
 import Tracks, { tracksLoader } from 'routes/tracks/Tracks';
-import { createSelectObservable } from 'state';
+import { createSelectObservable, persistedStore, store } from 'state';
 import { SelectObservables } from 'typescript';
 import Titlebar from 'ui/titlebar/Titlebar';
 
 enableReactComponents();
+
+window.addEventListener('pagehide', async () => {
+  persistedStore.audio.savedTimeMillis.set(audio.currentTimeMillis);
+  window.clearInterval(store.audio.intervalTimer.peek());
+  const library = store.library.peek();
+  const nowPlaying = store.queue.nowPlaying.peek();
+  await library.timeline({
+    currentTime: Math.max(0, Math.floor(audio.currentTime) * 1000),
+    duration: nowPlaying.track.duration,
+    key: nowPlaying.track.key,
+    playerState: 'stopped',
+    queueItemId: nowPlaying.id,
+    ratingKey: nowPlaying.track.ratingKey,
+  });
+});
 
 // Instantiate each new select observable here
 const keys = Object.keys(SelectObservables).filter((value) => isNaN(Number(value)));

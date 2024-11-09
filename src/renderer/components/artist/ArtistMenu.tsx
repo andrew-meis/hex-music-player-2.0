@@ -6,7 +6,7 @@ import React from 'react';
 import { BsPlayFill } from 'react-icons/bs';
 import { CgRowFirst, CgRowLast } from 'react-icons/cg';
 import { FiRadio } from 'react-icons/fi';
-import { RiShuffleFill } from 'react-icons/ri';
+import { TbArrowsShuffle } from 'react-icons/tb';
 import { persistedStore, store } from 'state';
 
 const ArtistMenu: React.FC<{ artists: Artist[] }> = ({ artists }) => {
@@ -39,8 +39,8 @@ const ArtistMenu: React.FC<{ artists: Artist[] }> = ({ artists }) => {
         <ListItemText>Play now</ListItemText>
       </MenuItem>
       <MenuItem onClick={() => handlePlay(true)}>
-        <ListItemIcon sx={{ fontSize: '1.15rem' }}>
-          <RiShuffleFill />
+        <ListItemIcon sx={{ fontSize: '1.2rem' }}>
+          <TbArrowsShuffle />
         </ListItemIcon>
         <ListItemText>Shuffle</ListItemText>
       </MenuItem>
