@@ -1,4 +1,4 @@
-appId: com.hex-music-vite.app
+appId: com.hex-music-player-2.0.app
 productName: Hex Music
 directories:
   buildResources: build
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: hex-music-vite
+  executableName: hex-music-player-2.0
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

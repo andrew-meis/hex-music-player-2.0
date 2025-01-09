@@ -1,4 +1,4 @@
-# hex-music-vite
+# hex-music-player-2.0
 
 An Electron application with React and TypeScript
 

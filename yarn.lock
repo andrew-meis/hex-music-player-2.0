@@ -6594,9 +6594,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hex-music-vite@workspace:.":
+"hex-music-player-2.0@workspace:.":
   version: 0.0.0-use.local
-  resolution: "hex-music-vite@workspace:."
+  resolution: "hex-music-player-2.0@workspace:."
   dependencies:
     "@electron-toolkit/eslint-config-prettier": "npm:^2.0.0"
     "@electron-toolkit/eslint-config-ts": "npm:^2.0.0"
