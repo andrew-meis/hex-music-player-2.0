@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# hex-music-player-2.0
-=======
 # Hex Music Player
->>>>>>> ee003934601015682aa5e85429fb5512651ec3a8
 
 Successor to original [Hex Music Player](https://github.com/andrew-meis/hex-music-player).
 
