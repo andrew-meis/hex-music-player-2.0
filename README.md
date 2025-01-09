@@ -1,34 +1,16 @@
+<<<<<<< HEAD
 # hex-music-player-2.0
+=======
+# Hex Music Player
+>>>>>>> ee003934601015682aa5e85429fb5512651ec3a8
 
-An Electron application with React and TypeScript
+Successor to original [Hex Music Player](https://github.com/andrew-meis/hex-music-player).
 
-## Recommended IDE Setup
+Expected first release: late 2025.
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+Key enhancements:
+- UI improvements that emphasize deep engagement with your music library
+- Faster audio track loading and better gapless audio transitions
+- Goal to implement all features of Plex Web Interface, including metadata editing
 
-## Project Setup
-
-### Install
-
-```bash
-$ yarn
-```
-
-### Development
-
-```bash
-$ yarn dev
-```
-
-### Build
-
-```bash
-# For windows
-$ yarn build:win
-
-# For macOS
-$ yarn build:mac
-
-# For Linux
-$ yarn build:linux
-```
+[Preview](https://imgur.com/a/ZcccBh9)
