@@ -29,10 +29,11 @@ function createWindow() {
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',
     titleBarOverlay: {
-      height: 32,
+      height: 36,
     },
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
+      backgroundThrottling: false,
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
     },
@@ -45,6 +46,13 @@ function createWindow() {
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url);
     return { action: 'deny' };
+  });
+
+  mainWindow.webContents.on('did-navigate-in-page', () => {
+    mainWindow.webContents.send('nav-update', {
+      backward: mainWindow.webContents.navigationHistory.canGoBack(),
+      forward: mainWindow.webContents.navigationHistory.canGoForward(),
+    });
   });
 
   // HMR for renderer base on electron-vite cli.

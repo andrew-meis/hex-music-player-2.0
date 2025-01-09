@@ -4,7 +4,7 @@ import Textfit from '@namhong2001/react-textfit';
 import { useIntersectionObserver, useWindowSize } from '@react-hookz/web';
 import { useQuery } from '@tanstack/react-query';
 import { Album, Artist as ArtistType, SORT_TRACKS_BY_PLAYS } from 'api';
-import { Color } from 'chroma-js';
+import chroma, { Color } from 'chroma-js';
 import Palette from 'components/palette/Palette';
 import { motion } from 'framer-motion';
 import { isEmpty } from 'lodash';
@@ -121,8 +121,9 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
                 background: 'var(--mui-palette-background-default)',
                 height: (Math.max(height / 2, 280) - 216) / 2,
                 left: 12,
+                pointerEvents: 'none',
                 position: 'absolute',
-                top: 0,
+                top: -12,
                 width: 384,
               }}
             >
@@ -156,7 +157,7 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
                 backgroundAttachment: 'fixed',
                 backgroundImage: `url(${bannerSrc})`,
                 backgroundPositionX: '50%',
-                backgroundPositionY: 76,
+                backgroundPositionY: 44,
                 backgroundRepeat: 'no-repeat',
                 backgroundSize:
                   Math.min(width, 1920) + bannerWidthAdjustment + bannerGrowthAdjustment,
@@ -177,7 +178,7 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
                   backgroundAttachment: 'fixed',
                   backgroundImage: `url(${thumbSrc})`,
                   backgroundPositionX: 20 + thumbPositionAdjustment,
-                  backgroundPositionY: 'calc(calc(calc(max(50vh, 280px) - 216px) / 2) + 76px)',
+                  backgroundPositionY: 'calc(calc(calc(max(50vh, 280px) - 216px) / 2) + 30px)',
                   backgroundRepeat: 'no-repeat',
                   backgroundSize: 384 + thumbGrowthAdjustment,
                   borderBottomLeftRadius: 16,
@@ -188,6 +189,7 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
                   width: 384,
                   position: 'fixed',
                   top: 'calc(calc(max(50vh, 280px) - 216px) / 2)',
+                  pointerEvents: 'none',
                 }}
               />
             </>
@@ -286,16 +288,16 @@ const Artist: React.FC = () => {
 
   return (
     <Palette src={artist.art || artist.thumb}>
-      {({ isReady, color }) =>
+      {({ isReady, swatch }) =>
         isReady && (
           <RouteContainer style={{ margin: 0 }}>
             {({ viewport }) => {
               return (
                 <>
-                  <Banner artist={artist} color={color} viewport={viewport} />
+                  <Banner artist={artist} color={chroma(swatch.rgb)} viewport={viewport} />
                   <ArtistNavbar
                     artist={artist}
-                    color={color}
+                    color={chroma(swatch.rgb)}
                     mostPlayedTracks={mostPlayedTracks || []}
                     popularTracks={artist.popularTracks}
                     recentTracks={recentTracks}

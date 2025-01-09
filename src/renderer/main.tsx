@@ -32,18 +32,18 @@ import Genre, { genreLoader } from 'routes/genre/Genre';
 import Genres, { genresLoader } from 'routes/genres/Genres';
 import Library, { libraryLoader } from 'routes/library/Library';
 import Login, { loginLoader } from 'routes/login/Login';
+import { nowPlayingLoader } from 'routes/now-playing/loader';
+import NowPlaying from 'routes/now-playing/NowPlaying';
 import { playlistLoader } from 'routes/playlist/loader';
 import Playlist from 'routes/playlist/Playlist';
 import { playlistsLoader } from 'routes/playlists/loader';
 import Playlists from 'routes/playlists/Playlists';
-import Queue from 'routes/queue/Queue';
 import Search, { searchLoader } from 'routes/search/Search';
 import Settings, { settingsLoader } from 'routes/settings/Settings';
 import Track, { trackLoader } from 'routes/track/Track';
 import Tracks, { tracksLoader } from 'routes/tracks/Tracks';
 import { createSelectObservable, persistedStore, store } from 'state';
 import { SelectObservables } from 'typescript';
-import Titlebar from 'ui/titlebar/Titlebar';
 
 enableReactComponents();
 
@@ -136,6 +136,11 @@ const router = createHashRouter([
         loader: genreLoader,
       },
       {
+        path: '/now-playing',
+        element: <NowPlaying />,
+        loader: nowPlayingLoader,
+      },
+      {
         path: '/playlists',
         element: <Playlists />,
         loader: playlistsLoader,
@@ -144,10 +149,6 @@ const router = createHashRouter([
         path: '/playlists/:id',
         element: <Playlist />,
         loader: playlistLoader,
-      },
-      {
-        path: '/queue',
-        element: <Queue />,
       },
       {
         path: '/search',
@@ -186,7 +187,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         <DndProvider backend={HTML5Backend}>
           <Box bgcolor="background.default" height="100vh" position="absolute" width="100vw">
             <DragLayer />
-            <Titlebar />
             <RouterProvider router={router} />
           </Box>
         </DndProvider>

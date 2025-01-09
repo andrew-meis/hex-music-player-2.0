@@ -5,7 +5,11 @@ const WindowThemeModeSwitch = () => {
   const { mode } = useColorScheme();
 
   useEffect(() => {
-    mode === 'dark' ? window.api.setMode('dark') : window.api.setMode('light');
+    if (mode === 'dark') {
+      window.api.setMode('dark');
+    } else {
+      window.api.setMode('light');
+    }
   }, [mode]);
 
   return null;

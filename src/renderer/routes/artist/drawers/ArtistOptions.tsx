@@ -99,12 +99,12 @@ const ArtistOptions: React.FC = () => {
 
   const handleClose = (event: MouseEvent | TouchEvent) => {
     if ((event.target as HTMLElement).classList.contains('MuiBackdrop-root')) {
-      store.routes.artist.drawers.options.set(false);
+      store.ui.drawers.artist.options.open.set(false);
     }
   };
 
   return (
-    <ReactiveDrawer $open={() => store.routes.artist.drawers.options.get()} anchor="right">
+    <ReactiveDrawer $open={() => store.ui.drawers.artist.options.open.get()} anchor="right">
       <ClickAwayListener onClickAway={handleClose}>
         <Box height="calc(100vh - 244px)" maxHeight={600} width="clamp(212px, 25vw, 256px)">
           <Typography variant="h6">Options</Typography>

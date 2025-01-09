@@ -1,5 +1,10 @@
 import { electronAPI } from '@electron-toolkit/preload';
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+
+interface NavigationUpdate {
+  backward: boolean;
+  forward: boolean;
+}
 
 // Custom APIs for renderer
 const api = {
@@ -7,6 +12,8 @@ const api = {
   getValue: (key: string) => ipcRenderer.invoke('get-value', key),
   setValue: (key: string, value: object) => ipcRenderer.invoke('set-value', key, value),
   setMode: (mode: 'dark' | 'light') => ipcRenderer.invoke('set-mode', mode),
+  onNavigationUpdate: (callback: (event: IpcRendererEvent, args: NavigationUpdate) => void) =>
+    ipcRenderer.on('nav-update', callback),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

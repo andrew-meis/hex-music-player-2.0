@@ -11,6 +11,8 @@
     "baseUrl": ".",
     "composite": true,
     "jsx": "react-jsx",
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "outDir": "out",
     "paths": {
       "api": ["src/api/index.ts"],

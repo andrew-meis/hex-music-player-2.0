@@ -132,7 +132,7 @@ const ArtistNavbar: React.FC<{
           background: theme.palette.background.default,
           zIndex: 3,
         })}
-        top={0}
+        top={-1}
       >
         <ReactiveTabScrollButton
           $sx={() => ({
@@ -213,7 +213,7 @@ const ArtistNavbar: React.FC<{
         />
         <IconButton
           sx={{ marginLeft: 'auto', marginY: 'auto' }}
-          onClick={() => store.routes.artist.drawers.options.set(true)}
+          onClick={() => store.ui.drawers.artist.options.open.set(true)}
         >
           <SvgIcon>
             <HiAdjustmentsVertical />
@@ -229,8 +229,8 @@ const ArtistNavbar: React.FC<{
         </IconButton>
       </Box>
       <Box
-        marginX={4}
         maxWidth={1}
+        paddingX={4}
         sx={(theme) => ({
           background: theme.palette.background.default,
           position: 'relative',

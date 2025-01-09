@@ -9,8 +9,7 @@ const AppSurface: React.FC = () => (
     marginX="auto"
     marginY={1}
     maxWidth={1920}
-    position="relative"
-    top={40}
+    minHeight="var(--content-height)"
     width="calc(100% - 16px)"
   >
     <Outlet />

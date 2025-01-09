@@ -1,8 +1,8 @@
 export interface PersistedStore {
   audio: {
+    savedTimeMillis: number;
     volume: number;
   };
-  displayRemainingTime: boolean;
   lastfmApiKey: string;
   lyricsSize: number;
   queueId: number;

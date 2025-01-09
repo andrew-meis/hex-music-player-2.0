@@ -1,8 +1,18 @@
 import { computed, observable } from '@legendapp/state';
+import { Palette, Swatch } from '@vibrant/color';
 import { Account, Album, Artist, Library, PlayQueue, PlayQueueItem, Track } from 'api';
-import chroma from 'chroma-js';
 import { To } from 'react-router-dom';
 import { SelectObservables, ServerConfig } from 'typescript';
+
+export const defaultSwatch = new Swatch([128, 128, 128], 0);
+export const defaultPalette: Palette = {
+  Vibrant: new Swatch([128, 128, 128], 0),
+  Muted: new Swatch([128, 128, 128], 0),
+  DarkVibrant: new Swatch([88, 88, 88], 0),
+  DarkMuted: new Swatch([88, 88, 88], 0),
+  LightVibrant: new Swatch([220, 220, 220], 0),
+  LightMuted: new Swatch([220, 220, 220], 0),
+};
 
 export { persistedStore } from './persisted-store';
 export { allSelectObservables, createSelectObservable } from './select-observables';
@@ -71,16 +81,20 @@ export const store = observable({
       return undefined;
     }),
   },
-  routes: {
-    artist: {
-      drawers: { options: false },
-    },
-  },
   ui: {
     breadcrumbs: [{ title: 'Home', to: { pathname: '/' } }] as { title: string; to: To }[],
-    queue: {
-      activeTab: '0',
-      isOverIndex: -1,
+    drawers: {
+      artist: {
+        options: {
+          open: false,
+        },
+      },
+      library: {
+        open: false,
+      },
+      queue: {
+        open: false,
+      },
     },
     isDragging: false,
     menus: {
@@ -96,16 +110,20 @@ export const store = observable({
       open: false,
     },
     navigation: {
-      drawer: false,
+      backward: false,
+      forward: false,
     },
     nowPlaying: {
-      activeSection: 1,
       activeTab: '0',
       artHovered: false,
-      color: chroma([90, 90, 90]),
-      palette: [chroma([90, 90, 90]), chroma([90, 90, 90])],
+      lyricsHovered: false,
+      swatch: defaultSwatch,
+      palette: defaultPalette,
     },
-    overlay: false,
+    queue: {
+      activeTab: '0',
+      isOverIndex: -1,
+    },
     search: {
       input: '',
     },

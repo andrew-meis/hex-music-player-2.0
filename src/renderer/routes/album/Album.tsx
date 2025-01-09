@@ -129,7 +129,18 @@ const Album: React.FC = () => {
                   );
                 })}
               </Typography>
-              <Typography paddingBottom={2} paddingTop={1} variant="h1">
+              <Typography
+                display="-webkit-box"
+                marginBottom={2}
+                marginTop={1}
+                overflow="hidden"
+                sx={{
+                  wordBreak: 'break-word',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: 2,
+                }}
+                variant="h1"
+              >
                 {title}
               </Typography>
               <Box alignItems="center" display="flex" width={1}>

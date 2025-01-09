@@ -135,7 +135,7 @@ const LibrarySectionCard: React.FC<{
   };
 
   return (
-    <Grid item lg={2} md={4} sm={4}>
+    <Grid item lg={2} sm={4} xs={6}>
       <MotionBoxPaper
         alignItems="center"
         borderRadius={1}

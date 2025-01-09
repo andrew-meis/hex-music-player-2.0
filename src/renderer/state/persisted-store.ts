@@ -3,20 +3,19 @@ import { persistObservable } from '@legendapp/state/persist';
 import { Album } from 'api';
 
 const defaultValues = {
+  appearsOnFilters: {} as Record<string, { exclusions: string[]; inclusions: string[] }>,
   audio: {
     savedTimeMillis: 0,
     volume: 50,
   },
-  sorting: {
-    key: 'originallyAvailableAt' as keyof Album,
-    order: 'desc' as 'asc' | 'desc',
-  },
-  appearsOnFilters: {} as Record<string, { exclusions: string[]; inclusions: string[] }>,
-  displayRemainingTime: true,
   lastfmApiKey: '',
   lyricsSize: 2,
   queueId: 0,
   recentSearches: [] as string[],
+  sorting: {
+    key: 'originallyAvailableAt' as keyof Album,
+    order: 'desc' as 'asc' | 'desc',
+  },
 };
 
 export const persistedStore = observable(defaultValues);

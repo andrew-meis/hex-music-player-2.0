@@ -45,7 +45,6 @@ export enum TrackKeys {
 
 export enum OtherQueryKeys {
   COLLECTIONS = 'collections',
-  COLOR = 'color',
   COUNTRIES = 'countries',
   GENRES = 'genres',
   HISTORY = 'history',
@@ -68,4 +67,5 @@ export const QueryKeys = {
   ...TrackKeys,
   ...OtherQueryKeys,
 };
+
 export type QueryKeys = typeof QueryKeys;
