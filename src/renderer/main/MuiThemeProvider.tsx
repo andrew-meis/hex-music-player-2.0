@@ -34,7 +34,7 @@ const createDarkTheme = (): ColorSystemOptions => ({
       `,
     },
     background: {
-      default: '#191919',
+      default: '#000000',
       paper: '#121212',
     },
     primary: {
@@ -111,9 +111,6 @@ const theme = createTheme({
           minWidth: '0 !important',
           padding: '3px 6px !important',
         },
-        tag: {
-          borderRadius: 4,
-        },
       },
     },
     MuiBackdrop: {
@@ -162,6 +159,14 @@ const theme = createTheme({
         },
       },
     },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: 4,
+          letterSpacing: 0,
+        },
+      },
+    },
     MuiDialog: {
       styleOverrides: {
         container: {
@@ -196,11 +201,11 @@ const theme = createTheme({
           ...theme.applyStyles('dark', {
             background: chroma(theme.palette.background.paper).alpha(0.7).css(),
           }),
-          height: 'calc(100vh - 60px)',
+          height: 'calc(100vh - 56px)',
           borderRadius: 8,
-          marginTop: 40,
+          marginTop: 36,
           padding: 8,
-          width: 'clamp(224px, 25vw, 300px)',
+          width: 288,
         }),
       },
     },
@@ -264,6 +269,14 @@ const theme = createTheme({
               paddingLeft: '0.5rem',
             }),
         }),
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          fontFamily: 'Fira Code, monospace',
+          letterSpacing: '-0.05em',
+        },
       },
     },
     MuiListItemIcon: {
@@ -395,7 +408,6 @@ const theme = createTheme({
       styleOverrides: {
         root: ({ theme }) => ({
           borderRadius: 8,
-          minHeight: 32,
           paddingBottom: 0,
           paddingTop: 0,
           textAlign: 'left',
@@ -418,7 +430,6 @@ const theme = createTheme({
           backgroundColor: theme.palette.text.primary,
         }),
         root: {
-          minHeight: 32,
           overflow: 'visible',
         },
         scroller: {
@@ -468,52 +479,63 @@ const theme = createTheme({
       },
     },
     MuiTypography: {
+      styleOverrides: {
+        root: {
+          letterSpacing: 0,
+        },
+      },
       variants: [
+        // Used for route headings
         {
           props: { variant: 'h1' },
           style: {
-            fontFamily: 'TT Commons, sans-serif',
+            fontFamily: 'Figtree, sans-serif',
             fontSize: '2.75rem',
-            fontWeight: '700',
+            fontWeight: '900',
           },
         },
+        // Not used
         {
           props: { variant: 'h2' },
           style: {
-            fontFamily: 'TT Commons, sans-serif',
+            fontFamily: 'Figtree, sans-serif',
             fontSize: '2.5rem',
-            fontWeight: '700',
+            fontWeight: '900',
           },
         },
+        // Not used
         {
           props: { variant: 'h3' },
           style: {
-            fontFamily: 'TT Commons, sans-serif',
-            fontSize: '2.125rem',
-            fontWeight: '700',
+            fontFamily: 'Figtree, sans-serif',
+            fontSize: '2rem',
+            fontWeight: '900',
           },
         },
+        // Used for sub-headings within routes, modal headings, login page
         {
           props: { variant: 'h4' },
           style: {
-            fontFamily: 'TT Commons, sans-serif',
+            fontFamily: 'Figtree, sans-serif',
             fontSize: '1.75rem',
-            fontWeight: '700',
+            fontWeight: '900',
           },
         },
+        // Used for drawer headings, now playing route error text
         {
           props: { variant: 'h5' },
           style: {
-            fontFamily: 'TT Commons, sans-serif',
+            fontFamily: 'Figtree, sans-serif',
             fontSize: '1.5rem',
-            fontWeight: '600',
+            fontWeight: '900',
           },
         },
+        // Used for sub-headings within routes
         {
           props: { variant: 'h6' },
           style: {
-            fontSize: '1.125rem',
-            fontWeight: '600',
+            fontFamily: 'Figtree, sans-serif',
+            fontWeight: '700',
           },
         },
         {

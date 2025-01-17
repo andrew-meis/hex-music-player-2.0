@@ -13,7 +13,7 @@ const PlexServer: React.FC<{
   const [isLoading, setLoading] = useState(false);
   return (
     <>
-      <Typography variant="h3">Server Name</Typography>
+      <Typography variant="h4">Server Name</Typography>
       <Box alignItems="center" display="flex" flexDirection="column" gap={1} mt={2}>
         {servers.devices.map((device) => (
           <LoadingButton

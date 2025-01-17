@@ -1,6 +1,6 @@
-import { observer, Show, useMount } from '@legendapp/state/react';
+import { observer, reactive, Show, useMount } from '@legendapp/state/react';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { ClickAwayListener, Tab, Typography } from '@mui/material';
+import { Box, ClickAwayListener, Drawer, Tab, Typography } from '@mui/material';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { PlayQueueItem } from 'api';
 import BackToRow from 'components/queue/BackToRow';
@@ -14,8 +14,10 @@ import { ItemProps, TableProps, TableVirtuoso } from 'react-virtuoso';
 import { allSelectObservables, store } from 'state';
 import { DragTypes, SelectObservables } from 'typescript';
 
+const ReactiveDrawer = reactive(Drawer);
+
 const BackTo: React.FC<{ backTo: PlayQueueItem[] }> = ({ backTo }) => {
-  const selectObservable = allSelectObservables[SelectObservables.ROUTE_QUEUE];
+  const selectObservable = allSelectObservables[SelectObservables.UI_QUEUE];
   const columns = useMemo(() => queueColumns, []);
   const table = useReactTable({
     data: backTo,
@@ -70,7 +72,7 @@ const BackTo: React.FC<{ backTo: PlayQueueItem[] }> = ({ backTo }) => {
         style={{ height: 'calc(100% - 8px)', marginTop: 8 }}
         totalCount={rows.length}
         onMouseOver={() => {
-          store.ui.menus.activeMenu.set(SelectObservables.ROUTE_QUEUE);
+          store.ui.menus.activeMenu.set(SelectObservables.UI_QUEUE);
           selectObservable.items.set(backTo);
         }}
       />
@@ -79,7 +81,7 @@ const BackTo: React.FC<{ backTo: PlayQueueItem[] }> = ({ backTo }) => {
 };
 
 const UpNext: React.FC<{ upNext: PlayQueueItem[] }> = ({ upNext }) => {
-  const selectObservable = allSelectObservables[SelectObservables.ROUTE_QUEUE];
+  const selectObservable = allSelectObservables[SelectObservables.UI_QUEUE];
 
   const columns = useMemo(() => queueColumns, []);
   const table = useReactTable({
@@ -140,7 +142,7 @@ const UpNext: React.FC<{ upNext: PlayQueueItem[] }> = ({ upNext }) => {
         style={{ height: 'calc(100% - 8px)', marginTop: 8 }}
         totalCount={rows.length}
         onMouseOver={() => {
-          store.ui.menus.activeMenu.set(SelectObservables.ROUTE_QUEUE);
+          store.ui.menus.activeMenu.set(SelectObservables.UI_QUEUE);
           selectObservable.items.set(upNext);
         }}
       />
@@ -221,4 +223,28 @@ const Queue: React.FC = observer(function Queue() {
   );
 });
 
-export default Queue;
+const QueueDrawer: React.FC = () => {
+  const handleClose = (event: MouseEvent | TouchEvent) => {
+    if ((event.target as HTMLElement).classList.contains('MuiBackdrop-invisible')) {
+      return;
+    }
+    if ((event.target as HTMLElement).classList.contains('MuiBackdrop-root')) {
+      store.ui.drawers.queue.open.set(false);
+    }
+  };
+
+  return (
+    <ReactiveDrawer $open={() => store.ui.drawers.queue.open.get()} anchor="right">
+      <ClickAwayListener onClickAway={handleClose}>
+        <Box display="flex" flexDirection="column" height={1}>
+          <Typography paddingX={1} variant="h5">
+            Queue
+          </Typography>
+          <Queue />
+        </Box>
+      </ClickAwayListener>
+    </ReactiveDrawer>
+  );
+};
+
+export default QueueDrawer;

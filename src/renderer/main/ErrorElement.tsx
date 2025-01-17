@@ -32,12 +32,7 @@ const ErrorElement: React.FC = () => {
           height="100vh"
           justifyContent="center"
         >
-          <Typography
-            color="var(--mui-palette-text-primary)"
-            fontFamily="TT Commons, sans-serif"
-            fontWeight={700}
-            variant="h4"
-          >
+          <Typography color="var(--mui-palette-text-primary)" variant="h4">
             Oops!
           </Typography>
           <Typography color="var(--mui-palette-text-primary)">

@@ -75,7 +75,6 @@ const SearchInput: React.FC = observer(function SearchInput() {
     <Paper elevation={2} sx={{ alignItems: 'center', display: 'flex', flexShrink: 0, height: 40 }}>
       <Form action="/search" style={{ width: '100%' }} onSubmit={(event) => event.preventDefault()}>
         <ReactiveInputBase
-          fullWidth
           $endAdornment={
             store.ui.search.input.get().length > 0 ? (
               <InputAdornment position="end">
@@ -85,6 +84,18 @@ const SearchInput: React.FC = observer(function SearchInput() {
               </InputAdornment>
             ) : null
           }
+          $inputProps={{
+            maxLength: 128,
+            spellCheck: false,
+            sx: {
+              fontWeight: 500,
+              padding: '2px 0 3px',
+              width: store.ui.search.input.get().length > 0 ? 212 : 256,
+              '&::placeholder': {
+                opacity: 0.75,
+              },
+            },
+          }}
           $startAdornment={
             <InputAdornment position="start">
               <IconButton onClick={() => searchInput.current?.focus()}>
@@ -96,17 +107,6 @@ const SearchInput: React.FC = observer(function SearchInput() {
           }
           autoComplete="off"
           id="search-input"
-          inputProps={{
-            maxLength: 128,
-            spellCheck: false,
-            sx: {
-              fontWeight: 500,
-              padding: '2px 0 3px',
-              '&::placeholder': {
-                opacity: 0.75,
-              },
-            },
-          }}
           inputRef={searchInput}
           name="query"
           placeholder="Search"

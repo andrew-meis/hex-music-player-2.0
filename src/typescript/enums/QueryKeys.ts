@@ -11,6 +11,7 @@ export enum ArtistKeys {
   ARTISTS = 'artists',
   SEARCH = 'search', // includes albums, artists, collections, genres, playlists, and tracks
   SEARCH_ARTISTS = 'search-artists',
+  TRACK_ARTISTS = 'track-artists'
 }
 
 export enum CustomFilterKeys {

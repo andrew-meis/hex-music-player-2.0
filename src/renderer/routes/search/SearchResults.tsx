@@ -129,7 +129,7 @@ const Table: React.FC<{
           },
         }}
         isScrolling={handleScrollState}
-        style={{ height: 'calc(100% - 16px)', marginTop: 16 }}
+        style={{ height: 'calc(100% - 8px)', marginTop: 8 }}
         totalCount={rows.length}
         onMouseOver={() => {
           store.ui.menus.activeMenu.set(SelectObservables.ROUTE_SEARCH);

@@ -9,7 +9,7 @@ const ArtistRow: React.FC<
     children: React.ReactNode;
     index: number;
     state: SelectObservable;
-  } & ItemProps<Artist>
+  } & Partial<ItemProps<Artist>>
 > = ({ children, index, state, ...props }) => {
   return (
     <TableRow index={index} state={state} type={DragTypes.ARTIST} {...props}>

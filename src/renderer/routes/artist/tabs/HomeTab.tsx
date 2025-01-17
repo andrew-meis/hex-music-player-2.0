@@ -32,7 +32,7 @@ const TrackSection: React.FC<{
     <MotionTypography
       color="text.primary"
       paddingTop={3}
-      variant="h5"
+      variant="h6"
       whileHover="hover"
       width="fit-content"
     >

@@ -83,7 +83,7 @@ const Seekbar: React.FC = observer(function Seekbar() {
       }}
       sx={{
         borderRadius: 0,
-        bottom: 2,
+        top: -4,
         height: 2,
         marginX: 1,
         padding: '4px 0',

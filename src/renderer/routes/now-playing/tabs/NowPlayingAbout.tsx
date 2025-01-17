@@ -1,4 +1,4 @@
-import { observer, useSelector } from '@legendapp/state/react';
+import { observer, Show, useSelector } from '@legendapp/state/react';
 import { Avatar, Box, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
@@ -47,7 +47,7 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
         height: '100%',
       }}
     >
-      {!nowPlaying.track.grandparentArt && (
+      <Show if={!nowPlaying.track.grandparentArt}>
         <Avatar
           slotProps={{
             img: {
@@ -64,27 +64,30 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
             borderRadius: 4,
             height: 'auto',
             marginLeft: 6,
-            marginTop: 2,
+            marginTop: 1,
             marginBottom: 'auto',
             width: 400,
           }}
         />
-      )}
-      <Box
-        borderRadius={4}
-        display="flex"
-        height="-webkit-fill-available"
-        marginTop={1}
-        marginX={2}
-        sx={{
-          background: `url(${artistBannerSrc}) no-repeat`,
-          backgroundSize: '100%',
-          maskImage: `linear-gradient(to top, transparent 20%, rgba(0, 0, 0, 1) 80%)`,
-        }}
-        width="-webkit-fill-available"
-      />
+      </Show>
+      <Show if={nowPlaying.track.grandparentArt}>
+        <Box
+          borderRadius={4}
+          display="flex"
+          height="-webkit-fill-available"
+          marginTop={1}
+          marginX={2}
+          overflow="hidden"
+          sx={{
+            background: `url(${artistBannerSrc}) no-repeat`,
+            backgroundSize: '100%',
+            maskImage: `linear-gradient(to top, transparent 20%, rgba(0, 0, 0, 1) 80%)`,
+          }}
+          width="-webkit-fill-available"
+        />
+      </Show>
       {data && (
-        <Box bottom={88} padding={4} paddingBottom={2} position="absolute">
+        <Box bottom={0} padding={4} paddingBottom={2} position="absolute" width="calc(100% - 64px)">
           <Typography color="text.primary" lineHeight={3} variant="h6">
             {(+data.artist.stats.listeners).toLocaleString()} last.fm listeners
           </Typography>

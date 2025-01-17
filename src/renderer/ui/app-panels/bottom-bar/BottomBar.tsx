@@ -1,13 +1,14 @@
-import { Memo, Show } from '@legendapp/state/react';
-import { Box, Divider } from '@mui/material';
+import { Show } from '@legendapp/state/react';
+import { Box } from '@mui/material';
 import React from 'react';
 import { store } from 'state';
 
 import AudioControls from './audio-controls/AudioControls';
 import Seekbar from './audio-controls/Seekbar';
 import Volume from './audio-controls/Volume';
+import ChartsButton from './buttons/ChartsButton';
+import PlaylistsButton from './buttons/PlaylistsButton';
 import QueueButton from './buttons/QueueButton';
-import SearchButton from './buttons/SearchButton';
 import NowPlaying from './now-playing/NowPlaying';
 import NowPlayingColor from './now-playing/NowPlayingColor';
 
@@ -16,41 +17,25 @@ const BottomBar: React.FC = () => {
     <Box
       borderRadius={2}
       color="text.primary"
+      display="flex"
+      flexDirection="column"
       height={76}
-      margin={0.5}
-      marginTop={0}
+      justifyContent="flex-end"
       sx={{
-        contain: 'paint',
+        transform: 'translateZ(0)',
       }}
       width="-webkit-fill-available"
     >
+      <Seekbar />
       <Show ifReady={store.queue.nowPlaying}>
         <NowPlayingColor />
       </Show>
-      <Memo>
-        {() => {
-          const swatch = store.ui.nowPlaying.swatch.get();
-          return (
-            <div
-              style={{
-                background: swatch.hex,
-                height: '100%',
-                mixBlendMode: 'color',
-                opacity: 0.6,
-                pointerEvents: 'none',
-                position: 'absolute',
-                width: '100%',
-              }}
-            />
-          );
-        }}
-      </Memo>
       <Box
         alignItems="center"
         display="flex"
         height={64}
         justifyContent="space-between"
-        paddingTop={0.25}
+        paddingBottom={1}
         paddingX={1}
       >
         <Box
@@ -74,13 +59,12 @@ const BottomBar: React.FC = () => {
           justifyContent="flex-end"
           maxWidth={368}
         >
-          <SearchButton />
+          <PlaylistsButton />
+          <ChartsButton />
           <QueueButton />
-          <Divider orientation="vertical" sx={{ height: 36, marginX: 0.5 }} />
           <Volume />
         </Box>
       </Box>
-      <Seekbar />
     </Box>
   );
 };

@@ -172,7 +172,7 @@ export const lastfmMatchTracksQuery = (track: Track, enabled: boolean) =>
         autocorrect: 1,
       });
       if (similartracks.track.length === 0) {
-        return { reason: 'No last.fm similar tracks', tracks: [] };
+        return { reason: 'No similar tracks on last.fm.', tracks: [] };
       }
       const matchedTracks = [] as Track[];
       await Promise.all(
@@ -188,7 +188,7 @@ export const lastfmMatchTracksQuery = (track: Track, enabled: boolean) =>
         })
       );
       if (matchedTracks.length === 0) {
-        return { reason: 'No last.fm similar tracks found in Plex library', tracks: [] };
+        return { reason: 'No last.fm similar tracks found in Plex library.', tracks: [] };
       }
       return { reason: 'Success!', tracks: matchedTracks };
     },

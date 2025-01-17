@@ -1,5 +1,6 @@
 import { QueryClient, queryOptions, useQuery } from '@tanstack/react-query';
 import { AlbumContainer, ArtistContainer, Library, parseContainerType } from 'api';
+import { deburr, uniqBy } from 'lodash';
 import paramsToObject from 'scripts/params-to-object';
 import { store } from 'state';
 import { ArtistKeys, QueryKeys } from 'typescript';
@@ -55,4 +56,87 @@ export const useArtists = (searchParams?: URLSearchParams) => {
   const { sectionId } = store.serverConfig.peek();
   const library = store.library.peek();
   return useQuery(artistsQuery(sectionId, library, searchParams));
+};
+
+export const trackArtistsQuery = (
+  sectionId: number,
+  library: Library,
+  trackId: number,
+  artistTitle: string
+) => ({
+  queryKey: [QueryKeys.TRACK_ARTISTS, trackId],
+  queryFn: async () => {
+    // other potential separators: med
+    const regex =
+      /\s([Ff]t\.?|[Ff]eaturing|[Ff]eat\.?|[Ww]ith|[Aa]nd|[Xx]|[Oo]f|[Dd]uet with|[Vv]s\.?|&|\+|w\/|×)\s|,\s|\/\s|·\s/gm;
+    const separators = [
+      'feat.',
+      'feat',
+      'featuring',
+      'ft.',
+      'ft',
+      'duet with',
+      'and',
+      'x',
+      'of',
+      '&',
+      ',',
+      'with',
+      '',
+      'w/',
+      'vs.',
+      'vs',
+      '+',
+      '×',
+      '·',
+    ];
+    const artistTitleSplit = artistTitle
+      .split(regex)
+      .filter((str) => str !== undefined)
+      .map((str) => str.trim());
+    const andIndexes = artistTitleSplit.flatMap((str, i) => (str.toLowerCase() === 'and' ? i : []));
+    const ampersandIndexes = artistTitleSplit.flatMap((str, i) => (str === '&' ? i : []));
+    if (andIndexes) {
+      const newNames = andIndexes.map((n) => artistTitleSplit.slice(n - 1, n + 2).join(' '));
+      artistTitleSplit.push(...newNames);
+    }
+    if (ampersandIndexes) {
+      const newNames = ampersandIndexes.map((n) => artistTitleSplit.slice(n - 1, n + 2).join(' '));
+      artistTitleSplit.push(...newNames);
+    }
+    const searchArray = artistTitleSplit
+      .filter((str) => !separators.includes(str.toLowerCase()))
+      .map((str) => str.toLowerCase());
+    const promises = searchArray.map((str) =>
+      library.artists(
+        sectionId,
+        new URLSearchParams({
+          title: deburr(str),
+          limit: '5',
+        })
+      )
+    );
+    const artists = await Promise.all(promises);
+    return uniqBy(
+      artists.flatMap((container) => {
+        if (container.totalSize === 0) return [];
+        const match = container.artists.filter((artist) =>
+          searchArray.includes(artist.title.toLowerCase())
+        );
+        if (match.length === 0) return [];
+        if (match.length === 1) return match[0];
+        return [];
+      }),
+      'title'
+    ).map((artist, index) => {
+      if (index === 0) return { ...artist, type: 'Main artist ' };
+      return { ...artist, type: 'Guest artist ' };
+    });
+  },
+});
+
+export const useTrackArtists = (trackId: number, artistTitle: string) => {
+  const { sectionId } = store.serverConfig.peek();
+  const library = store.library.peek();
+  return useQuery(trackArtistsQuery(sectionId, library, trackId, artistTitle));
 };

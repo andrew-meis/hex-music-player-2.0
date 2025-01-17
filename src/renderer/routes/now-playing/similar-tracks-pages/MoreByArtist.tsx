@@ -8,7 +8,7 @@ import { allSelectObservables, store } from 'state';
 import { SelectObservables } from 'typescript';
 
 const MoreByArtist: React.FC = observer(function SimilarMoreByArtist() {
-  const selectObservable = allSelectObservables[SelectObservables.UI_NOW_PLAYING];
+  const selectObservable = allSelectObservables[SelectObservables.ROUTE_NOW_PLAYING];
 
   const nowPlaying = store.queue.nowPlaying.get();
 
@@ -66,7 +66,7 @@ const MoreByArtist: React.FC = observer(function SimilarMoreByArtist() {
         width={1}
       >
         <Typography color="text.secondary" variant="h5">
-          No other tracks found in Plex library
+          No other tracks found in Plex library.
         </Typography>
       </Box>
     );
@@ -74,10 +74,14 @@ const MoreByArtist: React.FC = observer(function SimilarMoreByArtist() {
 
   return (
     <VirtualTrackTable
-      activeMenu={SelectObservables.UI_NOW_PLAYING}
+      activeMenu={SelectObservables.ROUTE_NOW_PLAYING}
       columnOptions={{ userRating: { showSubtext: 'popularity' } }}
       columnVisibility={{ duration: false, index: false }}
       state={selectObservable}
+      style={{
+        height: 'calc(100% - 8px)',
+        marginTop: 8,
+      }}
       tracks={recentTracks.filter((track) => track.id !== nowPlaying.track.id) || []}
     />
   );

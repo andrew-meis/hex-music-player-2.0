@@ -1,6 +1,16 @@
 import { computed, observable } from '@legendapp/state';
 import { Palette, Swatch } from '@vibrant/color';
-import { Account, Album, Artist, Library, PlayQueue, PlayQueueItem, Track } from 'api';
+import {
+  Account,
+  Album,
+  Artist,
+  Library,
+  PlaylistContainer,
+  PlayQueue,
+  PlayQueueItem,
+  Track,
+} from 'api';
+import { DateTime } from 'luxon';
 import { To } from 'react-router-dom';
 import { SelectObservables, ServerConfig } from 'typescript';
 
@@ -33,7 +43,11 @@ export const store = observable({
   },
   events: {
     newQueue: false,
+    updatePlaylists: false,
     updateQueue: false as boolean | 'force-playback',
+  },
+  playlists: {
+    currentPlaylists: undefined as unknown as PlaylistContainer,
   },
   queue: {
     currentQueue: undefined as unknown as PlayQueue,
@@ -89,7 +103,12 @@ export const store = observable({
           open: false,
         },
       },
-      library: {
+      charts: {
+        open: false,
+        start: DateTime.now().minus({ days: 7 }),
+        end: DateTime.now().set({ hour: 23, minute: 59, second: 59 }),
+      },
+      playlists: {
         open: false,
       },
       queue: {
@@ -114,9 +133,7 @@ export const store = observable({
       forward: false,
     },
     nowPlaying: {
-      activeTab: '0',
-      artHovered: false,
-      lyricsHovered: false,
+      activeSimilarTracksTab: '0',
       swatch: defaultSwatch,
       palette: defaultPalette,
     },

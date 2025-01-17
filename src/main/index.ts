@@ -29,7 +29,7 @@ function createWindow() {
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',
     titleBarOverlay: {
-      height: 36,
+      height: 32,
     },
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {

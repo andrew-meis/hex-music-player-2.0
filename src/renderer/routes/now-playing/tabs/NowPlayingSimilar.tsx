@@ -1,75 +1,27 @@
-import { observer, useObserve, useSelector } from '@legendapp/state/react';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Box, Tab, Typography } from '@mui/material';
+import { observer } from '@legendapp/state/react';
+import { TabContext, TabPanel } from '@mui/lab';
+import { Box } from '@mui/material';
 import React from 'react';
-import { FiRadio } from 'react-icons/fi';
-import { ImLastfm } from 'react-icons/im';
-import { IoMdMicrophone } from 'react-icons/io';
-import { PiWaveform } from 'react-icons/pi';
 import { store } from 'state';
 
+import { SimilarTracksActions } from '../NowPlayingSectionActions';
 import MoreByArtist from '../similar-tracks-pages/MoreByArtist';
 import SimilarLastfm from '../similar-tracks-pages/SimilarLastfm';
 import SimilarRelated from '../similar-tracks-pages/SimilarRelated';
 import SimilarSonically from '../similar-tracks-pages/SimilarSonically';
 
 const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
-  const activeTab = store.ui.nowPlaying.activeTab.get();
-  const artist = useSelector(() => store.queue.nowPlaying.get()?.track.grandparentTitle);
-
-  useObserve(store.queue.nowPlaying.id, ({ value, previous }) => {
-    if (value === previous) return;
-    store.ui.nowPlaying.activeTab.set('0');
-  });
-
-  const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
-    store.ui.nowPlaying.activeTab.set(newValue);
-  };
-
-  const tabs = [
-    {
-      label: 'Related Tracks',
-      icon: <FiRadio />,
-    },
-    {
-      label: 'Sonically Similar',
-      icon: <PiWaveform />,
-    },
-    {
-      label: 'last.fm Similar',
-      icon: <ImLastfm viewBox="0 0 17 17" />,
-    },
-    {
-      label: `More by ${artist}`,
-      icon: <IoMdMicrophone />,
-    },
-  ];
+  const activeTab = store.ui.nowPlaying.activeSimilarTracksTab.get();
 
   return (
     <Box
       display="flex"
       flexDirection="column"
       height="-webkit-fill-available"
-      marginTop={1}
       marginX={2}
       width="-webkit-fill-available"
     >
       <TabContext value={activeTab}>
-        <TabList onChange={handleChange}>
-          {tabs.map((tab, index) => (
-            <Tab
-              icon={tab.icon}
-              iconPosition="start"
-              key={tab.label}
-              label={
-                <Typography paddingTop={0.25} variant="subtitle1">
-                  {tab.label}
-                </Typography>
-              }
-              value={index.toString()}
-            />
-          ))}
-        </TabList>
         <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="0">
           <SimilarRelated />
         </TabPanel>
@@ -83,6 +35,7 @@ const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
           <MoreByArtist />
         </TabPanel>
       </TabContext>
+      <SimilarTracksActions />
     </Box>
   );
 });

@@ -8,7 +8,7 @@ const PlexLibrary: React.FC<{
 }> = ({ sections, setSelectedLibrary }) => {
   return (
     <>
-      <Typography variant="h3">Music Library</Typography>
+      <Typography variant="h4">Music Library</Typography>
       <Box alignItems="center" display="flex" flexDirection="column" gap={1} mt={2}>
         {sections.map((section) => (
           <Button

@@ -4,7 +4,7 @@ import isAppInit from 'scripts/init-app';
 
 import AppLayout from './AppLayout';
 import Modals from './Modals';
-import QueueUpdater from './QueueUpdater';
+import QueryUpdaters from './QueryUpdaters';
 import Toasts from './Toasts';
 
 export const appLoader = async () => {
@@ -18,7 +18,7 @@ export const appLoader = async () => {
 const App: React.FC = () => {
   return (
     <>
-      <QueueUpdater />
+      <QueryUpdaters />
       <AppLayout />
       <Modals />
       <Menu />

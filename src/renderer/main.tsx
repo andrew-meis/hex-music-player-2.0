@@ -3,6 +3,8 @@ import 'overlayscrollbars/overlayscrollbars.css';
 
 import { enableReactComponents } from '@legendapp/state/config/enableReactComponents';
 import { Box } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import App, { appLoader } from 'app/App';
@@ -44,6 +46,7 @@ import Track, { trackLoader } from 'routes/track/Track';
 import Tracks, { tracksLoader } from 'routes/tracks/Tracks';
 import { createSelectObservable, persistedStore, store } from 'state';
 import { SelectObservables } from 'typescript';
+import Titlebar from 'ui/titlebar/Titlebar';
 
 enableReactComponents();
 
@@ -183,13 +186,16 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <MuiThemeProvider>
-        <WindowThemeModeSwitch />
-        <DndProvider backend={HTML5Backend}>
-          <Box bgcolor="background.default" height="100vh" position="absolute" width="100vw">
-            <DragLayer />
-            <RouterProvider router={router} />
-          </Box>
-        </DndProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <WindowThemeModeSwitch />
+          <DndProvider backend={HTML5Backend}>
+            <Box bgcolor="background.default" height="100vh" position="absolute" width="100vw">
+              <DragLayer />
+              <Titlebar />
+              <RouterProvider router={router} />
+            </Box>
+          </DndProvider>
+        </LocalizationProvider>
       </MuiThemeProvider>
       <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
     </QueryClientProvider>

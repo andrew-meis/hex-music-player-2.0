@@ -8,7 +8,7 @@ import { allSelectObservables, store } from 'state';
 import { SelectObservables } from 'typescript';
 
 const SimilarSonically: React.FC = observer(function SimilarSonically() {
-  const selectObservable = allSelectObservables[SelectObservables.UI_NOW_PLAYING];
+  const selectObservable = allSelectObservables[SelectObservables.ROUTE_NOW_PLAYING];
 
   const nowPlaying = store.queue.nowPlaying.get();
 
@@ -31,7 +31,7 @@ const SimilarSonically: React.FC = observer(function SimilarSonically() {
         width={1}
       >
         <Typography color="text.secondary" variant="h5">
-          No sonically similar tracks found in Plex library
+          No sonically similar tracks found in Plex library.
         </Typography>
       </Box>
     );
@@ -39,9 +39,13 @@ const SimilarSonically: React.FC = observer(function SimilarSonically() {
 
   return (
     <VirtualTrackTable
-      activeMenu={SelectObservables.UI_NOW_PLAYING}
+      activeMenu={SelectObservables.ROUTE_NOW_PLAYING}
       columnVisibility={{ duration: false, index: false }}
       state={selectObservable}
+      style={{
+        height: 'calc(100% - 8px)',
+        marginTop: 8,
+      }}
       tracks={slicedTracks || []}
     />
   );

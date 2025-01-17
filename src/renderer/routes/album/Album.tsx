@@ -179,12 +179,7 @@ const Album: React.FC = () => {
               </Box>
               <Box display="flex" flexWrap="wrap" gap={0.5} paddingTop={2}>
                 {album.genre.map((genre) => (
-                  <Chip
-                    key={genre.id}
-                    label={genre.tag}
-                    size="small"
-                    sx={{ borderRadius: '4px' }}
-                  />
+                  <Chip key={genre.id} label={genre.tag} size="small" />
                 ))}
               </Box>
             </Box>

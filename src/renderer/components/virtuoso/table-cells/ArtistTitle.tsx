@@ -5,11 +5,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createArtistNavigate } from 'scripts/navigate-generators';
 
-const ArtistTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; artist: Artist }> = ({
-  showSubtext = true,
-  showType = false,
-  artist,
-}) => {
+const ArtistTitle: React.FC<{
+  showArtistType?: boolean;
+  showDefaultSubtext?: boolean;
+  showType?: boolean;
+  artist: Artist;
+}> = ({ showDefaultSubtext = true, showType = false, showArtistType = false, artist }) => {
   return (
     <>
       <Typography variant="title1">
@@ -21,7 +22,7 @@ const ArtistTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; artist:
           {artist.title}
         </Link>
       </Typography>
-      <Show if={showSubtext}>
+      <Show if={showDefaultSubtext}>
         <Typography variant="title2">
           {showType ? `${artist._type}\xa0 · \xa0` : ''}
           <Link
@@ -34,6 +35,9 @@ const ArtistTitle: React.FC<{ showSubtext?: boolean; showType?: boolean; artist:
               : `${artist.childCount} release`}
           </Link>
         </Typography>
+      </Show>
+      <Show if={showArtistType}>
+        <Typography variant="title2">{artist.type}</Typography>
       </Show>
     </>
   );

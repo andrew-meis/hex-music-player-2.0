@@ -1,12 +1,13 @@
 import { ObservableObject } from '@legendapp/state';
 import { reactive, useObservable } from '@legendapp/state/react';
 import { TabContext, TabList, TabListProps, TabPanel } from '@mui/lab';
-import { Box, IconButton, SvgIcon, Tab, TabScrollButton, Typography } from '@mui/material';
+import { Box, Tab, TabScrollButton, Typography } from '@mui/material';
 import { useWindowSize } from '@react-hookz/web';
 import { Album, Artist, Track } from 'api';
 import { Color } from 'chroma-js';
+import ActionButton from 'components/buttons/ActionButton';
 import Scroller from 'components/scroller/Scroller';
-import { useMotionValueEvent, useScroll } from 'framer-motion';
+import { AnimatePresence, useMotionValueEvent, useScroll } from 'framer-motion';
 import { UseOverlayScrollbarsInstance } from 'overlayscrollbars-react';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { HiAdjustmentsVertical } from 'react-icons/hi2';
@@ -91,6 +92,31 @@ const Tabs: React.FC<
 };
 
 const ReactiveTabScrollButton = reactive(TabScrollButton);
+
+const ActionButtons: React.FC<{ artist: Artist; color: Color }> = ({ artist, color }) => {
+  return (
+    <Box alignItems="center" display="flex" gap={1} marginLeft="auto" marginRight={1}>
+      <AnimatePresence>
+        <ActionButton
+          color={color}
+          key="edit-view"
+          label="View Options"
+          onClick={() => store.ui.drawers.artist.options.open.set(true)}
+        >
+          <HiAdjustmentsVertical />
+        </ActionButton>
+        <ActionButton
+          color={color}
+          key="edit-artist"
+          label="Edit Artist"
+          onClick={() => store.ui.modals.values.artist.set(artist)}
+        >
+          <TbEdit />
+        </ActionButton>
+      </AnimatePresence>
+    </Box>
+  );
+};
 
 const ArtistNavbar: React.FC<{
   artist: Artist;
@@ -211,22 +237,7 @@ const ArtistNavbar: React.FC<{
             }
           }}
         />
-        <IconButton
-          sx={{ marginLeft: 'auto', marginY: 'auto' }}
-          onClick={() => store.ui.drawers.artist.options.open.set(true)}
-        >
-          <SvgIcon>
-            <HiAdjustmentsVertical />
-          </SvgIcon>
-        </IconButton>
-        <IconButton
-          sx={{ marginRight: 1, marginY: 'auto' }}
-          onClick={() => store.ui.modals.values.artist.set(artist)}
-        >
-          <SvgIcon>
-            <TbEdit />
-          </SvgIcon>
-        </IconButton>
+        <ActionButtons artist={artist} color={color} />
       </Box>
       <Box
         maxWidth={1}

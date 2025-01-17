@@ -25,9 +25,10 @@ const releaseSortOptions = [
 ];
 
 const sx = {
-  fontFamily: 'Consolas, monospace',
-  fontSize: '11px',
-  lineHeight: '10px',
+  fontFamily: 'Fira Code, monospace',
+  fontSize: '10px',
+  lineHeight: '9px',
+  letterSpacing: '-0.05em',
 };
 
 const SortOrderText: React.FC<{
@@ -106,9 +107,20 @@ const ArtistOptions: React.FC = () => {
   return (
     <ReactiveDrawer $open={() => store.ui.drawers.artist.options.open.get()} anchor="right">
       <ClickAwayListener onClickAway={handleClose}>
-        <Box height="calc(100vh - 244px)" maxHeight={600} width="clamp(212px, 25vw, 256px)">
-          <Typography variant="h6">Options</Typography>
-          <Typography variant="caption">Sort releases by</Typography>
+        <Box>
+          <Typography paddingX={1} variant="h5">
+            Options
+          </Typography>
+          <Typography
+            color="text.secondary"
+            lineHeight={1}
+            marginBottom={0.25}
+            paddingTop={2}
+            paddingX={1}
+            variant="subtitle2"
+          >
+            Sort releases by
+          </Typography>
           <Box display="flex" gap="4px">
             <ReactiveSelect
               disableUnderline

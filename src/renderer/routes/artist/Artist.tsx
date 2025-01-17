@@ -119,11 +119,11 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
             <div
               style={{
                 background: 'var(--mui-palette-background-default)',
-                height: (Math.max(height / 2, 280) - 216) / 2,
+                height: 'calc(calc(max(100vh, 280px) / 2) - 240px)',
                 left: 12,
                 pointerEvents: 'none',
                 position: 'absolute',
-                top: -12,
+                top: -8,
                 width: 384,
               }}
             >
@@ -157,7 +157,7 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
                 backgroundAttachment: 'fixed',
                 backgroundImage: `url(${bannerSrc})`,
                 backgroundPositionX: '50%',
-                backgroundPositionY: 44,
+                backgroundPositionY: 96,
                 backgroundRepeat: 'no-repeat',
                 backgroundSize:
                   Math.min(width, 1920) + bannerWidthAdjustment + bannerGrowthAdjustment,
@@ -178,7 +178,7 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
                   backgroundAttachment: 'fixed',
                   backgroundImage: `url(${thumbSrc})`,
                   backgroundPositionX: 20 + thumbPositionAdjustment,
-                  backgroundPositionY: 'calc(calc(calc(max(50vh, 280px) - 216px) / 2) + 30px)',
+                  backgroundPositionY: 'calc(calc(max(100vh, 280px) / 2) - 152px)',
                   backgroundRepeat: 'no-repeat',
                   backgroundSize: 384 + thumbGrowthAdjustment,
                   borderBottomLeftRadius: 16,
@@ -188,7 +188,7 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
                   height: 216,
                   width: 384,
                   position: 'fixed',
-                  top: 'calc(calc(max(50vh, 280px) - 216px) / 2)',
+                  top: 'calc(calc(max(100vh, 280px) / 2) - 152px)',
                   pointerEvents: 'none',
                 }}
               />
@@ -197,8 +197,8 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
         </Box>
         <Typography
           component="div"
-          fontFamily="TT Commons, sans-serif"
-          fontWeight={700}
+          fontFamily="Figtree, sans-serif"
+          fontWeight={900}
           left={24}
           position="absolute"
           sx={(theme) => ({
@@ -206,10 +206,10 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
             textShadow: '2px 4px 8px rgb(40 40 48 / 60%)',
             zIndex: 10,
           })}
-          top="calc(max(50vh, 280px) - 108px)"
+          top="calc(max(50vh, 280px) - 96px)"
           width={0.8}
         >
-          <Textfit max={72} min={24} mode="single">
+          <Textfit max={64} min={24} mode="single">
             {artist.title}
           </Textfit>
         </Typography>

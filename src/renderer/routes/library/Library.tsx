@@ -156,7 +156,7 @@ const LibrarySectionCard: React.FC<{
           {svgs[section as (typeof sections)[number]]}
         </SvgIcon>
         <Box marginTop={0.5}>
-          <Typography lineHeight="inherit" variant="h3">
+          <Typography lineHeight="inherit" variant="h4">
             {data.totalSize || 0}
           </Typography>
           <Typography lineHeight="inherit" variant="overline">

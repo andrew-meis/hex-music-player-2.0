@@ -48,9 +48,14 @@ const SyncedLine: React.FC<{
   const [line, setLine] = useState<HTMLSpanElement | null>(null);
   const { text, startOffset, nextOffset } = item;
 
+  const scrollDistance = useSelector(() => {
+    const index = persistedStore.lyricsSize.get();
+    return fontSizes[index] * 16 * 3 * 1.334;
+  });
+
   useEffect(() => {
     if (!box.current || !line) return;
-    box.current.scrollTo({ top: line.offsetTop - 96, behavior: 'smooth' });
+    box.current.scrollTo({ top: line.offsetTop - scrollDistance, behavior: 'smooth' });
   }, [line]);
 
   const shouldSetRef = useSelector(() => {
@@ -78,6 +83,7 @@ const SyncedLine: React.FC<{
   return (
     <Typography
       fontSize={fontSize}
+      fontWeight={700}
       ref={shouldSetRef ? setLine : null}
       sx={{
         color,
@@ -200,6 +206,7 @@ const PlainLyrics: React.FC<{
         {plainLyrics.map((value, index) => (
           <Typography
             fontSize={fontSize}
+            fontWeight={700}
             key={index}
             sx={{
               color: 'text.secondary',
@@ -219,7 +226,7 @@ const PlainLyrics: React.FC<{
 const NowPlayingLyrics: React.FC = observer(function NowPlayingLyrics() {
   const nowPlaying = store.queue.nowPlaying.get();
 
-  const { data: lyrics } = useLyrics(nowPlaying.track);
+  const { data: lyrics, isLoading } = useLyrics(nowPlaying.track);
 
   const syncedLyrics = useMemo(() => {
     if (!lyrics || !lyrics.syncedLyrics) return undefined;
@@ -231,6 +238,24 @@ const NowPlayingLyrics: React.FC = observer(function NowPlayingLyrics() {
     return processPlainLyrics(lyrics.plainLyrics);
   }, [lyrics]);
 
+  const isInstrumental = useMemo(() => {
+    if (!lyrics) return undefined;
+    return lyrics.instrumental;
+  }, [lyrics]);
+
+  if (isLoading) {
+    return (
+      <Box
+        alignItems="center"
+        display="flex"
+        flexDirection="column"
+        height={1}
+        justifyContent="center"
+        width={1}
+      />
+    );
+  }
+
   if (syncedLyrics) {
     return <SyncedLyrics syncedLyrics={syncedLyrics} />;
   }
@@ -239,7 +264,7 @@ const NowPlayingLyrics: React.FC = observer(function NowPlayingLyrics() {
     return <PlainLyrics plainLyrics={plainLyrics} />;
   }
 
-  if (lyrics?.instrumental) {
+  if (isInstrumental) {
     return (
       <Box
         alignItems="center"
@@ -250,21 +275,15 @@ const NowPlayingLyrics: React.FC = observer(function NowPlayingLyrics() {
         width={1}
       >
         <Box color="text.primary" height="fit-content">
-          <Typography
-            sx={{
-              color: 'text.secondary',
-              fontWeight: 600,
-            }}
-            variant="h5"
-          >
-            ...track is instrumental...
+          <Typography color="text.secondary" variant="h5">
+            Track is instrumental.
           </Typography>
         </Box>
       </Box>
     );
   }
 
-  if (!syncedLyrics && !plainLyrics && !lyrics?.instrumental) {
+  if (!syncedLyrics && !plainLyrics && !isInstrumental) {
     return (
       <Box
         alignItems="center"
@@ -275,15 +294,11 @@ const NowPlayingLyrics: React.FC = observer(function NowPlayingLyrics() {
         width={1}
       >
         <Box color="text.primary" height="fit-content">
-          <Typography
-            sx={{
-              color: 'text.secondary',
-              fontWeight: 600,
-              textAlign: 'center',
-            }}
-            variant="h5"
-          >
-            ...no lyrics found...
+          <Typography color="text.secondary" textAlign="center" variant="h5">
+            No lyrics found.
+          </Typography>
+          <Typography color="text.secondary" textAlign="center" variant="title1">
+            You can add lyrics above.
           </Typography>
         </Box>
       </Box>

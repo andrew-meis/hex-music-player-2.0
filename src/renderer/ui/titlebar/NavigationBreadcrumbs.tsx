@@ -16,7 +16,8 @@ const NavigationBreadcrumbs: React.FC = observer(function NavigationBreadcrumbs(
         flexShrink: 0,
         fontWeight: 400,
         marginLeft: 1,
-        maxWidth: 'calc(100vw - 300px)',
+        marginRight: 'auto',
+        maxWidth: 'calc(100% - 388px)',
       }}
     >
       {breadcrumbs.map((value, index, array) => {

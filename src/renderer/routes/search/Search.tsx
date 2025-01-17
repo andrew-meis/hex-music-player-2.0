@@ -6,7 +6,6 @@ import RouteContainer from 'routes/RouteContainer';
 import { persistedStore, store } from 'state';
 
 import SearchHistory from './SearchHistory';
-import SearchInput from './SearchInput';
 import SearchResults from './SearchResults';
 
 interface loaderReturn {
@@ -64,8 +63,6 @@ const Search: React.FC = () => {
       <Typography paddingBottom={2} variant="h1">
         Search
       </Typography>
-      <SearchInput />
-      <span style={{ display: 'block', marginTop: 16, width: '100%' }} />
       {query.length < 2 && <SearchHistory />}
       {query.length > 1 && <SearchResults filter={filter} query={query} />}
     </RouteContainer>

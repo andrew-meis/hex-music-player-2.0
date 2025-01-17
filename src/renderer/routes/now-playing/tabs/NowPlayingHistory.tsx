@@ -160,58 +160,58 @@ const Table: React.FC<{ history: HistoryContainer }> = ({ history }) => {
   const { rows } = table.getRowModel();
 
   return (
-    <>
-      <table style={{ width: '-webkit-fill-available', tableLayout: 'fixed' }}>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr className="history-row" key={headerGroup.id} style={{ pointerEvents: 'none' }}>
-              {headerGroup.headers.map((header) => (
-                <th className={header.column.id} key={header.id}>
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                </th>
+    <TableVirtuoso
+      components={{
+        Scroller,
+        Table: ({ style, ...props }: TableProps) => (
+          <table
+            {...props}
+            style={{
+              ...style,
+              width: '-webkit-fill-available',
+              tableLayout: 'fixed',
+            }}
+          />
+        ),
+        TableRow: ({ style, ...props }: ItemProps<HistoryEntry>) => {
+          const index = props['data-index'];
+          const row = rows[index];
+
+          return (
+            <tr className="history-row" {...props} style={{ ...style }}>
+              {row.getVisibleCells().map((cell) => (
+                <td className={cell.column.id} key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
               ))}
             </tr>
-          ))}
-        </thead>
-      </table>
-      <TableVirtuoso
-        components={{
-          Scroller,
-          Table: ({ style, ...props }: TableProps) => (
-            <table
-              {...props}
-              style={{
-                ...style,
-                width: '-webkit-fill-available',
-                tableLayout: 'fixed',
-              }}
-            />
-          ),
-          TableRow: ({ style, ...props }: ItemProps<HistoryEntry>) => {
-            const index = props['data-index'];
-            const row = rows[index];
-
-            return (
-              <tr className="history-row" {...props} style={{ ...style }}>
-                {row.getVisibleCells().map((cell) => (
-                  <td className={cell.column.id} key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
+          );
+        },
+      }}
+      fixedHeaderContent={() => {
+        return (
+          <>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr className="history-row" key={headerGroup.id} style={{ pointerEvents: 'none' }}>
+                {headerGroup.headers.map((header) => (
+                  <th className={header.column.id} key={header.id}>
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </th>
                 ))}
               </tr>
-            );
-          },
-        }}
-        style={{
-          height: 'calc(100% - 29px)',
-          marginBottom: 16,
-          overscrollBehavior: 'contain',
-          width: '100%',
-          zIndex: 100,
-        }}
-        totalCount={rows.length}
-      />
-    </>
+            ))}
+          </>
+        );
+      }}
+      style={{
+        height: 'calc(100% - 29px)',
+        marginBottom: 16,
+        overscrollBehavior: 'contain',
+        width: '100%',
+        zIndex: 100,
+      }}
+      totalCount={rows.length}
+    />
   );
 };
 
@@ -232,8 +232,8 @@ const NowPlayingHistory: React.FC = observer(function NowPlayingHistory() {
         margin={2}
         width="calc(100% - 32px)"
       >
-        <Typography color="text.secondary" variant="h5">
-          ...no play history...
+        <Typography color="text.secondary" variant="h4">
+          No playback history.
         </Typography>
       </Box>
     );
@@ -250,7 +250,7 @@ const NowPlayingHistory: React.FC = observer(function NowPlayingHistory() {
       <Box flexShrink={0} width={history.entries.length === 0 ? 1 : 0.4}>
         <Chart history={history} />
       </Box>
-      <Box flexGrow={1} height="calc(100% - 32px)" width="calc(60% - 48px)">
+      <Box flexGrow={1} height={1} width="calc(60% - 48px)">
         <Table history={history} />
       </Box>
     </Box>

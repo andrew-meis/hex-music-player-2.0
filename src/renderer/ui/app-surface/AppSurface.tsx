@@ -6,11 +6,9 @@ const AppSurface: React.FC = () => (
   <Box
     color="text.primary"
     height="var(--content-height)"
-    marginX="auto"
-    marginY={1}
     maxWidth={1920}
     minHeight="var(--content-height)"
-    width="calc(100% - 16px)"
+    width={1}
   >
     <Outlet />
   </Box>

@@ -31,6 +31,7 @@
     "@mui/material": "^6.3.1",
     "@mui/system": "^6.3.1",
     "@mui/x-charts": "^7.23.6",
+    "@mui/x-date-pickers": "^7.23.6",
     "@namhong2001/react-textfit": "^2.0.0",
     "@react-hookz/web": "^24.0.4",
     "@synesthesia-project/precise-audio": "^0.3.1",
@@ -67,7 +68,7 @@
     "react-konva": "^18.2.10",
     "react-merge-refs": "^2.1.1",
     "react-router-dom": "^6.22.2",
-    "react-virtuoso": "^4.7.11",
+    "react-virtuoso": "^4.12.3",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

@@ -25,6 +25,7 @@ const VirtualTrackTable: React.FC<{
   columnVisibility?: Partial<Record<keyof Track, boolean>>;
   state: SelectObservable;
   tracks: Track[];
+  style?: React.CSSProperties;
   useWindowScroll?: boolean;
   viewport?: HTMLDivElement;
 }> = ({
@@ -34,6 +35,7 @@ const VirtualTrackTable: React.FC<{
   columnVisibility,
   state,
   tracks,
+  style,
   useWindowScroll = false,
   viewport,
 }) => {
@@ -156,9 +158,7 @@ const VirtualTrackTable: React.FC<{
           if (row.getIsGrouped()) {
             const cell = row.getVisibleCells().find(({ column }) => column.id === 'parentIndex')!;
             return (
-              <td colSpan={100} key={cell.id}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
+              <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
             );
           }
           return undefined;
@@ -168,6 +168,7 @@ const VirtualTrackTable: React.FC<{
           marginTop: 16,
           overscrollBehavior: 'contain',
           width: '100%',
+          ...style,
         }}
         totalCount={rows.length}
         onMouseOver={() => {

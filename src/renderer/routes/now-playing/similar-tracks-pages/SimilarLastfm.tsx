@@ -8,7 +8,7 @@ import { allSelectObservables, store } from 'state';
 import { SelectObservables } from 'typescript';
 
 const SimilarLastfm: React.FC = observer(function SimilarLastfm() {
-  const selectObservable = allSelectObservables[SelectObservables.UI_NOW_PLAYING];
+  const selectObservable = allSelectObservables[SelectObservables.ROUTE_NOW_PLAYING];
 
   const nowPlaying = store.queue.nowPlaying.get();
 
@@ -28,7 +28,7 @@ const SimilarLastfm: React.FC = observer(function SimilarLastfm() {
       >
         <CircularProgress size="2rem" />
         <Typography color="text.secondary" paddingTop={1} variant="h5">
-          Searching for last.fm similar tracks
+          Searching for last.fm similar tracks...
         </Typography>
       </Box>
     );
@@ -55,9 +55,13 @@ const SimilarLastfm: React.FC = observer(function SimilarLastfm() {
 
   return (
     <VirtualTrackTable
-      activeMenu={SelectObservables.UI_NOW_PLAYING}
+      activeMenu={SelectObservables.ROUTE_NOW_PLAYING}
       columnVisibility={{ duration: false, index: false }}
       state={selectObservable}
+      style={{
+        height: 'calc(100% - 8px)',
+        marginTop: 8,
+      }}
       tracks={lastfmMatchTracks.tracks || []}
     />
   );

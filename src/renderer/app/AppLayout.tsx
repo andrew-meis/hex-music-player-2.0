@@ -1,24 +1,41 @@
-import { Box } from '@mui/material';
+import { Box, Divider } from '@mui/material';
 import React from 'react';
+import SearchInput from 'routes/search/SearchInput';
 import BottomBar from 'ui/app-panels/bottom-bar/BottomBar';
-import LibraryDrawer from 'ui/app-panels/library-drawer/LibraryDrawer';
-import QueueDrawer from 'ui/app-panels/queue-drawer/QueueDrawer';
+import Drawers from 'ui/app-panels/drawers/Drawers';
 import AppSurface from 'ui/app-surface/AppSurface';
-import Titlebar from 'ui/titlebar/Titlebar';
+import NavigationBreadcrumbs from 'ui/titlebar/NavigationBreadcrumbs';
+import NavigationButtons from 'ui/titlebar/NavigationButtons';
 
 const AppLayout: React.FC = () => {
   return (
-    <>
-      <LibraryDrawer />
-      <QueueDrawer />
-      <Box display="flex" height="calc(100vh - 80px)">
-        <Box width={1}>
-          <Titlebar />
-          <AppSurface />
-        </Box>
+    <Box width={1}>
+      <Drawers />
+      <Box
+        alignItems="center"
+        display="flex"
+        height={56}
+        justifyContent="space-between"
+        paddingX={1}
+        width="-webkit-fill-available"
+      >
+        <NavigationButtons />
+        <NavigationBreadcrumbs />
+        <SearchInput />
       </Box>
+      <Divider sx={{ marginX: 1 }} />
+      <Box
+        height="var(--content-height)"
+        margin={1}
+        position="relative"
+        width="calc(100vw - 16px)"
+        zIndex={0}
+      >
+        <AppSurface />
+      </Box>
+      <Divider sx={{ marginX: 1 }} />
       <BottomBar />
-    </>
+    </Box>
   );
 };
 

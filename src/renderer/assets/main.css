@@ -8,16 +8,6 @@
        url('./fonts/Arimo/arimo-v26-vietnamese_latin-ext_latin_hebrew_greek-ext_greek_cyrillic-ext_cyrillic-regular.woff2') format('woff2')
 }
 
-/* arimo-600 - vietnamese_latin-ext_latin_hebrew_greek-ext_greek_cyrillic-ext_cyrillic */
-@font-face {
-  font-family: 'Arimo';
-  font-style: normal;
-  font-weight: 600;
-  font-display: block;
-  src: local(''),
-       url('./fonts/Arimo/arimo-v26-vietnamese_latin-ext_latin_hebrew_greek-ext_greek_cyrillic-ext_cyrillic-600.woff2') format('woff2')
-}
-
 /* arimo-500 - vietnamese_latin-ext_latin_hebrew_greek-ext_greek_cyrillic-ext_cyrillic */
 @font-face {
   font-family: 'Arimo';
@@ -28,6 +18,16 @@
        url('./fonts/Arimo/arimo-v26-vietnamese_latin-ext_latin_hebrew_greek-ext_greek_cyrillic-ext_cyrillic-500.woff2') format('woff2')
 }
 
+/* arimo-600 - vietnamese_latin-ext_latin_hebrew_greek-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: 'Arimo';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: local(''),
+       url('./fonts/Arimo/arimo-v26-vietnamese_latin-ext_latin_hebrew_greek-ext_greek_cyrillic-ext_cyrillic-600.woff2') format('woff2')
+}
+
 /* arimo-700 - vietnamese_latin-ext_latin_hebrew_greek-ext_greek_cyrillic-ext_cyrillic */
 @font-face {
   font-family: 'Arimo';
@@ -36,6 +36,42 @@
   font-display: block;
   src: local(''),
        url('./fonts/Arimo/arimo-v26-vietnamese_latin-ext_latin_hebrew_greek-ext_greek_cyrillic-ext_cyrillic-700.woff2') format('woff2')
+}
+
+/* figtree-700 - latin_latin-ext */
+@font-face {
+  font-display: block; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Figtree';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./fonts/Figtree/figtree-v6-latin_latin-ext-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* figtree-800 - latin_latin-ext */
+@font-face {
+  font-display: block; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Figtree';
+  font-style: normal;
+  font-weight: 800;
+  src: url('./fonts/Figtree/figtree-v6-latin_latin-ext-800.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* figtree-900 - latin_latin-ext */
+@font-face {
+  font-display: block; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Figtree';
+  font-style: normal;
+  font-weight: 900;
+  src: url('./fonts/Figtree/figtree-v6-latin_latin-ext-900.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* fira-code-regular - latin_latin-ext */
+@font-face {
+  font-display: block;
+  font-family: 'Fira Code';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./fonts/Fira Code/fira-code-v22-latin_latin-ext-regular.woff2') format('woff2'); 
 }
 
 /* rubik-regular - latin-ext_latin */
@@ -58,28 +94,6 @@
        url('./fonts/Rubik/rubik-v20-latin-ext_latin-700.woff2') format('woff2')
 }
 
-/* ttcommons-600 */
-@font-face {
-  ascent-override: 105%;
-  font-family: 'TT Commons';
-  font-style: normal;
-  font-weight: 600;
-  font-display: block;
-  src: local(''),
-       url('./fonts/TTCommons/ttcommons-600.woff') format('woff')
-}
-
-/* ttcommons-700 */
-@font-face {
-  ascent-override: 105%;
-  font-family: 'TT Commons';
-  font-style: normal;
-  font-weight: 700;
-  font-display: block;
-  src: local(''),
-       url('./fonts/TTCommons/ttcommons-700.woff') format('woff')
-}
-
 :root {
   font-family: Arimo, Arial, Helvetica, sans-serif;
   font-size: 16px;
@@ -96,7 +110,7 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
-  --content-height: calc(100vh - 132px);
+  --content-height: calc(100vh - 180px);
 }
 
 body {
@@ -166,7 +180,6 @@ tr.history-row {
   padding: 0 10px 0 0;
   transition: background-color 100ms ease-in-out;
   > td[class$="index"], > th[class$="index"] {
-    flex-shrink: 0;
     overflow: hidden;
     padding: 6px 8px;
     text-align: center;
@@ -180,13 +193,15 @@ tr.history-row {
     text-align: right;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: -webkit-fill-available;
+    width: 100%;
   }
   > th[class$="index"] {
+    background: var(--mui-palette-background-default);
     padding: 0 8px;
     text-align: left;
   }
   > th[class$="viewedAt"] {
+    background: var(--mui-palette-background-default);
     padding: 0 10px;
   }
 }
@@ -235,52 +250,6 @@ tr.history-row:hover {
   z-index: 10;
 }
 
-.now-playing-grid {
-  display: grid;
-  height: 100%;
-  width: 100%;
-  grid-template-columns: auto 50fr;
-  grid-template-areas: 'artwork metadata';
-}
-
-.now-playing-artwork {
-  aspect-ratio: 1;
-  display: flex;
-  grid-area: artwork;
-  width: calc(var(--content-height) - 32px);
-  margin-bottom: auto;
-  margin-top: auto;
-  max-width: 436px;
-}
-
-.now-playing-metadata {
-  background: cornflowerblue;
-  display: flex;
-  height: calc(var(--content-height) - 32px);
-  grid-area: metadata;
-  margin-bottom: auto;
-  margin-top: auto;
-  max-height: 436px;
-}
-
-@media (min-width: 1120px) {
-  .now-playing-artwork {
-    max-width: 536px;
-  }
-  .now-playing-metadata {
-    max-height: 536px;
-  }
-}
-
-@media (min-width: 1536px) {
-  .now-playing-artwork {
-    max-width: 620px;
-  }
-  .now-playing-metadata {
-    max-height: 620px;
-  }
-}
-
 .rating-container {
   display: inline-flex;
   position: relative;
@@ -305,8 +274,9 @@ tr.history-row:hover {
   transform-origin: center;
 }
 
-.titlebar-spacer {
+.titlebar {
+  align-items: center;
+  display: flex;
   height: 32px;
-  width: -webkit-fill-available;
   -webkit-app-region: drag;
 }

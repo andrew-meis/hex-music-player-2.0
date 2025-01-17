@@ -29,7 +29,7 @@ const PlexLogin: React.FC<{
 }> = ({ activeStep, client, code, setActiveStep }) => {
   return (
     <>
-      <Typography variant="h3">Login</Typography>
+      <Typography variant="h4">Login</Typography>
       <LoadingButton
         endIcon={<FiExternalLink style={{ height: '0.9em', width: '0.9em' }} viewBox="0 0 24 24" />}
         href={createAuthUrl(client, code)}

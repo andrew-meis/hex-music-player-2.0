@@ -74,9 +74,8 @@ const AboutTab: React.FC<{ artist: Artist; color: Color }> = ({ artist, color })
                 y={96}
               />
               <Text
-                fontFamily="TT Commons"
+                fontFamily="Figtree"
                 fontSize={32}
-                fontVariant="bold"
                 offsetX={(primaryTextDimensions?.width || 0) / 2}
                 offsetY={(primaryTextDimensions?.height || 0) / 2}
                 ref={primaryRef}
@@ -85,7 +84,7 @@ const AboutTab: React.FC<{ artist: Artist; color: Color }> = ({ artist, color })
                 y={90}
               />
               <Text
-                fontFamily="TT Commons"
+                fontFamily="Figtree"
                 fontSize={14}
                 offsetX={(secondaryTextDimensions?.width || 0) / 2}
                 offsetY={(secondaryTextDimensions?.height || 0) / 2}

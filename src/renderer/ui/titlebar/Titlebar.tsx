@@ -1,23 +1,23 @@
 import { Box } from '@mui/material';
+import favicon from 'assets/favicon.svg';
 import React from 'react';
-
-import NavigationBreadcrumbs from './NavigationBreadcrumbs';
-import NavigationButtons from './NavigationButtons';
 
 const appInfo = await window.api.getAppInfo();
 
 const Titlebar: React.FC = () => {
   return (
-    <Box
-      alignItems="center"
-      display="flex"
-      height={36}
-      marginLeft={appInfo.platform === 'macOS' ? 8 : 0}
-      width="100vw"
-    >
-      <NavigationButtons />
-      <NavigationBreadcrumbs />
-      <Box className="titlebar-spacer" />
+    <Box className="titlebar">
+      {appInfo.platform !== 'macOS' && (
+        <img
+          alt="logo"
+          src={favicon}
+          style={{
+            height: 24,
+            width: 24,
+            marginLeft: 8,
+          }}
+        />
+      )}
     </Box>
   );
 };
