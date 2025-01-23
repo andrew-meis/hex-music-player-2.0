@@ -1,6 +1,7 @@
-import { observer, Show, useSelector } from '@legendapp/state/react';
+import { observer, Show } from '@legendapp/state/react';
 import { Avatar, Box, IconButton, Typography } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useImageResize } from 'hooks/useImageResize';
 import React from 'react';
 import { HiOutlineHeart } from 'react-icons/hi2';
 import { createSearchParams, NavLink, useLocation, useNavigate } from 'react-router-dom';
@@ -10,16 +11,17 @@ import { store } from 'state';
 const MotionBox = motion(Box);
 
 const NowPlaying: React.FC = observer(function NowPlaying() {
-  const library = store.library.get();
   const nowPlaying = store.queue.nowPlaying.get();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const albumThumbSrc = useSelector(() => {
-    return library.resizeImage(
-      new URLSearchParams({ url: nowPlaying?.track.parentThumb, width: '100', height: '100' })
-    );
-  });
+  const thumbSrc = useImageResize(
+    new URLSearchParams({
+      url: nowPlaying?.track.parentThumb || '',
+      width: '100',
+      height: '100',
+    })
+  );
 
   return (
     <Show
@@ -35,7 +37,7 @@ const NowPlaying: React.FC = observer(function NowPlaying() {
         width={1}
       >
         <Avatar
-          src={albumThumbSrc}
+          src={thumbSrc}
           sx={{
             cursor: 'pointer',
             height: 60,

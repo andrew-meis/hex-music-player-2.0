@@ -1,15 +1,11 @@
 import { Typography } from '@mui/material';
-// import { useInView } from 'framer-motion';
-import React, { useRef } from 'react';
+import React from 'react';
 
 const RouteHeader: React.FC<{
   title: string;
 }> = ({ title }) => {
-  const ref = useRef(null);
-  // const isInView = useInView(ref);
-
   return (
-    <Typography paddingBottom={2} ref={ref} variant="h1">
+    <Typography paddingBottom={2} variant="h1">
       {title}
     </Typography>
   );

@@ -1,17 +1,17 @@
 import { observer } from '@legendapp/state/react';
-import { Box, styled, Typography, useColorScheme } from '@mui/material';
-import { PieChart, useDrawingArea } from '@mui/x-charts';
+import { Box, Tooltip, tooltipClasses, Typography } from '@mui/material';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { HistoryContainer, HistoryEntry } from 'api';
 import chroma from 'chroma-js';
 import { historyColumns } from 'components/history/columns';
 import Scroller from 'components/virtuoso/Scroller';
-import { groupBy } from 'lodash';
+import { groupBy, sum } from 'lodash';
 import { DateTime } from 'luxon';
 import { useHistory } from 'queries';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import React from 'react';
 import { ItemProps, TableProps, TableVirtuoso } from 'react-virtuoso';
+import formatCount from 'scripts/format-count';
 import { store } from 'state';
 
 const makeEquidistantValues = (startValue: number, stopValue: number, cardinality: number) => {
@@ -23,26 +23,17 @@ const makeEquidistantValues = (startValue: number, stopValue: number, cardinalit
   return arr.map((x) => Math.round(x * 100) / 100);
 };
 
-const StyledText = styled('text')(({ theme }) => ({
-  fill: theme.palette.text.primary,
-  textAnchor: 'middle',
-  dominantBaseline: 'central',
-  fontFamily: 'Arimo, Arial, sans-serif',
-  fontSize: '1.125rem',
-  fontWeight: 600,
-}));
-
-const PieCenterLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { width, height, left, top } = useDrawingArea();
-  return (
-    <StyledText x={left + width / 2} y={top + height / 2}>
-      {children}
-    </StyledText>
-  );
-};
-
-const Chart: React.FC<{ history: HistoryContainer }> = observer(function Chart({ history }) {
+const BarChart: React.FC<{ history: HistoryContainer }> = observer(function BarChart({ history }) {
+  const [activeIndex, setActiveIndex] = useState(-1);
   const palette = store.ui.nowPlaying.palette.get();
+
+  const moments = useMemo(
+    () => history.entries.map((entry) => DateTime.fromJSDate(entry.viewedAt)),
+    [history]
+  );
+
+  const data = useMemo(() => groupBy(moments, (date) => date.toFormat('yyyy')), [moments]);
+
   const chromaColors = Object.entries(palette)
     .map(([, swatch]) => {
       if (swatch) {
@@ -53,36 +44,17 @@ const Chart: React.FC<{ history: HistoryContainer }> = observer(function Chart({
     })
     .filter((color) => color !== null);
 
-  const { mode } = useColorScheme();
-
-  const moments = useMemo(
-    () => history.entries.map((entry) => DateTime.fromJSDate(entry.viewedAt)),
-    [history]
-  );
-
-  const data = useMemo(() => {
-    const groupsYears = groupBy(moments, (date) => date.toFormat('yyyy'));
-    const years = Object.keys(groupsYears)
-      .map((key, index) => ({
-        id: index,
-        label: key,
-        value: groupsYears[key].length,
-        entries: groupsYears[key],
-      }))
-      .sort((a, b) => parseInt(a.label, 10) - parseInt(b.label, 10));
-    return years;
-  }, [moments]);
-
   const colors = useMemo(() => {
-    const surfaceColor = chroma(mode === 'dark' ? '#121212' : '#ffffff');
+    const surfaceColor = '#000';
+    const { length } = Object.entries(data);
     let saturationValues: number[];
     let luminanceValues: number[];
-    if (data.length <= 1) {
+    if (length <= 1) {
       saturationValues = [0.5];
       luminanceValues = [0.5];
     } else {
-      saturationValues = makeEquidistantValues(0.2, 0.8, data.length);
-      luminanceValues = makeEquidistantValues(0.4, 0.6, data.length);
+      saturationValues = makeEquidistantValues(0.2, 0.8, length);
+      luminanceValues = makeEquidistantValues(0.4, 0.6, length);
     }
     const filteredPalette = chromaColors.filter(
       (color) => Math.max(...color.rgb()) - Math.min(...color.rgb()) > 10
@@ -94,56 +66,68 @@ const Chart: React.FC<{ history: HistoryContainer }> = observer(function Chart({
           chroma.contrast(surfaceColor, x) > chroma.contrast(surfaceColor, arr[max]) ? i : max,
         0
       );
-      return data.map((_value, index) =>
+      return Object.entries(data).map((_value, index) =>
         filteredPalette[maxContrastIndex].set('hsv.s', saturationValues[index]).hex()
       );
     } else {
-      return data.map((_value, index) =>
+      return Object.entries(data).map((_value, index) =>
         chroma('#808080').set('hsl.l', luminanceValues[index]).hex()
       );
     }
-  }, [data, mode, chromaColors]);
+  }, [data, chromaColors]);
 
   return (
-    <PieChart
-      colors={colors}
-      margin={{ top: 32, right: 32, bottom: 32, left: 0 }}
-      series={[
-        {
-          data,
-          innerRadius: '60%',
-          paddingAngle: 2,
-          cornerRadius: 4,
-          startAngle: -45,
-          endAngle: 225,
-          highlightScope: { faded: 'global', highlighted: 'item' },
-          faded: { color: 'rgb(128, 128, 128)' },
-          valueFormatter: ({ value }) => (value > 1 ? `${value} plays` : `${value} play`),
-        },
-      ]}
-      slotProps={{
-        legend: {
-          hidden: true,
-        },
-        noDataOverlay: {
-          transform: 'translate(24, 0)',
-          x: '50%',
-          y: '50%',
-        },
-      }}
-      sx={{
-        '& .MuiPieArc-root': {
-          stroke: 'transparent',
-          strokeWidth: '2px',
-        },
-      }}
-    >
-      <PieCenterLabel>
-        {history.entries.length > 1
-          ? `${history.entries.length} plays`
-          : `${history.entries.length} play`}
-      </PieCenterLabel>
-    </PieChart>
+    <>
+      <Box
+        alignItems="flex-end"
+        color="text.secondary"
+        display="flex"
+        height={32}
+        justifyContent="space-between"
+      >
+        <Typography>{Object.keys(data).at(0)}</Typography>
+        <Typography>{Object.keys(data).at(-1)}</Typography>
+      </Box>
+      <Box display="flex" minHeight={21}>
+        {Object.entries(data).map((entry, index, array) => {
+          const year = entry[0];
+          const length = entry[1].length;
+          const total = sum(array.map((entry) => entry[1].length));
+          return (
+            <Tooltip
+              key={year}
+              slotProps={{
+                popper: {
+                  sx: {
+                    [`&[data-popper-placement*="bottom"] .${tooltipClasses.tooltip}`]: {
+                      marginTop: 0.5,
+                    },
+                  },
+                },
+              }}
+              title={
+                <Typography variant="subtitle1">{`${year} · ${formatCount(length, 'play', 'plays')}`}</Typography>
+              }
+              onClose={() => setActiveIndex(-1)}
+              onOpen={() => setActiveIndex(index)}
+            >
+              <Box
+                bgcolor={activeIndex === index || activeIndex === -1 ? colors[index] : '#808080'}
+                borderRadius={0.5}
+                key={year}
+                marginRight={index !== array.length - 1 ? '2px' : ''}
+                sx={{
+                  filter: activeIndex === index ? 'brightness(120%)' : null,
+                  opacity: activeIndex === index || activeIndex === -1 ? 1 : 0.3,
+                  transition: '300ms',
+                }}
+                width={length / total}
+              />
+            </Tooltip>
+          );
+        })}
+      </Box>
+    </>
   );
 });
 
@@ -204,7 +188,8 @@ const Table: React.FC<{ history: HistoryContainer }> = ({ history }) => {
         );
       }}
       style={{
-        height: 'calc(100% - 29px)',
+        height: '100%',
+        marginTop: 16,
         marginBottom: 16,
         overscrollBehavior: 'contain',
         width: '100%',
@@ -224,14 +209,7 @@ const NowPlayingHistory: React.FC = observer(function NowPlayingHistory() {
 
   if (history.size === 0) {
     return (
-      <Box
-        alignItems="center"
-        display="flex"
-        height="-webkit-fill-available"
-        justifyContent="center"
-        margin={2}
-        width="calc(100% - 32px)"
-      >
+      <Box alignItems="center" display="flex" height={1} justifyContent="center" width={1}>
         <Typography color="text.secondary" variant="h4">
           No playback history.
         </Typography>
@@ -240,19 +218,9 @@ const NowPlayingHistory: React.FC = observer(function NowPlayingHistory() {
   }
 
   return (
-    <Box
-      display="flex"
-      height="-webkit-fill-available"
-      marginTop={1}
-      marginX={2}
-      width="-webkit-fill-available"
-    >
-      <Box flexShrink={0} width={history.entries.length === 0 ? 1 : 0.4}>
-        <Chart history={history} />
-      </Box>
-      <Box flexGrow={1} height={1} width="calc(60% - 48px)">
-        <Table history={history} />
-      </Box>
+    <Box display="flex" flexDirection="column" height={1} width={1}>
+      <BarChart history={history} />
+      <Table history={history} />
     </Box>
   );
 });

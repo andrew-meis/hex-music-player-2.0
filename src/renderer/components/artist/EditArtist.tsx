@@ -9,8 +9,8 @@ import EditAppearsOnPanel from './edit-artist-panels/EditAppearsOnPanel';
 import EditSummaryPanel from './edit-artist-panels/EditSummaryPanel';
 import EditTagsPanel from './edit-artist-panels/EditTagsPanel';
 
-const EditArtist: React.FC<{ artist?: Artist }> = ({ artist }) => {
-  const [activeTab, setActiveTab] = useState('0');
+const EditArtist: React.FC<{ tab?: string; artist?: Artist }> = ({ tab = '0', artist }) => {
+  const [activeTab, setActiveTab] = useState(tab);
 
   const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
     setActiveTab(newValue);

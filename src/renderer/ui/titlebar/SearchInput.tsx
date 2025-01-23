@@ -1,10 +1,10 @@
 import { observer, reactive, useObserve } from '@legendapp/state/react';
 import { IconButton, InputAdornment, InputBase, Paper, SvgIcon } from '@mui/material';
 import { useDebouncedCallback } from '@react-hookz/web';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { CgSearch } from 'react-icons/cg';
 import { MdClear } from 'react-icons/md';
-import { Form, useSearchParams, useSubmit } from 'react-router-dom';
+import { Form, useNavigate, useNavigation, useSearchParams, useSubmit } from 'react-router-dom';
 import { store } from 'state';
 
 const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
@@ -15,11 +15,22 @@ const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
 const ReactiveInputBase = reactive(InputBase);
 
 const SearchInput: React.FC = observer(function SearchInput() {
+  const navigate = useNavigate();
+  const navigation = useNavigation();
   const searchForm = useRef<HTMLFormElement | null>(null);
   const searchInput = useRef<HTMLInputElement>(null);
 
   const [params] = useSearchParams();
   const submit = useSubmit();
+
+  useEffect(() => {
+    if (!navigation.location) return;
+    if (navigation.location.pathname !== '/search') {
+      store.ui.search.input.set('');
+      const input = document.getElementById('search-input') as HTMLInputElement;
+      nativeInputValueSetter?.call(input, '');
+    }
+  }, [navigation]);
 
   useObserve(store.ui.search.input, () => {
     const input = document.getElementById('search-input') as HTMLInputElement;
@@ -72,7 +83,7 @@ const SearchInput: React.FC = observer(function SearchInput() {
   };
 
   return (
-    <Paper elevation={2} sx={{ alignItems: 'center', display: 'flex', flexShrink: 0, height: 40 }}>
+    <Paper elevation={0} sx={{ alignItems: 'center', display: 'flex', flexShrink: 0, height: 40 }}>
       <Form action="/search" style={{ width: '100%' }} onSubmit={(event) => event.preventDefault()}>
         <ReactiveInputBase
           $endAdornment={
@@ -98,7 +109,7 @@ const SearchInput: React.FC = observer(function SearchInput() {
           }}
           $startAdornment={
             <InputAdornment position="start">
-              <IconButton onClick={() => searchInput.current?.focus()}>
+              <IconButton onClick={() => navigate('/search')}>
                 <SvgIcon sx={{ height: 20, width: 20 }} viewBox="2 0 24 24">
                   <CgSearch />
                 </SvgIcon>

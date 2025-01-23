@@ -15,13 +15,12 @@ import {
   useTracksByArtist,
 } from 'queries';
 import React, { useEffect, useMemo, useRef } from 'react';
-import { createSearchParams, useLoaderData } from 'react-router-dom';
+import { createSearchParams } from 'react-router-dom';
 import RouteContainer from 'routes/RouteContainer';
 import { store } from 'state';
 
 import ArtistNavbar from './ArtistNavbar';
 import ArtistOptions from './drawers/ArtistOptions';
-import { artistLoader } from './loader';
 
 const getMeta = (url: string) =>
   new Promise((resolve, reject) => {
@@ -80,7 +79,7 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
       return 1 - intersection.intersectionRatio;
     }, [intersection?.intersectionRatio]);
 
-    const thumbPositionAdjustment = useMemo(() => {
+    const thumbPosition = useMemo(() => {
       return width >= 1936 ? (width - 1936) / 2 : 0;
     }, [width]);
 
@@ -92,7 +91,7 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
           style={{
             position: 'fixed',
             width: 'calc(100% - 16px)',
-            maxWidth: 1920,
+            maxWidth: 1904,
             height: 'var(--content-height)',
             zIndex: 1,
             pointerEvents: 'none',
@@ -116,23 +115,14 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
             }}
           />
           {!artist.art && (
-            <div
-              style={{
-                background: 'var(--mui-palette-background-default)',
-                height: 'calc(calc(max(100vh, 280px) / 2) - 240px)',
-                left: 12,
-                pointerEvents: 'none',
-                position: 'absolute',
-                top: -8,
-                width: 384,
-              }}
-            >
+            <div className="top-spacer">
               <div
                 className="corner"
                 style={{
                   position: 'absolute',
                   bottom: -18,
                   left: 0,
+                  transform: 'rotate(0deg)',
                 }}
               />
               <div
@@ -147,7 +137,35 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
             </div>
           )}
         </div>
-        <Box height="50vh" minHeight={280} ref={elementRef} sx={{ containerType: 'inline-size' }}>
+        {!artist.art && (
+          <div className="bottom-spacer">
+            <div
+              className="corner"
+              style={{
+                position: 'absolute',
+                top: -18,
+                left: 0,
+                transform: 'rotate(270deg)',
+              }}
+            />
+            <div
+              className="corner"
+              style={{
+                position: 'absolute',
+                top: -18,
+                right: 0,
+                transform: 'rotate(180deg)',
+              }}
+            />
+          </div>
+        )}
+        <Box
+          height="50vh"
+          minHeight={280}
+          ref={elementRef}
+          style={{ '--x-position': `${thumbPosition}px` } as React.CSSProperties}
+          sx={{ containerType: 'inline-size' }}
+        >
           {artist.art && bannerWidthAdjustment !== undefined && (
             <motion.div
               animate={{ opacity: intersection ? 1 : 0 }}
@@ -173,22 +191,18 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
             <>
               <motion.div
                 animate={{ opacity: intersection ? 1 : 0 }}
+                className="artist-route-thumb"
                 initial={{ opacity: 0 }}
                 style={{
                   backgroundAttachment: 'fixed',
                   backgroundImage: `url(${thumbSrc})`,
-                  backgroundPositionX: 20 + thumbPositionAdjustment,
-                  backgroundPositionY: 'calc(calc(max(100vh, 280px) / 2) - 152px)',
                   backgroundRepeat: 'no-repeat',
                   backgroundSize: 384 + thumbGrowthAdjustment,
-                  borderBottomLeftRadius: 16,
-                  borderBottomRightRadius: 16,
                   boxShadow: `inset 0 0 0 50vw rgba(${color.rgb()}, ${colorAlpha})`,
                   marginLeft: 12,
                   height: 216,
                   width: 384,
                   position: 'fixed',
-                  top: 'calc(calc(max(100vh, 280px) / 2) - 152px)',
                   pointerEvents: 'none',
                 }}
               />
@@ -217,8 +231,8 @@ const Banner: React.FC<{ artist: ArtistType; color: Color; viewport: HTMLDivElem
     );
   });
 
-const Artist: React.FC = () => {
-  const { guid, id, title } = useLoaderData() as Awaited<ReturnType<typeof artistLoader>>;
+const Artist: React.FC = observer(function Artist() {
+  const { guid, id, title } = store.loaders.artist.get();
 
   const { data: artist } = useArtist(id);
   const { data: appearsOn } = useAlbumsArtistAppearsOn(guid, id, title);
@@ -288,31 +302,34 @@ const Artist: React.FC = () => {
 
   return (
     <Palette src={artist.art || artist.thumb}>
-      {({ isReady, swatch }) =>
-        isReady && (
-          <RouteContainer style={{ margin: 0 }}>
-            {({ viewport }) => {
-              return (
-                <>
-                  <Banner artist={artist} color={chroma(swatch.rgb)} viewport={viewport} />
-                  <ArtistNavbar
-                    artist={artist}
-                    color={chroma(swatch.rgb)}
-                    mostPlayedTracks={mostPlayedTracks || []}
-                    popularTracks={artist.popularTracks}
-                    recentTracks={recentTracks}
-                    releases={releases}
-                    viewport={viewport}
-                  />
-                  <ArtistOptions />
-                </>
-              );
-            }}
-          </RouteContainer>
-        )
-      }
+      {({ isReady, swatch }) => {
+        if (isReady) {
+          return (
+            <RouteContainer style={{ margin: 0 }}>
+              {({ viewport }) => {
+                return (
+                  <>
+                    <Banner artist={artist} color={chroma(swatch.rgb)} viewport={viewport} />
+                    <ArtistNavbar
+                      artist={artist}
+                      color={chroma(swatch.rgb)}
+                      mostPlayedTracks={mostPlayedTracks || []}
+                      popularTracks={artist.popularTracks}
+                      recentTracks={recentTracks}
+                      releases={releases}
+                      viewport={viewport}
+                    />
+                    <ArtistOptions />
+                  </>
+                );
+              }}
+            </RouteContainer>
+          );
+        }
+        return null;
+      }}
     </Palette>
   );
-};
+});
 
 export default Artist;

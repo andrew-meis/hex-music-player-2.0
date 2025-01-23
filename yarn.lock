@@ -6713,6 +6713,7 @@ __metadata:
     react-konva: "npm:^18.2.10"
     react-merge-refs: "npm:^2.1.1"
     react-router-dom: "npm:^6.22.2"
+    react-use-websocket: "npm:^4.11.1"
     react-virtuoso: "npm:^4.12.3"
     typescript: "npm:^5.7.3"
     uuid: "npm:^9.0.1"
@@ -9430,6 +9431,13 @@ __metadata:
     react: ">=16.6.0"
     react-dom: ">=16.6.0"
   checksum: 10/ca32d3fd2168c976c5d90a317f25d5f5cd723608b415fb3b9006f9d793c8965c619562d0884503a3e44e4b06efbca4fdd1520f30e58ca3e00a0890e637d55419
+  languageName: node
+  linkType: hard
+
+"react-use-websocket@npm:^4.11.1":
+  version: 4.11.1
+  resolution: "react-use-websocket@npm:4.11.1"
+  checksum: 10/acc55a946ffba0c67afadfeea3f2c572abc9ec342fd82ef12735b6fe1840081fa6322297872d334172b74187d3846686b0aa273e9244559b1b3922e75604d6f8
   languageName: node
   linkType: hard
 

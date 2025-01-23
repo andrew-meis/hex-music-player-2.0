@@ -16,6 +16,7 @@ const defaultValues = {
     key: 'originallyAvailableAt' as keyof Album,
     order: 'desc' as 'asc' | 'desc',
   },
+  syncLyrics: true,
 };
 
 export const persistedStore = observable(defaultValues);

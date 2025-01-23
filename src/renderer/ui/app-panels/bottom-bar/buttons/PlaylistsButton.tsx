@@ -1,7 +1,7 @@
 import { reactive } from '@legendapp/state/react';
 import { IconButton } from '@mui/material';
 import { Album, Artist, PlaylistItem, Track } from 'api';
-import React from 'react';
+import React, { useRef } from 'react';
 import { useDrop } from 'react-dnd';
 import { BsMusicNoteList } from 'react-icons/bs';
 import { store } from 'state';
@@ -10,10 +10,15 @@ import { DragTypes } from 'typescript';
 const ReactiveIconButton = reactive(IconButton);
 
 const PlaylistsButton: React.FC = () => {
+  const timeout = useRef<ReturnType<typeof setTimeout>>();
+
   const [{ canDrop, isOver }, drop] = useDrop(
     () => ({
       accept: [DragTypes.ALBUM, DragTypes.ARTIST, DragTypes.PLAYLIST_ITEM, DragTypes.TRACK],
-      drop: (items: (Album | Artist | PlaylistItem | Track)[]) => console.log(items),
+      drop: (items: (Album | Artist | PlaylistItem | Track)[]) => {
+        clearTimeout(timeout.current);
+        console.log(items);
+      },
       collect: (monitor) => ({ canDrop: monitor.canDrop(), isOver: monitor.isOver() }),
     }),
     []
@@ -29,6 +34,8 @@ const PlaylistsButton: React.FC = () => {
         outline: canDrop ? '2px solid var(--mui-palette-primary-main)' : '',
       }}
       onClick={handleButtonClick}
+      onDragEnter={() => (canDrop ? (timeout.current = setTimeout(handleButtonClick, 500)) : null)}
+      onDragLeave={() => clearTimeout(timeout.current)}
     >
       <BsMusicNoteList />
     </ReactiveIconButton>

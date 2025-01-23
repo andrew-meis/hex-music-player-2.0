@@ -12,6 +12,7 @@ const ReactiveIconButton = reactive(IconButton);
 
 const QueueButton: React.FC = () => {
   const timeout = useRef<ReturnType<typeof setTimeout>>();
+
   const [{ canDrop, isOver }, drop] = useDrop(
     () => ({
       accept: [DragTypes.ALBUM, DragTypes.ARTIST, DragTypes.PLAYLIST_ITEM, DragTypes.TRACK],
@@ -34,7 +35,7 @@ const QueueButton: React.FC = () => {
         outline: canDrop ? '2px solid var(--mui-palette-primary-main)' : '',
       }}
       onClick={handleButtonClick}
-      onDragEnter={() => (timeout.current = setTimeout(handleButtonClick, 500))}
+      onDragEnter={() => (canDrop ? (timeout.current = setTimeout(handleButtonClick, 500)) : null)}
       onDragLeave={() => clearTimeout(timeout.current)}
     >
       <BsViewList style={{ pointerEvents: 'none' }} viewBox="0 3 16 16" />

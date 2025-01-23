@@ -627,7 +627,7 @@ export default class Library {
         uri,
       }),
     });
-    return response;
+    return parsePlaylistContainer(response);
   }
 
   async movePlaylistItem(playlistId: number, itemId: number, afterId: number) {
@@ -805,7 +805,7 @@ export default class Library {
 
   resizeImage(searchParams: URLSearchParams = new URLSearchParams()): string | undefined {
     const url = searchParams.get('url');
-    if (!url || url === 'undefined') {
+    if (!url || url === 'undefined' || url === '') {
       return undefined;
     }
     searchParams.append('minSize', '1');

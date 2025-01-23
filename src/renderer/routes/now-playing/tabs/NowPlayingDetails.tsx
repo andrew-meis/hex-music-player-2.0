@@ -1,10 +1,9 @@
-import { observer, useSelector } from '@legendapp/state/react';
-import { Avatar, Box, Grid2 as Grid, Typography } from '@mui/material';
+import { observer } from '@legendapp/state/react';
+import { Box, Typography } from '@mui/material';
 import { Track } from 'api';
 import { audio } from 'audio';
 import chroma from 'chroma-js';
 import Rating from 'components/rating/Rating';
-import { useLyrics } from 'queries';
 import React, { useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { createAlbumNavigate, createArtistNavigate } from 'scripts/navigate-generators';
@@ -30,29 +29,6 @@ const getTrackEncodingText = (track: Track) => {
   }
   return '';
 };
-
-const Artwork: React.FC = observer(function NowPlayingArtwork() {
-  const library = store.library.get();
-  const nowPlaying = store.queue.nowPlaying.get();
-
-  useLyrics(nowPlaying.track);
-
-  const albumThumbSrc = useSelector(() => {
-    return library.server.getAuthenticatedUrl(nowPlaying.track.thumb);
-  });
-
-  return (
-    <Avatar
-      src={albumThumbSrc}
-      sx={{
-        borderRadius: 1,
-        boxShadow: 'var(--mui-shadows-2)',
-        height: '-webkit-fill-available',
-        width: '-webkit-fill-available',
-      }}
-    />
-  );
-});
 
 const Metadata: React.FC = observer(function NowPlayingMetadata() {
   const nowPlaying = store.queue.nowPlaying.get();
@@ -215,22 +191,7 @@ const Visualizer: React.FC = observer(function Visualizer() {
 const NowPlayingDetails: React.FC = () => {
   return (
     <>
-      <Grid
-        container
-        alignItems="center"
-        columnSpacing={0.5}
-        height={1}
-        marginTop={1}
-        maxHeight="calc(calc(100vw / 2) - 64px)"
-        overflow="hidden"
-      >
-        <Grid height={1} maxWidth={0.5}>
-          <Artwork />
-        </Grid>
-        <Grid height={1} overflow="hidden" size="grow">
-          <Metadata />
-        </Grid>
-      </Grid>
+      <Metadata />
       <DetailsActions />
     </>
   );

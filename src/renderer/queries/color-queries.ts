@@ -12,5 +12,6 @@ export const useColorPalette = ({ id, url }: UseColorsParams) =>
     queryKey: [QueryKeys.PALETTE, id],
     queryFn: () => Vibrant.from(url).getPalette(),
     placeholderData: keepPreviousData,
+    retry: false,
     staleTime: Infinity,
   });

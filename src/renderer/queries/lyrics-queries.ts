@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Track } from 'api';
 import { db, Lyrics } from 'features/db';
+import Fuse from 'fuse.js';
 import ky from 'ky';
 import { QueryKeys } from 'typescript';
 
@@ -19,13 +20,11 @@ export interface LRCLibResponse {
   syncedLyrics: string | null;
 }
 
-const createLRClibUrl = (artist: string, album: string, track: string, duration: string) => {
-  const url = 'https://lrclib.net/api/get';
+const createLRClibSearch = (artist: string, track: string) => {
+  const url = 'https://lrclib.net/api/search';
   const params = new URLSearchParams();
   params.append('artist_name', artist);
-  params.append('album_name', album);
   params.append('track_name', track);
-  params.append('duration', duration);
   return `${url}?${params.toString()}`;
 };
 
@@ -45,27 +44,49 @@ export const lyricsQuery = (track: Track) => ({
     if (savedLyrics && !shouldRefetch) {
       return savedLyrics;
     }
-    try {
-      const url = createLRClibUrl(
-        track.grandparentTitle?.toLowerCase() || ' ',
-        track.parentTitle?.toLowerCase() || ' ',
-        track.title?.toLowerCase() || ' ',
-        Math.floor((track.duration || 0) / 1000).toString()
-      );
-      const response = await ky(url).json<LRCLibResponse>();
+    const artistTitle =
+      track.grandparentTitle === 'Various Artists' ? track.originalTitle : track.grandparentTitle;
+    const url = createLRClibSearch(artistTitle.toLowerCase(), track.title.toLowerCase());
+    const response = await ky(url).json<LRCLibResponse[]>();
+    const fuseOptions = {
+      includeScore: true,
+      keys: [
+        { name: 'trackName', weight: 3 },
+        { name: 'albumName', weight: 1 },
+        { name: 'artistName', weight: 3 },
+      ],
+    };
+    const fuse = new Fuse(response, fuseOptions);
+    const fullSearch = fuse.search({
+      trackName: track.title,
+      albumName: track.parentTitle,
+      artistName: artistTitle,
+    });
+    const [firstResult] = [
+      ...fullSearch.filter((x) => x.item.syncedLyrics !== null),
+      ...fullSearch.filter((x) => x.item.syncedLyrics === null),
+    ];
+    const partialSearch = fuse.search({
+      trackName: track.title,
+      artistName: artistTitle,
+    });
+    const [secondResult] = [
+      ...partialSearch.filter((x) => x.item.syncedLyrics !== null),
+      ...partialSearch.filter((x) => x.item.syncedLyrics === null),
+    ];
+    const preferredResult = firstResult || secondResult;
+    console.log(preferredResult);
+    if (preferredResult) {
       const lyrics: Lyrics = {
         albumGuid: track.parentGuid,
         artistGuid: track.grandparentGuid,
         trackGuid: track.guid,
         albumTitle: track.parentTitle,
-        artistTitle:
-          track.grandparentTitle === 'Various Artists'
-            ? track.originalTitle
-            : track.grandparentTitle,
+        artistTitle: artistTitle,
         trackTitle: track.title,
-        instrumental: response.instrumental,
-        plainLyrics: response.plainLyrics,
-        syncedLyrics: response.syncedLyrics,
+        instrumental: preferredResult.item.instrumental,
+        plainLyrics: preferredResult.item.plainLyrics,
+        syncedLyrics: preferredResult.item.syncedLyrics,
       };
       if (savedLyrics) {
         await db.lyrics.update(savedLyrics.id, lyrics);
@@ -73,58 +94,24 @@ export const lyricsQuery = (track: Track) => ({
         await db.lyrics.add(lyrics);
       }
       return lyrics;
-    } catch {
-      try {
-        const url = createLRClibUrl(
-          track.originalTitle?.toLowerCase() || ' ',
-          track.parentTitle?.toLowerCase() || ' ',
-          track.title?.toLowerCase() || ' ',
-          Math.floor((track.duration || 0) / 1000).toString()
-        );
-        const response = await ky(url).json<LRCLibResponse>();
-        const lyrics: Lyrics = {
-          albumGuid: track.parentGuid,
-          artistGuid: track.grandparentGuid,
-          trackGuid: track.guid,
-          albumTitle: track.parentTitle,
-          artistTitle:
-            track.grandparentTitle === 'Various Artists'
-              ? track.originalTitle
-              : track.grandparentTitle,
-          trackTitle: track.title,
-          instrumental: response.instrumental,
-          plainLyrics: response.plainLyrics,
-          syncedLyrics: response.syncedLyrics,
-        };
-        if (savedLyrics) {
-          await db.lyrics.update(savedLyrics.id, lyrics);
-        } else {
-          await db.lyrics.add(lyrics);
-        }
-        return lyrics;
-      } catch {
-        const lyrics: Lyrics = {
-          albumGuid: track.parentGuid,
-          artistGuid: track.grandparentGuid,
-          trackGuid: track.guid,
-          albumTitle: track.parentTitle,
-          artistTitle:
-            track.grandparentTitle === 'Various Artists'
-              ? track.originalTitle
-              : track.grandparentTitle,
-          trackTitle: track.title,
-          instrumental: false,
-          plainLyrics: null,
-          syncedLyrics: null,
-        };
-        if (savedLyrics) {
-          await db.lyrics.update(savedLyrics.id, lyrics);
-        } else {
-          await db.lyrics.add(lyrics);
-        }
-        return lyrics;
-      }
     }
+    const lyrics: Lyrics = {
+      albumGuid: track.parentGuid,
+      artistGuid: track.grandparentGuid,
+      trackGuid: track.guid,
+      albumTitle: track.parentTitle,
+      artistTitle: artistTitle,
+      trackTitle: track.title,
+      instrumental: false,
+      plainLyrics: null,
+      syncedLyrics: null,
+    };
+    if (savedLyrics) {
+      await db.lyrics.update(savedLyrics.id, lyrics);
+    } else {
+      await db.lyrics.add(lyrics);
+    }
+    return lyrics;
   },
   retry: false,
   staleTime: Infinity,

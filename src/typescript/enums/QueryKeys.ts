@@ -1,3 +1,4 @@
+// return album objects
 export enum AlbumKeys {
   ALBUM = 'album',
   ALBUMS = 'albums',
@@ -6,6 +7,7 @@ export enum AlbumKeys {
   SEARCH_ALBUMS = 'search-albums',
 }
 
+// return artist objects
 export enum ArtistKeys {
   ARTIST = 'artist',
   ARTISTS = 'artists',
@@ -14,6 +16,7 @@ export enum ArtistKeys {
   TRACK_ARTISTS = 'track-artists'
 }
 
+// use custom filters
 export enum CustomFilterKeys {
   ALBUMS_ARTIST_APPEARS_ON = 'albums-artist-appears-on', // uses custom filters
   IS_HIDDEN = 'is-hidden', // uses custom filters
@@ -29,8 +32,10 @@ export enum LastFMQueryKeys {
   LASTFM_TRACK = 'lastfm-track',
 }
 
+// return track objects
 export enum TrackKeys {
   ALBUM_TRACKS = 'album-tracks',
+  ARTIST = 'artist', // includes popular tracks
   CHART = 'chart',
   PLAYLIST_ITEMS = 'playlist-items',
   PLAYQUEUE = 'play-queue',

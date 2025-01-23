@@ -1,4 +1,5 @@
 import { LoaderFunctionArgs } from 'react-router-dom';
+import { store } from 'state';
 
 export const albumLoader = async ({ params, request }: LoaderFunctionArgs) => {
   const { id } = params;
@@ -11,5 +12,6 @@ export const albumLoader = async ({ params, request }: LoaderFunctionArgs) => {
   if (!guid || !id || !parentGuid || !parentId || !parentTitle || !title) {
     throw new Error('Missing route loader data');
   }
-  return { guid, id: parseInt(id, 10), parentGuid, parentId, parentTitle, title };
+  store.loaders.album.set({ guid, id: parseInt(id, 10), parentGuid, parentId, parentTitle, title });
+  return true;
 };

@@ -1,4 +1,4 @@
-import { observer, Show, useSelector } from '@legendapp/state/react';
+import { observer, Show } from '@legendapp/state/react';
 import { Avatar, Box, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
@@ -15,13 +15,13 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
     new URLSearchParams({ id: nowPlaying.track.grandparentId.toString() })
   );
 
-  const artistBannerSrc = useSelector(() => {
-    return library.server.getAuthenticatedUrl(nowPlaying.track.grandparentArt);
-  });
+  const bannerSrc = nowPlaying.track.grandparentArt
+    ? library.server.getAuthenticatedUrl(nowPlaying.track.grandparentArt)
+    : undefined;
 
-  const artistThumbSrc = useSelector(() => {
-    return library.server.getAuthenticatedUrl(nowPlaying.track.grandparentThumb);
-  });
+  const thumbSrc = nowPlaying.track.grandparentThumb
+    ? library.server.getAuthenticatedUrl(nowPlaying.track.grandparentThumb)
+    : undefined;
 
   const { data } = useQuery({
     queryKey: [QueryKeys.LASTFM_ARTIST, nowPlaying.track.grandparentId],
@@ -57,16 +57,14 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
               },
             },
           }}
-          src={artistThumbSrc}
+          src={thumbSrc}
           sx={{
             aspectRatio: 16 / 9,
             background: 'transparent',
             borderRadius: 4,
             height: 'auto',
-            marginLeft: 6,
-            marginTop: 1,
             marginBottom: 'auto',
-            width: 400,
+            width: 384,
           }}
         />
       </Show>
@@ -74,16 +72,14 @@ const NowPlayingAbout: React.FC = observer(function NowPlayingAbout() {
         <Box
           borderRadius={4}
           display="flex"
-          height="-webkit-fill-available"
-          marginTop={1}
-          marginX={2}
+          height={1}
           overflow="hidden"
           sx={{
-            background: `url(${artistBannerSrc}) no-repeat`,
+            background: `url(${bannerSrc}) no-repeat`,
             backgroundSize: '100%',
             maskImage: `linear-gradient(to top, transparent 20%, rgba(0, 0, 0, 1) 80%)`,
           }}
-          width="-webkit-fill-available"
+          width={1}
         />
       </Show>
       {data && (

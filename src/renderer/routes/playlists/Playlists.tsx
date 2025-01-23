@@ -1,3 +1,4 @@
+import { observer } from '@legendapp/state/react';
 import { ClickAwayListener, Typography } from '@mui/material';
 import PlaylistCard from 'components/playlist/PlaylistCard';
 import Scroller from 'components/scroller/Scroller';
@@ -8,12 +9,10 @@ import useScrollRestoration from 'hooks/useScrollRestoration';
 import { useWidth } from 'hooks/useWidth';
 import { usePlaylists } from 'queries';
 import React, { useEffect } from 'react';
-import { createSearchParams, useLoaderData, useLocation } from 'react-router-dom';
+import { createSearchParams, useLocation } from 'react-router-dom';
 import { GridItemProps, VirtuosoGrid } from 'react-virtuoso';
 import { allSelectObservables, store } from 'state';
 import { SelectObservables } from 'typescript';
-
-import { playlistsLoader } from './loader';
 
 const breakpointMap = {
   xs: 3,
@@ -39,11 +38,11 @@ const Item: React.FC<GridItemProps> = ({ children, ...props }) => {
   );
 };
 
-const Playlists: React.FC = () => {
+const Playlists: React.FC = observer(function Playlists() {
   const location = useLocation();
   const [initial, handleScroll, scrollerProps, setReady] = useScrollRestoration(location.key);
 
-  const { section } = useLoaderData() as Awaited<ReturnType<typeof playlistsLoader>>;
+  const { section } = store.loaders.playlists.get();
   const selectObservable = allSelectObservables[SelectObservables.ROUTE_PLAYLISTS];
 
   const { data: playlistsData } = usePlaylists();
@@ -112,6 +111,6 @@ const Playlists: React.FC = () => {
       }}
     </Scroller>
   );
-};
+});
 
 export default Playlists;

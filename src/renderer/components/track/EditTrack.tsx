@@ -9,8 +9,8 @@ import EditGeneralPanel from './edit-track-panels/EditGeneralPanel';
 import EditLyricsPanel from './edit-track-panels/EditLyricsPanel';
 import EditTagsPanel from './edit-track-panels/EditTagsPanel';
 
-const EditTrack: React.FC<{ track?: Track }> = ({ track }) => {
-  const [activeTab, setActiveTab] = useState('0');
+const EditTrack: React.FC<{ tab?: string; track?: Track }> = ({ tab = '0', track }) => {
+  const [activeTab, setActiveTab] = useState(tab);
 
   const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
     setActiveTab(newValue);

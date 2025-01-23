@@ -1,16 +1,16 @@
-import { observer, useSelector } from '@legendapp/state/react';
+import { observer } from '@legendapp/state/react';
 import { Avatar, Box, SvgIcon, Typography } from '@mui/material';
 import { Album } from 'api';
 import CardBox from 'components/card/CardBox';
 import CardFab from 'components/card/CardFab';
 import { playbackActions } from 'features/playback';
+import { useImageResize } from 'hooks/useImageResize';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { BiSolidAlbum } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
 import formatCount from 'scripts/format-count';
 import { createAlbumNavigate, createArtistNavigate } from 'scripts/navigate-generators';
-import { store } from 'state';
 import { DragTypes, SelectObservable } from 'typescript';
 
 const Artist: React.FC<{ album: Album }> = ({ album }) => (
@@ -47,26 +47,27 @@ const AlbumCard: React.FC<{
   state: SelectObservable;
   subtext: keyof Album;
 }> = observer(function AlbumCard({ album, index, state, subtext }) {
-  const albumThumbSrc = useSelector(() => {
-    const library = store.library.get();
-    return library.resizeImage(
-      new URLSearchParams({ url: album.thumb, width: '500', height: '500' })
-    );
-  });
+  const thumbSrc = useImageResize(
+    new URLSearchParams({
+      url: album.thumb,
+      width: '500',
+      height: '500',
+    })
+  );
 
   return (
     <CardBox index={index} state={state} type={DragTypes.ALBUM}>
       <div
         style={{
           aspectRatio: 1,
-          backgroundImage: `url(${albumThumbSrc})`,
+          backgroundImage: `url(${thumbSrc})`,
           backgroundPosition: 'center',
           backgroundSize: 'cover',
           borderRadius: 4,
           margin: 8,
         }}
       >
-        {!albumThumbSrc && (
+        {!thumbSrc && (
           <Avatar sx={{ height: 1, width: 1 }} variant="rounded">
             <SvgIcon className="generic-icon">
               <BiSolidAlbum />

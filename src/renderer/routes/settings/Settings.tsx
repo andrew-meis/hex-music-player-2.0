@@ -1,4 +1,4 @@
-import { reactive, useSelector } from '@legendapp/state/react';
+import { reactive } from '@legendapp/state/react';
 import {
   Avatar,
   Box,
@@ -10,18 +10,15 @@ import {
   Typography,
   useColorScheme,
 } from '@mui/material';
-import { QueryClient } from '@tanstack/react-query';
-import { User } from 'api';
 import Scroller from 'components/scroller/Scroller';
-import { userQuery } from 'queries';
-import React, { useEffect, useRef } from 'react';
+import { useImageResize } from 'hooks/useImageResize';
+import { useUser } from 'queries';
+import React, { useEffect } from 'react';
 import { FiLogOut } from 'react-icons/fi';
 import { ImLastfm } from 'react-icons/im';
 import { TbExternalLink } from 'react-icons/tb';
-import { useLoaderData } from 'react-router-dom';
 import RouteContainer from 'routes/RouteContainer';
 import RouteHeader from 'routes/RouteHeader';
-import isAppInit from 'scripts/init-app';
 import { persistedStore, store } from 'state';
 
 const ReactiveTextField = reactive(TextField);
@@ -32,25 +29,8 @@ const settingsBoxStyle = {
   justifyContent: 'space-between',
 };
 
-interface loaderReturn {
-  user: User;
-}
-
-export const settingsLoader = (queryClient: QueryClient) => async (): Promise<loaderReturn> => {
-  await isAppInit();
-  const account = store.account.get();
-  const userDataQuery = userQuery(account);
-  return {
-    user:
-      queryClient.getQueryData(userDataQuery.queryKey) ??
-      (await queryClient.fetchQuery(userDataQuery)),
-  };
-};
-
 const Settings: React.FC = () => {
-  const { user } = useLoaderData() as Awaited<loaderReturn>;
-
-  const thumb = useRef<string | undefined>();
+  const { data: user } = useUser();
   const { mode, setMode } = useColorScheme();
 
   useEffect(() => {
@@ -63,17 +43,13 @@ const Settings: React.FC = () => {
     ]);
   }, []);
 
-  const thumbSrc = useSelector(() => {
-    const library = store.library.get();
-    if (!library) {
-      return undefined;
-    }
-    const newThumb = library.resizeImage(
-      new URLSearchParams({ url: user.thumb, width: '80', height: '80' })
-    );
-    thumb.current = newThumb;
-    return newThumb;
-  });
+  const thumbSrc = useImageResize(
+    new URLSearchParams({
+      url: user?.thumb || '',
+      width: '80',
+      height: '80',
+    })
+  );
 
   const handleLogout = async () => {
     const savedConfig = await window.api.getValue('server-config');
@@ -93,7 +69,7 @@ const Settings: React.FC = () => {
         <Box alignItems="center" display="flex" paddingY={1} width={1}>
           <Avatar
             alt={user?.title}
-            src={thumbSrc || thumb.current}
+            src={thumbSrc}
             sx={{
               height: 64,
               width: 64,

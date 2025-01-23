@@ -12,7 +12,26 @@ import {
 } from 'api';
 import { DateTime } from 'luxon';
 import { To } from 'react-router-dom';
-import { SelectObservables, ServerConfig } from 'typescript';
+import {
+  AlbumLoaderData,
+  AlbumsLoaderData,
+  ArtistDiscographyLoaderData,
+  ArtistLoaderData,
+  ArtistsLoaderData,
+  ChartsLoaderData,
+  CollectionLoaderData,
+  CollectionsLoaderData,
+  GenreLoaderData,
+  GenresLoaderData,
+  NowPlayingLoaderData,
+  PlaylistLoaderData,
+  PlaylistsLoaderData,
+  SearchLoaderData,
+  SelectObservables,
+  ServerConfig,
+  TrackLoaderData,
+  TracksLoaderData,
+} from 'typescript';
 
 export const defaultSwatch = new Swatch([128, 128, 128], 0);
 export const defaultPalette: Palette = {
@@ -45,6 +64,24 @@ export const store = observable({
     newQueue: false,
     updatePlaylists: false,
     updateQueue: false as boolean | 'force-playback',
+  },
+  loaders: {
+    album: undefined as unknown as AlbumLoaderData,
+    albums: undefined as unknown as AlbumsLoaderData,
+    artist: undefined as unknown as ArtistLoaderData,
+    artistDiscography: undefined as unknown as ArtistDiscographyLoaderData,
+    artists: undefined as unknown as ArtistsLoaderData,
+    charts: undefined as unknown as ChartsLoaderData,
+    collection: undefined as unknown as CollectionLoaderData,
+    collections: undefined as unknown as CollectionsLoaderData,
+    genre: undefined as unknown as GenreLoaderData,
+    genres: undefined as unknown as GenresLoaderData,
+    nowPlaying: undefined as unknown as NowPlayingLoaderData,
+    playlist: undefined as unknown as PlaylistLoaderData,
+    playlists: undefined as unknown as PlaylistsLoaderData,
+    search: undefined as unknown as SearchLoaderData,
+    track: undefined as unknown as TrackLoaderData,
+    tracks: undefined as unknown as TracksLoaderData,
   },
   playlists: {
     currentPlaylists: undefined as unknown as PlaylistContainer,
@@ -105,8 +142,8 @@ export const store = observable({
       },
       charts: {
         open: false,
-        start: DateTime.now().minus({ days: 7 }),
-        end: DateTime.now().set({ hour: 23, minute: 59, second: 59 }),
+        start: DateTime.now().startOf('day').minus({ days: 7 }),
+        end: DateTime.now().endOf('day'),
       },
       playlists: {
         open: false,
@@ -122,9 +159,9 @@ export const store = observable({
     },
     modals: {
       values: undefined as unknown as {
-        album: Album;
-        artist: Artist;
-        track: Track;
+        album: { tab: string; album: Album };
+        artist: { tab: string; artist: Artist };
+        track: { tab: string; track: Track };
       },
       open: false,
     },

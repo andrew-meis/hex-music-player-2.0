@@ -40,9 +40,11 @@ const Modals: React.FC = () => {
       }}
     >
       <Show ifReady={store.ui.modals.values.artist}>
-        {(artist) => <EditArtist artist={artist} />}
+        {(value) => <EditArtist artist={value?.artist} tab={value?.tab} />}
       </Show>
-      <Show ifReady={store.ui.modals.values.track}>{(track) => <EditTrack track={track} />}</Show>
+      <Show ifReady={store.ui.modals.values.track}>
+        {(value) => <EditTrack tab={value?.tab} track={value?.track} />}
+      </Show>
     </ReactiveDialog>
   );
 };

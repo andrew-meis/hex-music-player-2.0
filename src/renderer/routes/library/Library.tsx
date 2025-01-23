@@ -1,105 +1,22 @@
-import { Box, Grid, Paper, SvgIcon, Typography } from '@mui/material';
-import { QueryClient } from '@tanstack/react-query';
-import {
-  AlbumContainer,
-  ArtistContainer,
-  CollectionContainer,
-  GenreContainer,
-  MediaType,
-  PlaylistContainer,
-  TrackContainer,
-} from 'api';
-import { motion } from 'framer-motion';
+import { Box, Grid2 as Grid, Paper, SvgIcon, Typography } from '@mui/material';
+import { MediaType } from 'api';
+import { motion, useSpring, useTransform } from 'framer-motion';
 import { capitalize } from 'lodash';
-import {
-  albumsQuery,
-  artistsQuery,
-  collectionsQuery,
-  genresQuery,
-  playlistsQuery,
-  tracksQuery,
-} from 'queries';
+import { useAlbums, useArtists, useCollections, useGenres, usePlaylists, useTracks } from 'queries';
 import React, { useEffect } from 'react';
 import { BiSolidAlbum } from 'react-icons/bi';
 import { BsMusicNote, BsMusicNoteList } from 'react-icons/bs';
 import { FaTags } from 'react-icons/fa';
 import { IoMdMicrophone } from 'react-icons/io';
 import { LuLayoutGrid } from 'react-icons/lu';
-import { createSearchParams, useLoaderData, useNavigate } from 'react-router-dom';
+import { createSearchParams, useNavigate } from 'react-router-dom';
 import RouteContainer from 'routes/RouteContainer';
-import isAppInit from 'scripts/init-app';
 import { store } from 'state';
 
 const MotionBox = motion(Box);
 const MotionBoxPaper = motion(Box<typeof Paper>);
 
 const sections = ['artists', 'albums', 'tracks', 'playlists', 'genres', 'collections'] as const;
-
-interface loaderReturn {
-  artists: ArtistContainer;
-  albums: AlbumContainer;
-  tracks: TrackContainer;
-  playlists: PlaylistContainer;
-  genres: GenreContainer;
-  collections: CollectionContainer;
-}
-
-export const libraryLoader = (queryClient: QueryClient) => async (): Promise<loaderReturn> => {
-  await isAppInit();
-  const { sectionId } = store.serverConfig.peek();
-  const library = store.library.peek();
-  const artistsDataQuery = artistsQuery(
-    sectionId,
-    library,
-    new URLSearchParams({ start: '0', size: '0' })
-  );
-  const albumsDataQuery = albumsQuery(
-    sectionId,
-    library,
-    new URLSearchParams({ start: '0', size: '0' })
-  );
-  const tracksDataQuery = tracksQuery(
-    sectionId,
-    library,
-    true,
-    new URLSearchParams({ start: '0', size: '0' })
-  );
-  const playlistsDataQuery = playlistsQuery(
-    library,
-    new URLSearchParams({ start: '0', size: '0' })
-  );
-  const genresDataQuery = genresQuery(
-    sectionId,
-    library,
-    MediaType.TRACK,
-    new URLSearchParams({ start: '0', size: '0' })
-  );
-  const collectionsDataQuery = collectionsQuery(
-    sectionId,
-    library,
-    new URLSearchParams({ start: '0', size: '0' })
-  );
-  return {
-    artists:
-      queryClient.getQueryData(artistsDataQuery.queryKey) ??
-      (await queryClient.fetchQuery(artistsDataQuery)),
-    albums:
-      queryClient.getQueryData(albumsDataQuery.queryKey) ??
-      (await queryClient.fetchQuery(albumsDataQuery)),
-    tracks:
-      queryClient.getQueryData(tracksDataQuery.queryKey) ??
-      (await queryClient.fetchQuery(tracksDataQuery)),
-    playlists:
-      queryClient.getQueryData(playlistsDataQuery.queryKey) ??
-      (await queryClient.fetchQuery(playlistsDataQuery)),
-    genres:
-      queryClient.getQueryData(genresDataQuery.queryKey) ??
-      (await queryClient.fetchQuery(genresDataQuery)),
-    collections:
-      queryClient.getQueryData(collectionsDataQuery.queryKey) ??
-      (await queryClient.fetchQuery(collectionsDataQuery)),
-  };
-};
 
 const boxVariants = {
   default: { width: 0 },
@@ -115,11 +32,43 @@ const svgs = {
   collections: <LuLayoutGrid />,
 };
 
+function AnimatedNumber({ value }: { value: number }) {
+  const spring = useSpring(0, { mass: 0.8, stiffness: 75, damping: 15 });
+  const display = useTransform(spring, (current) => Math.round(current).toLocaleString());
+
+  useEffect(() => {
+    spring.set(value);
+  }, [spring, value]);
+
+  return <motion.span>{display}</motion.span>;
+}
+
+const useLibrarySection = (section: (typeof sections)[number]) => {
+  const params = new URLSearchParams({ start: '0', size: '0' });
+  switch (section) {
+    case 'artists':
+      return useArtists(params);
+    case 'albums':
+      return useAlbums(params);
+    case 'tracks':
+      return useTracks(params);
+    case 'playlists':
+      return usePlaylists(params);
+    case 'genres':
+      return useGenres(MediaType.TRACK, params);
+    case 'collections':
+      return useCollections(params);
+    default:
+      return section satisfies never;
+  }
+};
+
 const LibrarySectionCard: React.FC<{
-  data: Record<string, any>;
-  section: string;
-}> = ({ data, section }) => {
+  section: (typeof sections)[number];
+}> = ({ section }) => {
   const navigate = useNavigate();
+
+  const { data } = useLibrarySection(section);
 
   useEffect(() => {
     store.ui.breadcrumbs.set([{ title: 'Home', to: { pathname: '/' } }]);
@@ -135,7 +84,7 @@ const LibrarySectionCard: React.FC<{
   };
 
   return (
-    <Grid item lg={2} sm={4} xs={6}>
+    <Grid size={{ lg: 2, sm: 4, xs: 6 }}>
       <MotionBoxPaper
         alignItems="center"
         borderRadius={1}
@@ -157,7 +106,7 @@ const LibrarySectionCard: React.FC<{
         </SvgIcon>
         <Box marginTop={0.5}>
           <Typography lineHeight="inherit" variant="h4">
-            {data.totalSize || 0}
+            <AnimatedNumber value={data?.totalSize || 0} />
           </Typography>
           <Typography lineHeight="inherit" variant="overline">
             {section.toLocaleUpperCase()}
@@ -176,8 +125,6 @@ const LibrarySectionCard: React.FC<{
 };
 
 const Library: React.FC = () => {
-  const loaderData = useLoaderData() as Awaited<loaderReturn>;
-
   return (
     <RouteContainer>
       <Typography paddingBottom={2} variant="h1">
@@ -185,7 +132,7 @@ const Library: React.FC = () => {
       </Typography>
       <Grid container spacing={2}>
         {sections.map((section) => (
-          <LibrarySectionCard data={loaderData[section]} key={section} section={section} />
+          <LibrarySectionCard key={section} section={section} />
         ))}
       </Grid>
     </RouteContainer>

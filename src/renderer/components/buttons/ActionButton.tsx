@@ -10,14 +10,12 @@ const ActionButton: React.FC<
   {
     children: React.ReactNode;
     color: Color;
-    key: string;
     label: string;
     onClick: React.MouseEventHandler<HTMLButtonElement>;
   } & Omit<React.ComponentProps<typeof MotionButton>, 'color'>
-> = ({ children, color, key, label, onClick, ...props }) => {
+> = ({ children, color, label, onClick, ...props }) => {
   return (
     <Tooltip
-      key={key}
       slotProps={{
         popper: {
           modifiers: [

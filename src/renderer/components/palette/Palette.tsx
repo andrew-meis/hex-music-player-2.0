@@ -33,7 +33,15 @@ const Palette: React.FC<{
   }
 
   if (isError) {
-    return null;
+    return (
+      <>
+        {children({
+          isReady: true,
+          swatch: defaultPalette.DarkVibrant!,
+          palette: defaultPalette,
+        })}
+      </>
+    );
   }
 
   return (

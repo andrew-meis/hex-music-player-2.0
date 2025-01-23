@@ -1,20 +1,12 @@
+import { observer } from '@legendapp/state/react';
 import { Typography } from '@mui/material';
 import React, { useEffect } from 'react';
-import { createSearchParams, LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import { createSearchParams } from 'react-router-dom';
 import RouteContainer from 'routes/RouteContainer';
 import { store } from 'state';
 
-export const genresLoader = async ({ request }: LoaderFunctionArgs) => {
-  const url = new URL(request.url);
-  const section = url.searchParams.get('section');
-  if (!section) {
-    throw new Error('Missing route loader data');
-  }
-  return { section };
-};
-
-const Genres: React.FC = () => {
-  const { section } = useLoaderData() as Awaited<ReturnType<typeof genresLoader>>;
+const Genres: React.FC = observer(function Genres() {
+  const { section } = store.loaders.genres.get();
 
   useEffect(() => {
     store.ui.breadcrumbs.set([
@@ -33,6 +25,6 @@ const Genres: React.FC = () => {
       </Typography>
     </RouteContainer>
   );
-};
+});
 
 export default Genres;

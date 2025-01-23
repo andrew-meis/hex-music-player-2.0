@@ -1,4 +1,5 @@
 import Account from './account';
+import { Connection } from './types/device';
 import { withParams } from './utils/params';
 import { requestJSON, RequestOptions } from './utils/request';
 
@@ -7,13 +8,16 @@ import { requestJSON, RequestOptions } from './utils/request';
  */
 
 export default class ServerConnection {
-  public uri: string;
-
   public account: Account;
 
-  constructor(uri: string, account: Account) {
-    this.uri = uri;
+  public connection: Connection;
+
+  public uri: string;
+
+  constructor(connection: Connection, account: Account) {
     this.account = account;
+    this.connection = connection;
+    this.uri = connection.uri;
   }
 
   /**

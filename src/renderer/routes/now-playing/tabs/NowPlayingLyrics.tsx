@@ -225,6 +225,7 @@ const PlainLyrics: React.FC<{
 
 const NowPlayingLyrics: React.FC = observer(function NowPlayingLyrics() {
   const nowPlaying = store.queue.nowPlaying.get();
+  const prefersSynced = persistedStore.syncLyrics.get();
 
   const { data: lyrics, isLoading } = useLyrics(nowPlaying.track);
 
@@ -256,11 +257,11 @@ const NowPlayingLyrics: React.FC = observer(function NowPlayingLyrics() {
     );
   }
 
-  if (syncedLyrics) {
+  if (syncedLyrics && prefersSynced) {
     return <SyncedLyrics syncedLyrics={syncedLyrics} />;
   }
 
-  if (!syncedLyrics && plainLyrics) {
+  if (plainLyrics) {
     return <PlainLyrics plainLyrics={plainLyrics} />;
   }
 

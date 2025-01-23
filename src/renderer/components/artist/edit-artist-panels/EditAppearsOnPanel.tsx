@@ -4,13 +4,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Album, Artist, Track } from 'api';
 import EditFab from 'components/edit/EditFab';
 import Scroller from 'components/scroller/Scroller';
+import { useImageResize } from 'hooks/useImageResize';
 import { isEmpty, isEqual } from 'lodash';
 import { useAlbumsArtistAppearsOn } from 'queries';
 import React, { useRef } from 'react';
 import { BiSolidAlbum } from 'react-icons/bi';
 import { PiEye, PiEyeSlash } from 'react-icons/pi';
 import { useSearchParams } from 'react-router-dom';
-import { persistedStore, store } from 'state';
+import { persistedStore } from 'state';
 import { CustomFilterKeys } from 'typescript';
 
 const TrackRow: React.FC<{
@@ -61,17 +62,13 @@ const AlbumRow: React.FC<{
   artistGuid: string;
   toggleVisibility: (track: Track) => void;
 }> = ({ album, artistGuid, toggleVisibility }) => {
-  const library = store.library.peek();
-
-  const thumbSrc = useSelector(() => {
-    return library.resizeImage(
-      new URLSearchParams({
-        url: album.thumb,
-        width: '64',
-        height: '64',
-      })
-    );
-  });
+  const thumbSrc = useImageResize(
+    new URLSearchParams({
+      url: album.thumb,
+      width: '64',
+      height: '64',
+    })
+  );
 
   return (
     <Box marginBottom={2}>

@@ -129,6 +129,8 @@ const toPlaylist = ($data: Prism<any>): Playlist => {
 
 export interface PlaylistContainer extends MediaContainer {
   _type: string;
+  leafCountAdded: number;
+  leafCountRequested: number;
   playlists: Playlist[];
 }
 
@@ -147,6 +149,8 @@ const toPlaylistContainer = ($data: Prism<any>): PlaylistContainer => {
     _type: 'playlistContainer',
 
     playlists: $data.get('Metadata').toArray().map(toPlaylist),
+    leafCountAdded: $data.get<number>('leafCountAdded').value,
+    leafCountRequested: $data.get<number>('leafCountRequested').value,
   };
 };
 

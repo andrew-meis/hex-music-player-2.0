@@ -17,7 +17,7 @@ import { DragTypes, SelectObservables } from 'typescript';
 const ReactiveDrawer = reactive(Drawer);
 
 const BackTo: React.FC<{ backTo: PlayQueueItem[] }> = ({ backTo }) => {
-  const selectObservable = allSelectObservables[SelectObservables.UI_QUEUE];
+  const selectObservable = allSelectObservables[SelectObservables.DRAWER_QUEUE];
   const columns = useMemo(() => queueColumns, []);
   const table = useReactTable({
     data: backTo,
@@ -72,7 +72,7 @@ const BackTo: React.FC<{ backTo: PlayQueueItem[] }> = ({ backTo }) => {
         style={{ height: 'calc(100% - 8px)', marginTop: 8 }}
         totalCount={rows.length}
         onMouseOver={() => {
-          store.ui.menus.activeMenu.set(SelectObservables.UI_QUEUE);
+          store.ui.menus.activeMenu.set(SelectObservables.DRAWER_QUEUE);
           selectObservable.items.set(backTo);
         }}
       />
@@ -81,7 +81,7 @@ const BackTo: React.FC<{ backTo: PlayQueueItem[] }> = ({ backTo }) => {
 };
 
 const UpNext: React.FC<{ upNext: PlayQueueItem[] }> = ({ upNext }) => {
-  const selectObservable = allSelectObservables[SelectObservables.UI_QUEUE];
+  const selectObservable = allSelectObservables[SelectObservables.DRAWER_QUEUE];
 
   const columns = useMemo(() => queueColumns, []);
   const table = useReactTable({
@@ -142,7 +142,7 @@ const UpNext: React.FC<{ upNext: PlayQueueItem[] }> = ({ upNext }) => {
         style={{ height: 'calc(100% - 8px)', marginTop: 8 }}
         totalCount={rows.length}
         onMouseOver={() => {
-          store.ui.menus.activeMenu.set(SelectObservables.UI_QUEUE);
+          store.ui.menus.activeMenu.set(SelectObservables.DRAWER_QUEUE);
           selectObservable.items.set(upNext);
         }}
       />

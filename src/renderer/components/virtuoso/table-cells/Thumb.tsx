@@ -1,11 +1,11 @@
 import { Avatar } from '@mui/material';
+import { useImageResize } from 'hooks/useImageResize';
 import React from 'react';
 import { BiSolidAlbum } from 'react-icons/bi';
 import { BsMusicNote, BsMusicNoteList } from 'react-icons/bs';
 import { FaTags } from 'react-icons/fa';
 import { IoMdMicrophone } from 'react-icons/io';
 import { LuLayoutGrid } from 'react-icons/lu';
-import { store } from 'state';
 
 const icons = {
   album: <BiSolidAlbum />,
@@ -34,10 +34,13 @@ const Thumb: React.FC<{
   type: keyof typeof icons;
   url: string | undefined;
 }> = ({ title, type, url }) => {
-  const library = store.library.peek();
-  const thumbSrc = url
-    ? library.resizeImage(new URLSearchParams({ url, width: '64', height: '64' }))
-    : undefined;
+  const thumbSrc = useImageResize(
+    new URLSearchParams({
+      url: url || '',
+      width: '64',
+      height: '64',
+    })
+  );
 
   return (
     <Avatar alt={title} src={thumbSrc} sx={{ height: 38, width: 38 }} variant={variants[type]}>

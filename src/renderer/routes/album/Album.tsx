@@ -1,25 +1,23 @@
-import { useSelector } from '@legendapp/state/react';
+import { observer, useSelector } from '@legendapp/state/react';
 import { Avatar, Box, Chip, SvgIcon, Typography } from '@mui/material';
 import PlayFab from 'components/buttons/PlayFab';
 import VirtualTrackTable from 'components/track/VirtualTrackTable';
 import { playbackActions } from 'features/playback';
+import { useImageResize } from 'hooks/useImageResize';
 import { groupBy, sumBy } from 'lodash';
 import { Duration } from 'luxon';
 import { useAlbum, useAlbumTracks } from 'queries';
 import React, { useEffect, useMemo } from 'react';
 import { BiAlbum } from 'react-icons/bi';
-import { createSearchParams, NavLink, useLoaderData } from 'react-router-dom';
+import { createSearchParams, NavLink } from 'react-router-dom';
 import RouteContainer from 'routes/RouteContainer';
 import formatCount from 'scripts/format-count';
 import { createArtistNavigate } from 'scripts/navigate-generators';
 import { allSelectObservables, store } from 'state';
 import { SelectObservables } from 'typescript';
 
-import { albumLoader } from './loader';
-
-const Album: React.FC = () => {
-  const loaderData = useLoaderData() as Awaited<ReturnType<typeof albumLoader>>;
-  const { guid, id, parentGuid, parentId, parentTitle, title } = loaderData;
+const Album: React.FC = observer(function Album() {
+  const { guid, id, parentGuid, parentId, parentTitle, title } = store.loaders.album.get();
 
   const selectObservable = allSelectObservables[SelectObservables.ROUTE_ALBUM];
 
@@ -32,17 +30,13 @@ const Album: React.FC = () => {
     return library.server.getAuthenticatedUrl(album.thumb);
   });
 
-  const artistThumbSrc = useSelector(() => {
-    if (!album) return undefined;
-    const library = store.library.get();
-    return library.resizeImage(
-      new URLSearchParams({
-        url: album.parentThumb,
-        width: '64',
-        height: '64',
-      })
-    );
-  });
+  const artistThumbSrc = useImageResize(
+    new URLSearchParams({
+      url: album?.parentThumb || '',
+      width: '64',
+      height: '64',
+    })
+  );
 
   const multipleDiscs = useMemo(() => {
     if (tracks) {
@@ -201,6 +195,6 @@ const Album: React.FC = () => {
       )}
     </RouteContainer>
   );
-};
+});
 
 export default Album;

@@ -1,20 +1,12 @@
+import { observer } from '@legendapp/state/react';
 import { Typography } from '@mui/material';
 import React, { useEffect } from 'react';
-import { createSearchParams, LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import { createSearchParams } from 'react-router-dom';
 import RouteContainer from 'routes/RouteContainer';
 import { store } from 'state';
 
-export const tracksLoader = async ({ request }: LoaderFunctionArgs) => {
-  const url = new URL(request.url);
-  const section = url.searchParams.get('section');
-  if (!section) {
-    throw new Error('Missing route loader data');
-  }
-  return { section };
-};
-
-const Tracks: React.FC = () => {
-  const { section } = useLoaderData() as Awaited<ReturnType<typeof tracksLoader>>;
+const Tracks: React.FC = observer(function Tracks() {
+  const { section } = store.loaders.tracks.get();
 
   useEffect(() => {
     store.ui.breadcrumbs.set([
@@ -33,6 +25,6 @@ const Tracks: React.FC = () => {
       </Typography>
     </RouteContainer>
   );
-};
+});
 
 export default Tracks;

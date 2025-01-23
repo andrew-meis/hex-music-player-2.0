@@ -1,21 +1,12 @@
+import { observer } from '@legendapp/state/react';
 import { Typography } from '@mui/material';
 import React, { useEffect } from 'react';
-import { createSearchParams, LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import { createSearchParams } from 'react-router-dom';
 import RouteContainer from 'routes/RouteContainer';
 import { store } from 'state';
 
-export const collectionLoader = async ({ params, request }: LoaderFunctionArgs) => {
-  const { id } = params;
-  const url = new URL(request.url);
-  const title = url.searchParams.get('title');
-  if (!id || !title) {
-    throw new Error('Missing route loader data');
-  }
-  return { id: parseInt(id, 10), title };
-};
-
-const Collection: React.FC = () => {
-  const { id, title } = useLoaderData() as Awaited<ReturnType<typeof collectionLoader>>;
+const Collection: React.FC = observer(function Collection() {
+  const { id, title } = store.loaders.collection.get();
 
   useEffect(() => {
     store.ui.breadcrumbs.set([
@@ -44,6 +35,6 @@ const Collection: React.FC = () => {
       </Typography>
     </RouteContainer>
   );
-};
+});
 
 export default Collection;

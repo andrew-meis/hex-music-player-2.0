@@ -7,7 +7,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import App, { appLoader } from 'app/App';
+import App from 'app/App';
+import { appLoader } from 'app/loader';
 import { audio } from 'audio';
 import DragLayer from 'main/DragLayer';
 import ErrorElement from 'main/ErrorElement';
@@ -20,19 +21,26 @@ import ReactDOM from 'react-dom/client';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 import Album from 'routes/album/Album';
 import { albumLoader } from 'routes/album/loader';
-import Albums, { albumsLoader } from 'routes/albums/Albums';
+import Albums from 'routes/albums/Albums';
+import { albumsLoader } from 'routes/albums/loader';
 import Artist from 'routes/artist/Artist';
 import { artistLoader } from 'routes/artist/loader';
-import ArtistDiscography, {
-  artistDiscographyLoader,
-} from 'routes/artist/subroutes/discography/ArtistDiscography';
-import Artists, { artistsLoader } from 'routes/artists/Artists';
+import ArtistDiscography from 'routes/artist/subroutes/discography/ArtistDiscography';
+import { artistDiscographyLoader } from 'routes/artist/subroutes/discography/loader';
+import Artists from 'routes/artists/Artists';
+import { artistsLoader } from 'routes/artists/loader';
 import Charts from 'routes/charts/Charts';
-import Collection, { collectionLoader } from 'routes/collection/Collection';
-import Collections, { collectionsLoader } from 'routes/collections/Collections';
-import Genre, { genreLoader } from 'routes/genre/Genre';
-import Genres, { genresLoader } from 'routes/genres/Genres';
-import Library, { libraryLoader } from 'routes/library/Library';
+import { chartsLoader } from 'routes/charts/loader';
+import Collection from 'routes/collection/Collection';
+import { collectionLoader } from 'routes/collection/loader';
+import Collections from 'routes/collections/Collections';
+import { collectionsLoader } from 'routes/collections/loader';
+import Genre from 'routes/genre/Genre';
+import { genreLoader } from 'routes/genre/loader';
+import Genres from 'routes/genres/Genres';
+import { genresLoader } from 'routes/genres/loader';
+import Library from 'routes/library/Library';
+import { libraryLoader } from 'routes/library/loader';
 import Login, { loginLoader } from 'routes/login/Login';
 import { nowPlayingLoader } from 'routes/now-playing/loader';
 import NowPlaying from 'routes/now-playing/NowPlaying';
@@ -40,10 +48,13 @@ import { playlistLoader } from 'routes/playlist/loader';
 import Playlist from 'routes/playlist/Playlist';
 import { playlistsLoader } from 'routes/playlists/loader';
 import Playlists from 'routes/playlists/Playlists';
-import Search, { searchLoader } from 'routes/search/Search';
-import Settings, { settingsLoader } from 'routes/settings/Settings';
-import Track, { trackLoader } from 'routes/track/Track';
-import Tracks, { tracksLoader } from 'routes/tracks/Tracks';
+import { searchLoader } from 'routes/search/loader';
+import Search from 'routes/search/Search';
+import Settings from 'routes/settings/Settings';
+import { trackLoader } from 'routes/track/loader';
+import Track from 'routes/track/Track';
+import { tracksLoader } from 'routes/tracks/loader';
+import Tracks from 'routes/tracks/Tracks';
 import { createSelectObservable, persistedStore, store } from 'state';
 import { SelectObservables } from 'typescript';
 import Titlebar from 'ui/titlebar/Titlebar';
@@ -87,7 +98,7 @@ const router = createHashRouter([
       {
         path: '/',
         element: <Library />,
-        loader: libraryLoader(queryClient),
+        loader: libraryLoader,
       },
       {
         path: '/albums',
@@ -117,6 +128,7 @@ const router = createHashRouter([
       {
         path: '/charts',
         element: <Charts />,
+        loader: chartsLoader,
       },
       {
         path: '/collections',
@@ -161,7 +173,6 @@ const router = createHashRouter([
       {
         path: '/settings',
         element: <Settings />,
-        loader: settingsLoader(queryClient),
       },
       {
         path: '/tracks',

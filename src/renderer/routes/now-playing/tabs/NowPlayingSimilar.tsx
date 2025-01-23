@@ -14,13 +14,7 @@ const NowPlayingSimilar: React.FC = observer(function NowPlayingSimilar() {
   const activeTab = store.ui.nowPlaying.activeSimilarTracksTab.get();
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height="-webkit-fill-available"
-      marginX={2}
-      width="-webkit-fill-available"
-    >
+    <Box display="flex" flexDirection="column" height={1} width={1}>
       <TabContext value={activeTab}>
         <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="0">
           <SimilarRelated />

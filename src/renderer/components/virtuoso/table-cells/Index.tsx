@@ -1,12 +1,12 @@
 import { Typography } from '@mui/material';
 import React from 'react';
 
-const Tracknumber: React.FC<{ tracknumber: number }> = ({ tracknumber }) => {
+const Index: React.FC<{ index: number }> = ({ index }) => {
   return (
     <Typography color="text.secondary" variant="title2">
-      {tracknumber}
+      {index}
     </Typography>
   );
 };
 
-export default Tracknumber;
+export default Index;

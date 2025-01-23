@@ -279,6 +279,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiListItem: {
+      styleOverrides: {
+        root: {
+          padding: '2px 8px',
+        },
+      },
+    },
     MuiListItemIcon: {
       styleOverrides: {
         root: {
@@ -291,7 +298,18 @@ const theme = createTheme({
       defaultProps: {
         primaryTypographyProps: {
           fontSize: '0.875rem',
+          fontWeight: 'inherit',
           lineHeight: '1.5rem',
+        },
+      },
+      styleOverrides: {
+        root: {
+          display: '-webkit-box',
+          margin: '2px 0',
+          overflow: 'hidden',
+          WebkitBoxOrient: 'vertical',
+          WebkitLineClamp: 1,
+          wordBreak: 'break-all',
         },
       },
     },
@@ -536,6 +554,12 @@ const theme = createTheme({
           style: {
             fontFamily: 'Figtree, sans-serif',
             fontWeight: '700',
+          },
+        },
+        {
+          props: { variant: 'caption' },
+          style: {
+            fontFamily: 'Figtree, sans-serif',
           },
         },
         {

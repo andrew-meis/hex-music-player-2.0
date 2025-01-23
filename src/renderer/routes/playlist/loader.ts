@@ -1,4 +1,5 @@
 import { LoaderFunctionArgs } from 'react-router-dom';
+import { store } from 'state';
 
 export const playlistLoader = async ({ params, request }: LoaderFunctionArgs) => {
   const { id } = params;
@@ -7,5 +8,6 @@ export const playlistLoader = async ({ params, request }: LoaderFunctionArgs) =>
   if (!id || !title) {
     throw new Error('Missing route loader data');
   }
-  return { id: parseInt(id, 10), title };
+  store.loaders.playlist.set({ id: parseInt(id, 10), title });
+  return true;
 };

@@ -1,4 +1,4 @@
-import { observer } from '@legendapp/state/react';
+import { Memo, observer } from '@legendapp/state/react';
 import { Box } from '@mui/material';
 import chroma from 'chroma-js';
 import ActionButton from 'components/buttons/ActionButton';
@@ -8,6 +8,7 @@ import { FiRadio } from 'react-icons/fi';
 import { HiOutlineHeart } from 'react-icons/hi2';
 import { ImLastfm } from 'react-icons/im';
 import { IoMdMicrophone } from 'react-icons/io';
+import { LuTimer, LuTimerOff } from 'react-icons/lu';
 import { PiMusicNotesPlusFill, PiWaveform } from 'react-icons/pi';
 import { RiFontSize } from 'react-icons/ri';
 import { TbEdit, TbLayoutGridAdd } from 'react-icons/tb';
@@ -19,7 +20,7 @@ export const DetailsActions: React.FC = observer(function DetailsActions() {
   const nowPlaying = store.queue.nowPlaying.get();
 
   return (
-    <Box display="flex" gap={1} position="absolute" right={8} top={8}>
+    <Box display="flex" gap={1} position="absolute" right={-8} top={-56}>
       <AnimatePresence>
         <ActionButton
           color={color}
@@ -49,7 +50,7 @@ export const DetailsActions: React.FC = observer(function DetailsActions() {
           color={color}
           key="edit-metadata"
           label="Edit Track"
-          onClick={() => store.ui.modals.values.track.set(nowPlaying.track)}
+          onClick={() => store.ui.modals.values.track.set({ tab: '0', track: nowPlaying.track })}
         >
           <TbEdit />
         </ActionButton>
@@ -73,15 +74,20 @@ export const LyricsActions: React.FC = observer(function LyricsActions() {
   };
 
   return (
-    <Box display="flex" gap={1} position="absolute" right={8} top={8}>
+    <Box display="flex" gap={1} position="absolute" right={-8} top={-56}>
       <AnimatePresence>
         <ActionButton
           color={color}
-          key="edit-lyrics"
-          label="Edit Lyrics"
-          onClick={() => store.ui.modals.values.track.set(nowPlaying.track)}
+          key="sync-lyrics"
+          label="Toggle Synchronized Lyrics"
+          onClick={() => persistedStore.syncLyrics.toggle()}
         >
-          <TbEdit />
+          <Memo>
+            {() => {
+              const prefersSynced = persistedStore.syncLyrics.get();
+              return prefersSynced ? <LuTimerOff /> : <LuTimer />;
+            }}
+          </Memo>
         </ActionButton>
         <ActionButton
           color={color}
@@ -90,6 +96,14 @@ export const LyricsActions: React.FC = observer(function LyricsActions() {
           onClick={handleFontSize}
         >
           <RiFontSize />
+        </ActionButton>
+        <ActionButton
+          color={color}
+          key="edit-lyrics"
+          label="Edit Lyrics"
+          onClick={() => store.ui.modals.values.track.set({ tab: '2', track: nowPlaying.track })}
+        >
+          <TbEdit />
         </ActionButton>
       </AnimatePresence>
     </Box>
@@ -125,7 +139,7 @@ export const SimilarTracksActions: React.FC = observer(function SimilarTracksAct
   ];
 
   return (
-    <Box display="flex" gap={1} position="absolute" right={8} top={8}>
+    <Box display="flex" gap={1} position="absolute" right={-8} top={-56}>
       <AnimatePresence>
         {tabs.map((tab, index) => (
           <ActionButton

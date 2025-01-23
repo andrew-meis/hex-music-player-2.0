@@ -1,4 +1,4 @@
-import { Observable } from '@legendapp/state';
+import { Observable, ObservableComputed } from '@legendapp/state';
 import { reactive } from '@legendapp/state/react';
 import { Fab, FabProps, SvgIcon } from '@mui/material';
 import { motion } from 'framer-motion';
@@ -22,10 +22,10 @@ const buttonMotion = {
 const ReactiveMotionDiv = reactive(motion.div);
 const MotionFab = motion(Fab);
 
-const EditFab: React.FC<{ isVisible: Observable<boolean>; onClick: FabProps['onClick'] }> = ({
-  isVisible,
-  onClick,
-}) => {
+const EditFab: React.FC<{
+  isVisible: Observable<boolean> | ObservableComputed<boolean>;
+  onClick: FabProps['onClick'];
+}> = ({ isVisible, onClick }) => {
   return (
     <ReactiveMotionDiv
       $animate={() => (isVisible.get() ? 'visible' : 'hidden')}

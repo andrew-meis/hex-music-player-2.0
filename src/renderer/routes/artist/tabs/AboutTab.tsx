@@ -6,7 +6,7 @@ import { flag } from 'country-emoji';
 import Konva from 'konva';
 import { isEmpty } from 'lodash';
 import { useArtists } from 'queries';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import emoji from 'react-easy-emoji';
 import { TbPlus } from 'react-icons/tb';
 import { Layer, Stage, Star, Text } from 'react-konva';
@@ -49,12 +49,6 @@ const AboutTab: React.FC<{ artist: Artist; color: Color }> = ({ artist, color })
     })
   );
 
-  useEffect(() => {
-    if (store.ui.modals.open.peek()) {
-      store.ui.modals.values.artist.set(artist);
-    }
-  }, [artist]);
-
   const index = topArtists?.artists.findIndex((value) => value.id === artist.id);
 
   if (!topArtists || isLoading) return <Box display="flex" minHeight="var(--content-height)" />;
@@ -62,7 +56,7 @@ const AboutTab: React.FC<{ artist: Artist; color: Color }> = ({ artist, color })
   return (
     <Box display="flex" minHeight="var(--content-height)">
       <Show if={typeof index === 'number' && index > -1}>
-        <Box height="auto" width={200}>
+        <Box height={200} position="sticky" top={48} width={200}>
           <Stage height={200} width={200}>
             <Layer>
               <Star
@@ -143,7 +137,7 @@ const AboutTab: React.FC<{ artist: Artist; color: Color }> = ({ artist, color })
                   cursor: 'pointer',
                 }}
                 width={40}
-                onClick={() => store.ui.modals.values.artist.set(artist)}
+                onClick={() => store.ui.modals.values.artist.set({ tab: '1', artist })}
               >
                 <SvgIcon color="inherit" sx={{ height: 22, width: 22 }}>
                   <TbPlus />

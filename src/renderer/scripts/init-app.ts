@@ -32,7 +32,7 @@ const initApp = async () => {
         (r) => device!.connections.find((conn) => conn.uri === r.url.split('/servers')[0])!
       );
       const newAccount = new Account(client, device.accessToken);
-      const newServerConnection = new ServerConnection(connection.uri, newAccount);
+      const newServerConnection = new ServerConnection(connection, newAccount);
       const newLibrary = new Library(newServerConnection, device);
       store.serverConfig.set(serverConfig);
       store.account.set(newAccount);

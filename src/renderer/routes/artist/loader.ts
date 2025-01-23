@@ -1,4 +1,5 @@
 import { LoaderFunctionArgs } from 'react-router-dom';
+import { store } from 'state';
 
 export const artistLoader = async ({ params, request }: LoaderFunctionArgs) => {
   const { id } = params;
@@ -8,5 +9,6 @@ export const artistLoader = async ({ params, request }: LoaderFunctionArgs) => {
   if (!guid || !id || !title) {
     throw new Error('Missing route loader data');
   }
-  return { guid, id: parseInt(id, 10), title };
+  store.loaders.artist.set({ guid, id: parseInt(id, 10), title });
+  return true;
 };

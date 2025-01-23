@@ -1,4 +1,5 @@
 import { LoaderFunctionArgs } from 'react-router-dom';
+import { store } from 'state';
 
 export const playlistsLoader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -6,5 +7,6 @@ export const playlistsLoader = async ({ request }: LoaderFunctionArgs) => {
   if (!section) {
     throw new Error('Missing route loader data');
   }
-  return { section };
+  store.loaders.playlists.set({ section });
+  return true;
 };

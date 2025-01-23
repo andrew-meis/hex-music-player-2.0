@@ -6,31 +6,25 @@ import { QueryKeys } from 'typescript';
 
 export const chartQuery = (
   mediaType: MediaType,
-  enabled: boolean = true,
+  start: DateTime,
+  end: DateTime,
   limit: number = 10,
-  start?: DateTime,
-  end?: DateTime,
-  days?: number
+  enabled: boolean = true
 ) =>
   queryOptions({
-    queryKey: [QueryKeys.CHART, mediaType, start, end, days, limit],
+    queryKey: [QueryKeys.CHART, mediaType, start, end, limit],
     queryFn: async () => {
       const { sectionId } = store.serverConfig.peek();
       const library = store.library.peek();
-      const time = DateTime.now();
-      if (days) {
-        return library.topItems(sectionId, mediaType, time.minus({ days }), time, limit);
-      }
-      return library.topItems(sectionId, mediaType, start!, end!, limit);
+      return library.topItems(sectionId, mediaType, start, end, limit);
     },
     enabled,
   });
 
 export const useChart = (
   mediaType: MediaType,
-  enabled?: boolean,
+  start: DateTime,
+  end: DateTime,
   limit?: number,
-  start?: DateTime,
-  end?: DateTime,
-  days?: number
-) => useQuery(chartQuery(mediaType, enabled, limit, start, end, days));
+  enabled?: boolean
+) => useQuery(chartQuery(mediaType, start, end, limit, enabled));

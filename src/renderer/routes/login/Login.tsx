@@ -104,7 +104,7 @@ const Login: React.FC = () => {
     queryKey: ['library-sections'],
     queryFn: async () => {
       if (!selectedServer) return;
-      const newConnection = new ServerConnection(serverConnection!.uri, account);
+      const newConnection = new ServerConnection(serverConnection!, account);
       const library = new Library(newConnection, selectedServer);
       const sectionContainer = await library.sections();
       return sectionContainer.sections.filter((section) => section.type === 'artist');

@@ -95,7 +95,7 @@ const ReactiveTabScrollButton = reactive(TabScrollButton);
 
 const ActionButtons: React.FC<{ artist: Artist; color: Color }> = ({ artist, color }) => {
   return (
-    <Box alignItems="center" display="flex" gap={1} marginLeft="auto" marginRight={1}>
+    <Box alignItems="center" display="flex" gap={1} marginLeft="auto" marginRight={2}>
       <AnimatePresence>
         <ActionButton
           color={color}
@@ -109,7 +109,7 @@ const ActionButtons: React.FC<{ artist: Artist; color: Color }> = ({ artist, col
           color={color}
           key="edit-artist"
           label="Edit Artist"
-          onClick={() => store.ui.modals.values.artist.set(artist)}
+          onClick={() => store.ui.modals.values.artist.set({ tab: '0', artist })}
         >
           <TbEdit />
         </ActionButton>
@@ -132,12 +132,6 @@ const ArtistNavbar: React.FC<{
   const [searchParams, setSearchParams] = useSearchParams();
   const { width } = useWindowSize();
 
-  useEffect(() => {
-    if (store.ui.modals.open.peek()) {
-      store.ui.modals.values.artist.set(artist);
-    }
-  }, [artist]);
-
   const TABS_WIDTH = Math.min(width, 1920) - 128;
 
   const tabs = useMemo(() => {
@@ -148,6 +142,13 @@ const ArtistNavbar: React.FC<{
     searchParams.set('tabIndex', newValue);
     setSearchParams(searchParams);
   };
+
+  useEffect(() => {
+    if (!viewport) return;
+    const bannerHeight = Math.max((viewport.clientHeight + 180) / 2, 280);
+    if (viewport.scrollTop < bannerHeight) return;
+    viewport?.scrollTo({ top: bannerHeight + 1 });
+  }, [searchParams]);
 
   return (
     <TabContext value={searchParams.get('tabIndex')!}>

@@ -2,13 +2,16 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { Track } from 'api';
 import Discnumber from 'components/virtuoso/table-cells/Discnumber';
 import Duration from 'components/virtuoso/table-cells/Duration';
+import Index from 'components/virtuoso/table-cells/Index';
 import Thumb from 'components/virtuoso/table-cells/Thumb';
-import Tracknumber from 'components/virtuoso/table-cells/Tracknumber';
 import TrackRating from 'components/virtuoso/table-cells/TrackRating';
 import TrackTitle from 'components/virtuoso/table-cells/TrackTitle';
 import Title from 'components/virtuoso/table-headers/Title';
 
 export interface TrackColumnOptions {
+  index: {
+    showTableIndex: boolean;
+  };
   title: {
     showAlbumTitle: boolean;
   };
@@ -25,7 +28,9 @@ export const getTrackColumns = (options?: Partial<TrackColumnOptions>) => [
     header: () => '',
   }),
   columnHelper.accessor('index', {
-    cell: (info) => <Tracknumber tracknumber={info.getValue()} />,
+    cell: (info) => (
+      <Index index={options?.index?.showTableIndex ? info.row.index + 1 : info.getValue()} />
+    ),
     header: () => '',
   }),
   columnHelper.accessor('thumb', {
