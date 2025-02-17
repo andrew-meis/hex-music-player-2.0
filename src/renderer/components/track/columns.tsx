@@ -2,6 +2,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { Track } from 'api';
 import Discnumber from 'components/virtuoso/table-cells/Discnumber';
 import Duration from 'components/virtuoso/table-cells/Duration';
+import Favorite from 'components/virtuoso/table-cells/Favorite';
 import Index from 'components/virtuoso/table-cells/Index';
 import Thumb from 'components/virtuoso/table-cells/Thumb';
 import TrackRating from 'components/virtuoso/table-cells/TrackRating';
@@ -48,6 +49,12 @@ export const getTrackColumns = (options?: Partial<TrackColumnOptions>) => [
       );
     },
     header: () => <Title />,
+  }),
+  columnHelper.accessor('lastViewedAt', {
+    cell: (info) => {
+      return <Favorite id={info.row.original.id} lastViewedAt={info.getValue()} />;
+    },
+    header: () => '',
   }),
   columnHelper.accessor('userRating', {
     cell: (info) => {

@@ -50,8 +50,10 @@ function createWindow() {
 
   mainWindow.webContents.on('did-navigate-in-page', () => {
     mainWindow.webContents.send('nav-update', {
-      backward: mainWindow.webContents.navigationHistory.canGoBack(),
-      forward: mainWindow.webContents.navigationHistory.canGoForward(),
+      activeIndex: mainWindow.webContents.navigationHistory.getActiveIndex(),
+      allEntries: mainWindow.webContents.navigationHistory.getAllEntries(),
+      canGoBack: mainWindow.webContents.navigationHistory.canGoBack(),
+      canGoForward: mainWindow.webContents.navigationHistory.canGoForward(),
     });
   });
 
@@ -66,6 +68,10 @@ function createWindow() {
 
   // Register window state listeners
   mainWindowState.manage(mainWindow);
+
+  ipcMain.handle('go-to-index', (_event, index) => {
+    mainWindow.webContents.navigationHistory.goToIndex(index);
+  });
 
   ipcMain.handle('set-mode', (_event, mode) => {
     if (process.platform !== 'win32') return;

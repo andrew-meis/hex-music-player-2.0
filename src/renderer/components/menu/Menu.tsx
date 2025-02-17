@@ -23,6 +23,8 @@ import TrackMenu from 'components/track/TrackMenu';
 import { isEmpty } from 'lodash';
 import React, { useMemo } from 'react';
 import { allSelectObservables, store } from 'state';
+import { PlaylistFolder } from 'typescript';
+import { isPlaylistFolder, PlaylistFolderMenu } from 'ui/app-panels/drawers/PlaylistsDrawer';
 
 const Menu: React.FC = observer(function Menu() {
   const activeMenu = store.ui.menus.activeMenu.get();
@@ -59,6 +61,9 @@ const Menu: React.FC = observer(function Menu() {
       )}
       {!isEmpty(items) && items.every((item) => isPlaylist(item)) && (
         <PlaylistMenu playlists={items as Playlist[]} />
+      )}
+      {!isEmpty(items) && items.every((item) => isPlaylistFolder(item)) && (
+        <PlaylistFolderMenu playlistsFolders={items as PlaylistFolder[]} />
       )}
       {!isEmpty(items) && items.every((item) => isPlaylistItem(item)) && (
         <PlaylistItemMenu items={items as PlaylistItem[]} />

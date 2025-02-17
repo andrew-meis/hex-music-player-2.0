@@ -400,6 +400,7 @@ export const tracksQuery = (
   queryOptions({
     queryKey: [QueryKeys.TRACKS, paramsToObject(searchParams?.entries())],
     queryFn: async () => library.tracks(sectionId, searchParams),
+    placeholderData: keepPreviousData,
     enabled,
   });
 

@@ -75,7 +75,6 @@ export const lyricsQuery = (track: Track) => ({
       ...partialSearch.filter((x) => x.item.syncedLyrics === null),
     ];
     const preferredResult = firstResult || secondResult;
-    console.log(preferredResult);
     if (preferredResult) {
       const lyrics: Lyrics = {
         albumGuid: track.parentGuid,

@@ -10,6 +10,7 @@ import {
   PlayQueueItem,
   Track,
 } from 'api';
+import { NavigationEntry } from 'electron';
 import { DateTime } from 'luxon';
 import { To } from 'react-router-dom';
 import {
@@ -161,13 +162,16 @@ export const store = observable({
       values: undefined as unknown as {
         album: { tab: string; album: Album };
         artist: { tab: string; artist: Artist };
+        folder: { action: 'edit' | 'new'; currentName: string };
         track: { tab: string; track: Track };
       },
       open: false,
     },
     navigation: {
-      backward: false,
-      forward: false,
+      activeIndex: 0,
+      allEntries: [] as NavigationEntry[],
+      canGoBack: false,
+      canGoForward: false,
     },
     nowPlaying: {
       activeSimilarTracksTab: '0',

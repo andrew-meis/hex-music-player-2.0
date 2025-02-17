@@ -12,14 +12,14 @@ window.api.onNavigationUpdate((_, args) => {
 const NavigationButtons: React.FC = observer(function NavigationButtons() {
   const navigate = useNavigate();
 
-  const { backward, forward } = store.ui.navigation.get();
+  const { canGoBack, canGoForward } = store.ui.navigation.get();
 
   return (
     <Box display="flex" justifySelf="start">
-      <IconButton disabled={!backward} onClick={() => navigate(-1)}>
+      <IconButton disabled={!canGoBack} onClick={() => navigate(-1)}>
         <VscChevronLeft />
       </IconButton>
-      <IconButton disabled={!forward} onClick={() => navigate(1)}>
+      <IconButton disabled={!canGoForward} onClick={() => navigate(1)}>
         <VscChevronRight />
       </IconButton>
     </Box>

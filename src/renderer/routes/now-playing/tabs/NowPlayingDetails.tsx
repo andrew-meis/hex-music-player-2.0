@@ -1,5 +1,5 @@
 import { observer } from '@legendapp/state/react';
-import { Box, Typography } from '@mui/material';
+import { Avatar, Box, Grid2 as Grid, Typography } from '@mui/material';
 import { Track } from 'api';
 import { audio } from 'audio';
 import chroma from 'chroma-js';
@@ -188,10 +188,47 @@ const Visualizer: React.FC = observer(function Visualizer() {
   return <canvas height={HEIGHT} ref={canvasRef} width={WIDTH} />;
 });
 
+const Artwork: React.FC = observer(function Artwork() {
+  const library = store.library.get();
+  const nowPlaying = store.queue.nowPlaying.get();
+
+  const thumbSrc = library.server.getAuthenticatedUrl(nowPlaying.track.thumb);
+
+  return (
+    <Avatar
+      src={thumbSrc}
+      sx={{
+        borderRadius: 1,
+        boxShadow: 'var(--mui-shadows-2)',
+        height: '-webkit-fill-available',
+        marginBottom: 2,
+        marginRight: 2,
+        maxHeight: 952,
+        maxWidth: 952,
+        width: '-webkit-fill-available',
+      }}
+    />
+  );
+});
+
 const NowPlayingDetails: React.FC = () => {
   return (
     <>
-      <Metadata />
+      <Grid
+        container
+        alignItems="center"
+        columnSpacing={0.5}
+        height={1}
+        maxHeight="min(952px, calc(calc(100vw / 2) - 64px))"
+        overflow="hidden"
+      >
+        <Grid height={1} maxWidth={0.5}>
+          <Artwork />
+        </Grid>
+        <Grid height={1} overflow="hidden" size="grow">
+          <Metadata />
+        </Grid>
+      </Grid>
       <DetailsActions />
     </>
   );

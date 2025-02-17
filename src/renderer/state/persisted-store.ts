@@ -1,20 +1,22 @@
 import { observable } from '@legendapp/state';
 import { persistObservable } from '@legendapp/state/persist';
-import { Album } from 'api';
+import { PersistedStore } from 'typescript';
 
-const defaultValues = {
-  appearsOnFilters: {} as Record<string, { exclusions: string[]; inclusions: string[] }>,
+const defaultValues: PersistedStore = {
+  appearsOnFilters: {},
   audio: {
     savedTimeMillis: 0,
     volume: 50,
   },
+  currentFavorites: {},
   lastfmApiKey: '',
   lyricsSize: 2,
+  playlistFolders: {},
   queueId: 0,
-  recentSearches: [] as string[],
+  recentSearches: [],
   sorting: {
-    key: 'originallyAvailableAt' as keyof Album,
-    order: 'desc' as 'asc' | 'desc',
+    key: 'originallyAvailableAt',
+    order: 'desc',
   },
   syncLyrics: true,
 };

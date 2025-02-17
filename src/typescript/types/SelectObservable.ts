@@ -10,6 +10,12 @@ import {
   Track,
 } from 'api';
 
+export interface PlaylistFolder {
+  _type: string;
+  id: number;
+  title: string;
+}
+
 export type Selectable =
   | Artist
   | Album
@@ -18,6 +24,7 @@ export type Selectable =
   | Genre
   | Collection
   | PlayQueueItem
+  | PlaylistFolder
   | PlaylistItem;
 
 export type SelectObservable = ObservableObject<{

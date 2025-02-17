@@ -41,8 +41,8 @@ audio.addEventListener('ended', async () => {
 audio.addEventListener('error', (error) => console.log(error));
 
 audio.addEventListener('loadeddata', () => {
-  const savedTimeMillis = persistedStore.audio.savedTimeMillis.peek();
-  if (savedTimeMillis > 0 && audio.durationMillis < savedTimeMillis) {
+  const savedTimeMillis = persistedStore.audio.savedTimeMillis.get();
+  if (savedTimeMillis > 0 && audio.durationMillis > savedTimeMillis) {
     audio.currentTime = savedTimeMillis / 1000;
     persistedStore.audio.savedTimeMillis.set(0);
   }

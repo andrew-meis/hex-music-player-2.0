@@ -9,4 +9,4 @@ export type * from './interfaces/loaders';
 export type { PersistedStore } from './interfaces/PersistedStore';
 export type { ServerConfig } from './interfaces/ServerConfig';
 // Types
-export type { Selectable, SelectObservable } from './types/SelectObservable';
+export type { PlaylistFolder, Selectable, SelectObservable } from './types/SelectObservable';

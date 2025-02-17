@@ -44,7 +44,7 @@ const BottomBar: React.FC = () => {
           flexBasis="0%"
           flexGrow={1}
           justifyContent="flex-start"
-          maxWidth={368}
+          maxWidth={360}
         >
           <Show ifReady={store.queue.nowPlaying}>
             <NowPlaying />
@@ -57,7 +57,7 @@ const BottomBar: React.FC = () => {
           flexBasis="0%"
           flexGrow={1}
           justifyContent="flex-end"
-          maxWidth={368}
+          maxWidth={360}
         >
           <PlaylistsButton />
           <ChartsButton />

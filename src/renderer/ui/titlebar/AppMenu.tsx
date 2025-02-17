@@ -1,6 +1,14 @@
-import { Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
+import {
+  Divider,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  SvgIcon,
+} from '@mui/material';
 import React, { useState } from 'react';
-import { FiMoreHorizontal } from 'react-icons/fi';
+import { HiOutlineMenuAlt2 } from 'react-icons/hi';
 import { MdRefresh, MdSettings } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,7 +39,9 @@ const AppMenu: React.FC = () => {
   return (
     <div>
       <IconButton onClick={handleMenuOpen}>
-        <FiMoreHorizontal />
+        <SvgIcon sx={{ width: 20, height: 20 }}>
+          <HiOutlineMenuAlt2 />
+        </SvgIcon>
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
         <MenuItem onClick={handleRefresh}>

@@ -11,6 +11,7 @@ const api = {
   getAppInfo: () => ipcRenderer.invoke('get-app-info'),
   getValue: (key: string) => ipcRenderer.invoke('get-value', key),
   setValue: (key: string, value: object) => ipcRenderer.invoke('set-value', key, value),
+  goToIndex: (index: number) => ipcRenderer.invoke('go-to-index', index),
   setMode: (mode: 'dark' | 'light') => ipcRenderer.invoke('set-mode', mode),
   onNavigationUpdate: (callback: (event: IpcRendererEvent, args: NavigationUpdate) => void) =>
     ipcRenderer.on('nav-update', callback),

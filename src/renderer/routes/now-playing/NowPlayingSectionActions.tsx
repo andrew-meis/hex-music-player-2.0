@@ -2,10 +2,12 @@ import { Memo, observer } from '@legendapp/state/react';
 import { Box } from '@mui/material';
 import chroma from 'chroma-js';
 import ActionButton from 'components/buttons/ActionButton';
+import { updateFavorite } from 'components/virtuoso/table-cells/Favorite';
 import { AnimatePresence } from 'framer-motion';
+import { DateTime } from 'luxon';
 import React from 'react';
 import { FiRadio } from 'react-icons/fi';
-import { HiOutlineHeart } from 'react-icons/hi2';
+import { HiHeart, HiOutlineHeart } from 'react-icons/hi2';
 import { ImLastfm } from 'react-icons/im';
 import { IoMdMicrophone } from 'react-icons/io';
 import { LuTimer, LuTimerOff } from 'react-icons/lu';
@@ -18,6 +20,16 @@ export const DetailsActions: React.FC = observer(function DetailsActions() {
   const swatch = store.ui.nowPlaying.swatch.get();
   const color = chroma(swatch.rgb);
   const nowPlaying = store.queue.nowPlaying.get();
+  const isFavorite = persistedStore.currentFavorites[nowPlaying.track.id].get();
+  if (isFavorite) updateFavorite(nowPlaying.track.id, nowPlaying.track.lastViewedAt, isFavorite);
+
+  const handleClick = () => {
+    if (isFavorite) {
+      persistedStore.currentFavorites[nowPlaying.track.id].delete();
+      return;
+    }
+    persistedStore.currentFavorites[nowPlaying.track.id].set(DateTime.now().toUnixInteger());
+  };
 
   return (
     <Box display="flex" gap={1} position="absolute" right={-8} top={-56}>
@@ -25,10 +37,10 @@ export const DetailsActions: React.FC = observer(function DetailsActions() {
         <ActionButton
           color={color}
           key="add-to-current-favorites"
-          label="Add to Current Favorites"
-          onClick={() => {}}
+          label={isFavorite ? 'Remove from Current Favorites' : 'Add to Current Favorites'}
+          onClick={handleClick}
         >
-          <HiOutlineHeart />
+          {isFavorite ? <HiHeart /> : <HiOutlineHeart />}
         </ActionButton>
         <ActionButton
           color={color}

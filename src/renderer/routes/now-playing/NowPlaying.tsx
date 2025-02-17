@@ -1,15 +1,6 @@
-import { Memo, observer, Show, useObserve } from '@legendapp/state/react';
+import { observer, Show, useObserve } from '@legendapp/state/react';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import {
-  Avatar,
-  Box,
-  Grid2 as Grid,
-  SxProps,
-  Tab,
-  Theme,
-  Typography,
-  useColorScheme,
-} from '@mui/material';
+import { Box, SxProps, Tab, Theme, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import RouteContainer from 'routes/RouteContainer';
@@ -55,11 +46,12 @@ const NowPlayingLyricsContainer: React.FC = () => {
 };
 
 const sx: SxProps<Theme> = {
-  height: 'calc(100% - 80px)',
+  height: 'calc(100% - 64px)',
+  marginX: 2,
   padding: 0,
   position: 'relative',
   top: 64,
-  width: 'calc(100% - 16px)',
+  width: 'calc(100% - 32px)',
 };
 
 const NowPlayingTabs: React.FC = observer(function NowPlayingTabs() {
@@ -106,32 +98,7 @@ const NowPlayingTabs: React.FC = observer(function NowPlayingTabs() {
   );
 });
 
-const Artwork: React.FC = observer(function Artwork() {
-  const library = store.library.get();
-  const nowPlaying = store.queue.nowPlaying.get();
-
-  const thumbSrc = library.server.getAuthenticatedUrl(nowPlaying.track.thumb);
-
-  return (
-    <Avatar
-      src={thumbSrc}
-      sx={{
-        borderRadius: 1,
-        boxShadow: 'var(--mui-shadows-2)',
-        height: '-webkit-fill-available',
-        margin: 2,
-        marginTop: 8,
-        maxHeight: 952,
-        maxWidth: 952,
-        width: '-webkit-fill-available',
-      }}
-    />
-  );
-});
-
 const NowPlaying: React.FC = () => {
-  const { mode } = useColorScheme();
-
   useEffect(() => {
     store.ui.breadcrumbs.set([
       { title: 'Home', to: { pathname: '/' } },
@@ -159,42 +126,7 @@ const NowPlaying: React.FC = () => {
           width: '100%',
         }}
       >
-        <Memo>
-          {() => {
-            const swatch = store.ui.nowPlaying.swatch.get();
-            return (
-              <div
-                style={{
-                  background: swatch.hex,
-                  borderRadius: 16,
-                  height: 'var(--content-height)',
-                  left: 0,
-                  maxHeight: 'min(952px, calc(calc(100vw / 2) - 64px))',
-                  opacity: mode === 'dark' ? 0.6 : 0.2,
-                  pointerEvents: 'none',
-                  position: 'absolute',
-                  top: 0,
-                  width: '100%',
-                }}
-              />
-            );
-          }}
-        </Memo>
-        <Grid
-          container
-          alignItems="center"
-          columnSpacing={0.5}
-          height={1}
-          maxHeight="min(952px, calc(calc(100vw / 2) - 64px))"
-          overflow="hidden"
-        >
-          <Grid height={1} maxWidth={0.5}>
-            <Artwork />
-          </Grid>
-          <Grid height={1} overflow="hidden" size="grow">
-            <NowPlayingTabs />
-          </Grid>
-        </Grid>
+        <NowPlayingTabs />
       </RouteContainer>
     </Show>
   );

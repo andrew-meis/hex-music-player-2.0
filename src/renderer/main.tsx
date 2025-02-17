@@ -35,6 +35,7 @@ import Collection from 'routes/collection/Collection';
 import { collectionLoader } from 'routes/collection/loader';
 import Collections from 'routes/collections/Collections';
 import { collectionsLoader } from 'routes/collections/loader';
+import CurrentFavorites from 'routes/current-favorites/CurrentFavorites';
 import Genre from 'routes/genre/Genre';
 import { genreLoader } from 'routes/genre/loader';
 import Genres from 'routes/genres/Genres';
@@ -141,6 +142,10 @@ const router = createHashRouter([
         loader: collectionLoader,
       },
       {
+        path: '/current-favorites',
+        element: <CurrentFavorites />,
+      },
+      {
         path: '/genres',
         element: <Genres />,
         loader: genresLoader,
@@ -208,7 +213,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           </DndProvider>
         </LocalizationProvider>
       </MuiThemeProvider>
-      <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
+      <ReactQueryDevtools buttonPosition="top-left" initialIsOpen={false} />
     </QueryClientProvider>
   </React.StrictMode>
 );

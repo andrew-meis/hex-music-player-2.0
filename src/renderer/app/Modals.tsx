@@ -4,8 +4,47 @@ import EditArtist from 'components/artist/EditArtist';
 import EditTrack from 'components/track/EditTrack';
 import React from 'react';
 import { store } from 'state';
+import { EditPlaylistFolder } from 'ui/app-panels/drawers/PlaylistsDrawer';
 
 const ReactiveDialog = reactive(Dialog);
+
+const small: React.ComponentProps<typeof ReactiveDialog> = {
+  $open: () => store.ui.modals.open.get(),
+  fullWidth: true,
+  maxWidth: false,
+  PaperProps: {
+    elevation: 2,
+    sx: {
+      borderRadius: 2,
+      flexDirection: 'row',
+      height: 256,
+      justifyContent: 'center',
+      margin: '0 8px',
+      width: 352,
+    },
+  },
+  onClose: () => store.ui.modals.open.set(false),
+  onTransitionExited: () => store.ui.modals.values.set(undefined),
+};
+
+const large: React.ComponentProps<typeof ReactiveDialog> = {
+  $open: () => store.ui.modals.open.get(),
+  fullWidth: true,
+  maxWidth: false,
+  PaperProps: {
+    elevation: 2,
+    sx: {
+      borderRadius: 2,
+      flexDirection: 'row',
+      height: 456,
+      justifyContent: 'center',
+      margin: '0 8px',
+      width: 624,
+    },
+  },
+  onClose: () => store.ui.modals.open.set(false),
+  onTransitionExited: () => store.ui.modals.values.set(undefined),
+};
 
 const Modals: React.FC = () => {
   useObserve(store.ui.modals.values, ({ value }) => {
@@ -17,35 +56,29 @@ const Modals: React.FC = () => {
   });
 
   return (
-    <ReactiveDialog
-      fullWidth
-      $open={() => store.ui.modals.open.get()}
-      PaperProps={{
-        elevation: 2,
-        sx: {
-          borderRadius: 2,
-          flexDirection: 'row',
-          height: 'calc(100% - 68px)',
-          justifyContent: 'center',
-          margin: '0 8px',
-          maxHeight: 456,
-          maxWidth: 900,
-          width: 624,
-        },
-      }}
-      maxWidth={false}
-      onClose={() => store.ui.modals.open.set(false)}
-      onTransitionExited={() => {
-        store.ui.modals.values.set(undefined);
-      }}
-    >
+    <>
+      <Show ifReady={store.ui.modals.values.folder}>
+        {(value) => (
+          <ReactiveDialog {...small}>
+            <EditPlaylistFolder action={value!.action} currentName={value!.currentName} />
+          </ReactiveDialog>
+        )}
+      </Show>
       <Show ifReady={store.ui.modals.values.artist}>
-        {(value) => <EditArtist artist={value?.artist} tab={value?.tab} />}
+        {(value) => (
+          <ReactiveDialog {...large}>
+            <EditArtist artist={value?.artist} tab={value?.tab} />
+          </ReactiveDialog>
+        )}
       </Show>
       <Show ifReady={store.ui.modals.values.track}>
-        {(value) => <EditTrack tab={value?.tab} track={value?.track} />}
+        {(value) => (
+          <ReactiveDialog {...large}>
+            <EditTrack tab={value?.tab} track={value?.track} />
+          </ReactiveDialog>
+        )}
       </Show>
-    </ReactiveDialog>
+    </>
   );
 };
 
