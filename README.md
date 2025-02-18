@@ -8,8 +8,10 @@
 
 ## Screenshots
 
-![dark-light](previews/home.png)
-<p align="center">*Color modes*</p>
+<figure>
+<img src="previews/home.png" alt="Hex Music dark and light modes"/>
+<figcaption>Color modes</figcaption>
+</figure>
 
 ![quad-images](previews/quad-images.png)
 <p align="center">*Playlist management - Now playing page - Artist page - Queue management*</p>
