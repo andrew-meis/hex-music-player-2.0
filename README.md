@@ -6,7 +6,12 @@ Hex Music Player is a feature-rich desktop music player for Plex Media Server, b
 
 ![app-preview](previews/hex-preview.webp)
 
-## Features
+## Screenshots
 
-| *Light/Dark mode* |
 | ![dark-light](previews/home.png) |
+|:--:|
+| **Color modes** |
+
+| ![quad-images](previews/quad-images.png) |
+|:--:|
+| **Playlist management - Now playing - Artist pages - Queue management** |
