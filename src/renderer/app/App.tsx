@@ -1,6 +1,8 @@
 import { Box, Divider } from '@mui/material';
+import { audio } from 'audio';
 import Menu from 'components/menu/Menu';
 import React from 'react';
+import { store } from 'state';
 import BottomBar from 'ui/app-panels/bottom-bar/BottomBar';
 import Drawers from 'ui/app-panels/drawers/Drawers';
 import AppSurface from 'ui/app-surface/AppSurface';
@@ -33,6 +35,20 @@ import Toasts from './Toasts';
 
 //   return null;
 // });
+
+window.addEventListener('keydown', function (e) {
+  if (e.key === ' ' && e.target === document.body) {
+    e.preventDefault();
+    const nowPlaying = store.queue.nowPlaying.get();
+    if (!nowPlaying) return;
+    const isPlaying = store.audio.isPlaying.get();
+    if (isPlaying) {
+      audio.pause();
+      return;
+    }
+    audio.play();
+  }
+});
 
 const Layout: React.FC = () => {
   return (

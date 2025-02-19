@@ -16,7 +16,7 @@ import {
   useSearchTracks,
 } from 'queries';
 import React, { useMemo } from 'react';
-import { createSearchParams, useNavigate } from 'react-router-dom';
+import { createSearchParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ItemProps, TableProps, TableVirtuoso } from 'react-virtuoso';
 import { allSelectObservables, store } from 'state';
 import { DragTypes, SelectObservables } from 'typescript';
@@ -140,10 +140,11 @@ const Table: React.FC<{
   );
 };
 
-const SearchResults: React.FC<{
-  query: string;
-  filter: string;
-}> = ({ query, filter }) => {
+const SearchResults: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const filter = searchParams.get('filter') || 'top';
+  const query = searchParams.get('query') || '';
+
   const { data: searchResults } = useSearch(query, 100);
 
   const { data: albumResults } = useSearchAlbums(

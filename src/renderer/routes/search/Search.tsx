@@ -10,7 +10,7 @@ import SearchHistory from './SearchHistory';
 import SearchResults from './SearchResults';
 
 const Search: React.FC = observer(function Search() {
-  const { filter, query } = store.loaders.search.get();
+  const { query } = store.loaders.search.get();
 
   useEffect(() => {
     const searchInputElement = document.getElementById('search-input') as HTMLInputElement;
@@ -49,7 +49,7 @@ const Search: React.FC = observer(function Search() {
         Search
       </Typography>
       {query.length < 2 && <SearchHistory />}
-      {query.length > 1 && <SearchResults filter={filter} query={query} />}
+      {query.length > 1 && <SearchResults />}
     </RouteContainer>
   );
 });
