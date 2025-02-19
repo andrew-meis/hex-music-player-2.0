@@ -24,7 +24,7 @@ import { isEmpty } from 'lodash';
 import React, { useMemo } from 'react';
 import { allSelectObservables, store } from 'state';
 import { PlaylistFolder } from 'typescript';
-import { isPlaylistFolder, PlaylistFolderMenu } from 'ui/app-panels/drawers/PlaylistsDrawer';
+import { isPlaylistFolder, PlaylistFolderMenu } from 'ui/app-drawers/PlaylistsDrawer';
 
 const Menu: React.FC = observer(function Menu() {
   const activeMenu = store.ui.menus.activeMenu.get();

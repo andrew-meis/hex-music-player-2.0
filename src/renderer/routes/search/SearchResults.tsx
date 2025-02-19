@@ -25,31 +25,31 @@ export type Result = Artist | Album | Track | Playlist | Genre | Collection;
 
 const tabs = [
   {
-    filter: 'top',
+    tab: 'top-results',
     label: 'Top Results',
   },
   {
-    filter: 'artists',
+    tab: 'artists',
     label: 'Artists',
   },
   {
-    filter: 'albums',
+    tab: 'albums',
     label: 'Albums',
   },
   {
-    filter: 'tracks',
+    tab: 'tracks',
     label: 'Tracks',
   },
   {
-    filter: 'playlists',
+    tab: 'playlists',
     label: 'Playlists',
   },
   {
-    filter: 'collections',
+    tab: 'collections',
     label: 'Collections',
   },
   {
-    filter: 'genres',
+    tab: 'genres',
     label: 'Genres',
   },
 ];
@@ -142,41 +142,26 @@ const Table: React.FC<{
 
 const SearchResults: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const filter = searchParams.get('filter') || 'top';
+  const tab = searchParams.get('tab') || 'top-results';
   const query = searchParams.get('query') || '';
+  const isQuery = query.length > 1;
 
   const { data: searchResults } = useSearch(query, 100);
 
-  const { data: albumResults } = useSearchAlbums(
-    query,
-    200,
-    query.length > 1 && filter === 'albums'
-  );
+  const { data: albumResults } = useSearchAlbums(query, 200, isQuery && tab === 'albums');
+  // eslint-disable-next-line prettier/prettier
+  const { data: collectionResults } = useSearchCollections(query, 200, isQuery && tab === 'collections');
 
-  const { data: collectionResults } = useSearchCollections(
-    query,
-    200,
-    query.length > 1 && filter === 'collections'
-  );
+  const { data: genreResults } = useSearchGenres(query, isQuery && tab === 'genres');
 
-  const { data: genreResults } = useSearchGenres(query, query.length > 1 && filter === 'genres');
+  const { data: playlistResults } = useSearchPlaylists(query, 200, isQuery && tab === 'playlists');
 
-  const { data: playlistResults } = useSearchPlaylists(
-    query,
-    200,
-    query.length > 1 && filter === 'playlists'
-  );
-
-  const { data: trackResults } = useSearchTracks(
-    query,
-    200,
-    query.length > 1 && filter === 'tracks'
-  );
+  const { data: trackResults } = useSearchTracks(query, 200, isQuery && tab === 'tracks');
 
   const navigate = useNavigate();
 
   return (
-    <TabContext value={filter}>
+    <TabContext value={tab}>
       <TabList>
         {tabs.map((tab) => (
           <Tab
@@ -186,18 +171,18 @@ const SearchResults: React.FC = () => {
                 {tab.label}
               </Typography>
             }
-            value={tab.filter}
+            value={tab.tab}
             onClick={() =>
               navigate({
                 pathname: '/search',
-                search: createSearchParams({ query, filter: tab.filter }).toString(),
+                search: createSearchParams({ query, tab: tab.tab }).toString(),
               })
             }
           />
         ))}
       </TabList>
-      <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="top">
-        <Table results={searchResults?.slice(0, 10)} />
+      <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="top-results">
+        <Table results={searchResults} />
       </TabPanel>
       <TabPanel sx={{ height: 1, padding: 0, width: 1 }} value="artists">
         <Table results={searchResults?.filter((value) => isArtist(value))} />

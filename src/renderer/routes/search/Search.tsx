@@ -1,16 +1,16 @@
-import { observer } from '@legendapp/state/react';
 import { Typography } from '@mui/material';
 import { uniq } from 'lodash';
 import React, { useEffect } from 'react';
-import { createSearchParams } from 'react-router-dom';
+import { createSearchParams, useSearchParams } from 'react-router-dom';
 import RouteContainer from 'routes/RouteContainer';
 import { persistedStore, store } from 'state';
 
 import SearchHistory from './SearchHistory';
 import SearchResults from './SearchResults';
 
-const Search: React.FC = observer(function Search() {
-  const { query } = store.loaders.search.get();
+const Search: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get('query') || '';
 
   useEffect(() => {
     const searchInputElement = document.getElementById('search-input') as HTMLInputElement;
@@ -52,6 +52,6 @@ const Search: React.FC = observer(function Search() {
       {query.length > 1 && <SearchResults />}
     </RouteContainer>
   );
-});
+};
 
 export default Search;

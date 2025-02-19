@@ -58,7 +58,7 @@ import { tracksLoader } from 'routes/tracks/loader';
 import Tracks from 'routes/tracks/Tracks';
 import { createSelectObservable, persistedStore, store } from 'state';
 import { SelectObservables } from 'typescript';
-import Titlebar from 'ui/titlebar/Titlebar';
+import Titlebar from 'ui/app-titlebar/Titlebar';
 
 enableReactComponents();
 

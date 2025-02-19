@@ -1,4 +1,4 @@
-import { Box, Grid2 as Grid, Paper, SvgIcon, Typography } from '@mui/material';
+import { Box, Grid2 as Grid, IconButton, Paper, SvgIcon, Typography } from '@mui/material';
 import { MediaType } from 'api';
 import { motion, useSpring, useTransform } from 'framer-motion';
 import { capitalize } from 'lodash';
@@ -9,6 +9,7 @@ import { BsMusicNote, BsMusicNoteList } from 'react-icons/bs';
 import { FaTags } from 'react-icons/fa';
 import { IoMdMicrophone } from 'react-icons/io';
 import { LuLayoutGrid } from 'react-icons/lu';
+import { MdSettings } from 'react-icons/md';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import RouteContainer from 'routes/RouteContainer';
 import { store } from 'state';
@@ -125,6 +126,7 @@ const LibrarySectionCard: React.FC<{
 };
 
 const Library: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <RouteContainer>
       <Typography paddingBottom={2} variant="h1">
@@ -135,6 +137,12 @@ const Library: React.FC = () => {
           <LibrarySectionCard key={section} section={section} />
         ))}
       </Grid>
+      <IconButton
+        sx={{ bottom: 0, position: 'absolute', right: 0 }}
+        onClick={() => navigate('/settings')}
+      >
+        <MdSettings />
+      </IconButton>
     </RouteContainer>
   );
 };

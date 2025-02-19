@@ -63,11 +63,6 @@ export interface PlaylistsLoaderData {
   section: string;
 }
 
-export interface SearchLoaderData {
-  filter: string;
-  query: string;
-}
-
 export interface TrackLoaderData {
   grandparentGuid: string;
   grandparentId: string;

@@ -1,7 +1,8 @@
 import { observer } from '@legendapp/state/react';
 import { Box, IconButton } from '@mui/material';
+import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
-import { VscChevronLeft, VscChevronRight } from 'react-icons/vsc';
+import { VscChevronLeft, VscChevronRight, VscRefresh } from 'react-icons/vsc';
 import { useNavigate } from 'react-router-dom';
 import { store } from 'state';
 
@@ -11,6 +12,7 @@ window.api.onNavigationUpdate((_, args) => {
 
 const NavigationButtons: React.FC = observer(function NavigationButtons() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { canGoBack, canGoForward } = store.ui.navigation.get();
 
@@ -21,6 +23,9 @@ const NavigationButtons: React.FC = observer(function NavigationButtons() {
       </IconButton>
       <IconButton disabled={!canGoForward} onClick={() => navigate(1)}>
         <VscChevronRight />
+      </IconButton>
+      <IconButton onClick={() => queryClient.refetchQueries({ type: 'active' })}>
+        <VscRefresh style={{ transform: 'rotate(90deg)' }} />
       </IconButton>
     </Box>
   );

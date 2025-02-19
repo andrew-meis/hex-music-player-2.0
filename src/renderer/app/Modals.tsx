@@ -4,7 +4,7 @@ import EditArtist from 'components/artist/EditArtist';
 import EditTrack from 'components/track/EditTrack';
 import React from 'react';
 import { store } from 'state';
-import { EditPlaylistFolder } from 'ui/app-panels/drawers/PlaylistsDrawer';
+import { EditPlaylistFolder } from 'ui/app-drawers/PlaylistsDrawer';
 
 const ReactiveDialog = reactive(Dialog);
 

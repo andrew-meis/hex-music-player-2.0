@@ -12,7 +12,7 @@ import QueueButton from './buttons/QueueButton';
 import NowPlaying from './now-playing/NowPlaying';
 import NowPlayingColor from './now-playing/NowPlayingColor';
 
-const BottomBar: React.FC = () => {
+const AppController: React.FC = () => {
   return (
     <Box
       borderRadius={2}
@@ -69,4 +69,4 @@ const BottomBar: React.FC = () => {
   );
 };
 
-export default BottomBar;
+export default AppController;

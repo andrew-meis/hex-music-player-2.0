@@ -2,14 +2,13 @@ import { Box, Divider } from '@mui/material';
 import { audio } from 'audio';
 import Menu from 'components/menu/Menu';
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import { store } from 'state';
-import BottomBar from 'ui/app-panels/bottom-bar/BottomBar';
-import Drawers from 'ui/app-panels/drawers/Drawers';
-import AppSurface from 'ui/app-surface/AppSurface';
-import AppMenu from 'ui/titlebar/AppMenu';
-import NavigationBreadcrumbs from 'ui/titlebar/NavigationBreadcrumbs';
-import NavigationButtons from 'ui/titlebar/NavigationButtons';
-import SearchInput from 'ui/titlebar/SearchInput';
+import AppController from 'ui/app-controller/AppController';
+import Drawers from 'ui/app-drawers/Drawers';
+import NavigationBreadcrumbs from 'ui/app-titlebar/NavigationBreadcrumbs';
+import NavigationButtons from 'ui/app-titlebar/NavigationButtons';
+import SearchInput from 'ui/app-titlebar/SearchInput';
 
 import Modals from './Modals';
 import QueryUpdaters from './QueryUpdaters';
@@ -62,24 +61,25 @@ const Layout: React.FC = () => {
         paddingX={1}
         width="-webkit-fill-available"
       >
-        <AppMenu />
         <NavigationButtons />
         <NavigationBreadcrumbs />
         <SearchInput />
       </Box>
       <Divider sx={{ marginX: 1 }} />
       <Box
+        color="text.primary"
         height="var(--content-height)"
         margin={1}
         maxWidth={1904}
+        minHeight="var(--content-height)"
         position="relative"
         width="calc(100vw - 16px)"
         zIndex={0}
       >
-        <AppSurface />
+        <Outlet />
       </Box>
       <Divider sx={{ marginX: 1 }} />
-      <BottomBar />
+      <AppController />
     </Box>
   );
 };
