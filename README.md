@@ -5,6 +5,7 @@
 <br />
 <br />
 <b>Key Features</b>
+<br />
 <em>Gapless Audio · Metadata Editing · Library Management</em>
 </p>
 
